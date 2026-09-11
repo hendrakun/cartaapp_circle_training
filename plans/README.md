@@ -111,6 +111,63 @@ The API build and all 4 selected API tests passed. Type-check, lint, and patch
 checks passed. Browser E2E was not run. See the plan for the full evidence,
 earlier failures, and the separate external declaration-emission limit.
 
+## API dev-startup performance — 2026-09-11
+
+Planned with the improve skill against checkout `99d77a5` on 2026-09-11.
+Scope: `perf` only. The user reported ~15 s dev startup (2741 ms compile +
+6767 ms watcher + 1162 ms manifest load). The user selected the top 2
+findings for plans. Read-only analysis only; no source changed during
+planning. Working tree was clean (`git status --short` empty).
+
+### Measured evidence (all on this checkout, `bundle=false`)
+
+- Full API compile: 2424 ms cold-ish, warm 1959 ms. Scope: 24 routes,
+  5 scopes, 29 route files plus ~44 esbuild metafile inputs.
+- 1-route fixture compile: 326 ms cold, 143-161 ms warm. Fixed declaration
+  cost dominates the API compile.
+- Manifest import under tsx: 936-1372 ms, stable across runs. Plain Node
+  import was not measurable (source manifest holds `.ts` specifiers).
+- Server phases on port 5199 reproduce the report: manifest 1191 ms,
+  app 24 ms, database 2 ms, bind 0 ms.
+- Framework imports under tsx: sprindle/hono ~700 ms, create-app ~788 ms,
+  db module ~632-674 ms, first `getDb()` ~1 ms, `defineDomainSchema` ~1 ms.
+
+### Findings table
+
+| # | Finding | Category | Impact | Effort | Risk | Evidence |
+|---|---|---|---|---|---|---|
+| PERF-01 | Dev, test, and temp manifests emit TypeScript declarations | perf | ~2 s of every ~2.4 s dev compile; 3 compiles per startup | S | LOW | `packages/sprindle/src/tooling/manifest.ts:69` always calls `emitRouteDeclarations`; dev uses `.sprindle-dev` (`apps/api/scripts/dev.ts:5`), test uses `.sprindle-test` (`apps/api/scripts/compile-routes.ts:2`), temp dir in `apps/api/scripts/build-production.ts:14` |
+| PERF-02 | Dev startup compiles the manifest 3 times | perf | 2 redundant ~2.4 s compiles before the server starts | S | LOW | `apps/api/scripts/dev.ts:9` explicit compile, then `watchRouteManifest` runs `compile(); await queue; compile(); await queue` (`packages/sprindle/src/tooling/manifest.ts:252`) |
+| PERF-03 | Watcher scans the whole API project, not routes plus inputs | perf | Every keystroke recompiles on any project file change; dozens of watchers held open | S | LOW | `watch(project, { recursive: true })` at `manifest.ts:235` plus `directories(project)` at line 240; 51 watch-candidate dirs counted; no route/input scoping |
+| PERF-04 | Dev manifest is source-only while production is bundled | perf | ~1 s tsx transform per server start plus per-route transform churn on reload | M | MED | `dev.ts:9` and watcher use `bundle=false`; production `tooling/build.mjs:8` bundles; manifest import under tsx measured ~1 s |
+| PERF-05 | Versioned `contracts/` dirs accumulate, stale tmp files remain | perf | 8.7 MB across 10 contract versions in `.sprindle-dev`; 4 orphan `.tmp` files; no pruning | S | LOW | `apps/api/.sprindle-dev/contracts/` listing at audit time (ignored output); `manifest.ts:146-150` renames without cleanup; failed-compile tmp files observed |
+| PERF-06 | Server imports manifest, app, and db serially | perf | ~150-300 ms of chained tsx transforms | S | LOW | `apps/api/src/server.ts:13-26` awaits hono import, manifest, create-app, db in sequence; each import measured 600-800 ms cold under tsx |
+
+Direction findings: none. This was a focused perf audit, not a direction pass.
+
+### Status
+
+| Plan | Title | Priority | Depends on | Status |
+| --- | --- | --- | --- | --- |
+| [005](005-skip-dev-declarations.md) | Skip type declarations for development and test manifests | P1 | None | DONE (manifest.spec 14 pass; auth-manifest 2 pass; test:dev-routes pass ~9.2 s; type-checks + lints exit 0; production build.mjs untouched) |
+| [006](006-single-dev-compile.md) | Compile once and wait for watcher readiness on dev startup | P1 | 005 (time saving; logic works alone) | DONE (manifest.spec 15 pass incl. single-compile test; tooling.spec 5 pass; test:dev-routes pass ~10.4 s; type-checks + lints exit 0; pre-existing macOS FSEvents phantom-compile flake documented in 006 deviation note) |
+| [007](007-narrow-route-watcher.md) | Narrow the route watcher to routes plus compiled inputs | P2 | None (keep 005/006 signatures if landed) | DONE (manifest.spec 17 pass incl. 2 new scope tests, 10 consecutive full-file passes; tooling.spec 5 pass x2; test:dev-routes pass ~8.4 s; type-checks + lint exit 0) |
+
+Execute 005 → 006, 007 any time after drift check. 005 removes ~2 s per compile; 006 removes 2 compiles.
+007 removes spurious recompiles during editing (no startup gain by itself).
+Together 005+006 remove ~6-7 s from the ~15 s startup. Either plan alone still helps.
+
+### Findings considered and rejected
+
+- Bundle the dev manifest (PERF-04): deferred; changes reload semantics and
+  the auth-manifest source-mode contract. Needs its own design pass.
+- Prune contracts and tmp files (PERF-05): housekeeping, not startup time.
+  Safe follow-up, unplanned.
+- Parallelize server imports (PERF-06): small gain (~150-300 ms), touches
+  boot order. Unplanned.
+- Database or `defineDomainSchema` as the cause: rejected with evidence;
+  first `getDb()` ~1 ms, schema define ~1 ms, pool connect lazy.
+
 ## Follow-up plan 004
 
 The user selected the existing temporary-folder approach on 2026-09-10 to get

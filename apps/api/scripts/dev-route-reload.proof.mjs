@@ -40,7 +40,7 @@ async function stop(child) {
 }
 
 test('cold dev starts after compilation and reloads add, invalid recovery, move, and delete', { timeout: 60_000 }, async () => {
-  await rm(join(root, '.sprindle'), { recursive: true, force: true })
+  await rm(join(root, '.sprindle-dev'), { recursive: true, force: true })
   await rm(routeRoot, { recursive: true, force: true })
   const asset = join(routeRoot, 'asset')
   await mkdir(asset, { recursive: true })

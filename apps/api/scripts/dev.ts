@@ -1,13 +1,11 @@
 import { spawn, type ChildProcess } from 'node:child_process'
-import { compileRouteManifest, watchRouteManifest } from '@southneuhof/sprindle/tooling'
+import { watchRouteManifest } from '@southneuhof/sprindle/tooling'
 
 const projectRoot = new URL('..', import.meta.url).pathname
 const manifest = '.sprindle-dev/routes.mjs'
 const bootStarted = Date.now()
 const log = (message: string) => console.log(`[api:dev] ${message} (+${Date.now() - bootStarted}ms)`)
-log('Compiling file routes...')
-await compileRouteManifest(projectRoot, 'src/routes', manifest, false)
-log('File routes compiled. Starting route watcher...')
+log('Compiling file routes and starting route watcher...')
 
 let server: ChildProcess | undefined
 let restarting = false
@@ -41,7 +39,7 @@ const watcher = await watchRouteManifest(projectRoot, 'src/routes', (error) => {
     return
   }
   if (ready) restartServer()
-}, manifest, false)
+}, manifest, false, { declarations: false })
 log('Route watcher ready.')
 ready = true
 startServer()

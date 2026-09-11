@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { pathToFileURL } from 'node:url'
@@ -28,6 +28,57 @@ test('writes one atomic artifact with file, helper, and extended config inputs',
   rmSync(join(root, 'helper.ts'))
   const run = spawnSync(process.execPath, ['--input-type=module', '--eval', `const m=await import(${JSON.stringify(pathToFileURL(first).href)});process.stdout.write(m.default[0].handlers.POST())`], { encoding: 'utf8' })
   expect(run.stderr).toBe(''); expect(run.stdout).toBe('changed')
+})
+
+test('skips declarations when disabled', async () => {
+  const root = fixture()
+  const target = await compileRouteManifest(root, 'routes', '.sprindle/routes.mjs', true, { declarations: false })
+  const manifest = await import(`${pathToFileURL(target).href}?skipped`)
+  expect(manifest.default).toHaveLength(1)
+  expect(existsSync(target.replace(/\.mjs$/, '.d.ts'))).toBe(false)
+  await compileRouteManifest(root)
+  expect(existsSync(target.replace(/\.mjs$/, '.d.ts'))).toBe(true)
+})
+
+test('watcher startup compiles exactly once', { timeout: 120_000 }, async () => {
+  const root = fixture(); const callbacks: (Error | undefined)[] = []
+  const watcher = await watchRouteManifest(root, 'routes', (error) => callbacks.push(error))
+  await watcher.close()
+  expect(callbacks).toHaveLength(1)
+})
+
+test('watch ignores edits outside routes and inputs', { timeout: 120_000 }, async () => {
+  const root = fixture(); const callbacks: (Error | undefined)[] = []
+  const watcher = await watchRouteManifest(root, 'routes', (error) => callbacks.push(error))
+  try {
+    const start = callbacks.length
+    writeFileSync(join(root, 'notes.txt'), 'unrelated')
+    mkdirSync(join(root, 'scripts'), { recursive: true })
+    writeFileSync(join(root, 'scripts', 'tool.ts'), `export const tool = 1`)
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    expect(callbacks).toHaveLength(start)
+    writeFileSync(join(root, 'routes', 'health', '+server.ts'), `export const POST = () => 'changed'`)
+    for (let attempt = 0; attempt < 40 && callbacks.length === start; attempt++) await new Promise((resolve) => setTimeout(resolve, 25))
+    expect(callbacks).toHaveLength(start + 1)
+    expect(callbacks.at(-1)).toBeUndefined()
+  } finally { await watcher.close() }
+})
+
+test('watch follows new dependency directories after import', { timeout: 120_000 }, async () => {
+  const root = fixture(); const callbacks: (Error | undefined)[] = []
+  const watcher = await watchRouteManifest(root, 'routes', (error) => callbacks.push(error))
+  try {
+    writeFileSync(join(root, 'helper.ts'), `export const value = 'one'`)
+    writeFileSync(join(root, 'routes', 'health', '+server.ts'), `import { value } from '../../helper'; export const POST = () => value`)
+    for (let attempt = 0; attempt < 40 && (callbacks.length < 2 || callbacks.at(-1)); attempt++) await new Promise((resolve) => setTimeout(resolve, 25))
+    expect(callbacks.at(-1)).toBeUndefined()
+    const imported = callbacks.length
+    writeFileSync(join(root, 'helper.ts'), `export const value = 'two'`)
+    for (let attempt = 0; attempt < 40 && callbacks.length === imported; attempt++) await new Promise((resolve) => setTimeout(resolve, 25))
+    for (let attempt = 0; attempt < 40 && callbacks.at(-1); attempt++) await new Promise((resolve) => setTimeout(resolve, 25))
+    expect(callbacks.length).toBeGreaterThan(imported)
+    expect(callbacks.at(-1)).toBeUndefined()
+  } finally { await watcher.close() }
 })
 
 test('watch recovers after an invalid source tree is fixed', { timeout: 120_000 }, async () => {
@@ -115,6 +166,7 @@ test('watch recovers when an external cycle is fixed by an external edit', { tim
   const watcher = await watchRouteManifest(root, 'routes', (error) => results.push(error))
   try {
     expect(results.at(-1)).toBeInstanceOf(Error)
+    for (let attempt = 0; attempt < 40 && results.length < 2; attempt++) await new Promise((resolve) => setTimeout(resolve, 25))
     const count = results.length
     writeFileSync(join(base, 'shared', 'b.ts'), `export const b='fixed'`)
     for (let attempt = 0; attempt < 80 && (results.length === count || results.at(-1)); attempt++) await new Promise((resolve) => setTimeout(resolve, 25))
