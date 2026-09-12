@@ -65,9 +65,9 @@ Use the actual changed controls and assert the submitted value, updated actions
 and persistence after reload. Seed prerequisites; perform the selected sequence
 through the UI.
 
-The design selects journey IDs and acceptance links. The worksheet maps each to
-one distinct `file::exact test title`; parameterized cases need distinct titles.
-The plan supplies data and assertions. Run `check_worksheet.py --browser-report`
+The design selects journey IDs and acceptance links. As tests are written, the
+worksheet maps each to one distinct `file::exact test title`; parameterized cases need distinct titles.
+The executor selects fixtures and assertions from the approved outcomes. Run `check_worksheet.py --browser-report`
 on the preserved Playwright JSON report. Every selected case must pass in each
 reported project without skipped attempts or retry failures. Review assertions
 against the design; a matching title cannot prove coverage or report freshness.
@@ -117,43 +117,27 @@ Prepare ordinary local prerequisites within task authority. If they cannot be
 established safely, report the exact blocked checks rather than offering a new
 test framework or claiming the runtime result from static checks.
 
-## TDD and review timing
+## Test order
 
-The planner selects public test boundaries, concrete fixtures and expected values
-from the approved design. The executor writes executable Vitest or Playwright
-tests, one cycle at a time. Acceptance YAML is a specification, not a test run.
-A cycle is test → observed red → implementation → green → affected regression checks.
+Use test-first work for regressions and critical rules: unauthorized access,
+financial errors, data loss, irreversible external effects, invalid final
+decisions, broken coupled writes, or a consequence the user identifies as serious.
+Inspect the assertions against the approved rule before implementation. Keep
+this check within the worker's task; final review checks tests and code together.
+A user-required review gate still applies.
 
-Red must detect the missing behavior: an expected assertion failure or a missing
-planned interface/control. Environment, import mistakes, invalid fixtures, zero
-selected tests and skipped cases are not behavior evidence. Inspect all planned
-assertions after the interface exists. An immediate pass requires checking whether
-behavior already exists or assertions are weak; preserve valid code and record
-existing coverage instead of manufacturing failure. For already implemented work,
-record missing historical red evidence and perform acceptance review; do not claim
-TDD retroactively. A copy/layout-only change can use stated visual evidence.
+For routine new routes and forms, implementation can precede focused behavior
+tests. Group related changes around an observable result. Existing coverage can
+satisfy an outcome when its assertions and inputs remain applicable.
 
-Require orchestrator review of executable assertions and red output before
-implementation when failure has one of these consequences:
+For a regression, observe the expected failure when practical. Setup faults and
+empty test selections do not establish it. If failure cannot be reproduced,
+state that limit and the wrong outcome the test detects. Keep useful failure
+output for diagnosis; a separate red report is not a completion requirement.
 
-| Consequence | Qualifying effect |
-|---|---|
-| Unauthorized access/action | Expose scoped data or allow an unauthorized mutation. |
-| Financial error | Change a charge, payment, balance or committed cost incorrectly. |
-| Data/history loss | Remove records or required evidence, including through migration. |
-| Irreversible external effect | Submit, publish or issue an external instruction. |
-| Invalid final decision | Approve or close work without required conditions. |
-| Broken coupled effects | Lose a reservation, duplicate an effect, or partially commit an invariant. |
-| User-designated consequence | The user identifies the affected rule as serious. |
-
-Record timing, affected acceptance IDs and the concrete consequence in each plan
-cycle. Complexity or a money field alone does not qualify. Other cycles receive
-review after the plan. Timing changes review, not correctness or coverage.
-
-For every review, inspect changed tests as well as code. Setup repairs preserve
-assertions; proposed assertion changes return to the orchestrator. Changes to
-business expectations require design authority. A before-implementation test pass
-records reviewer, case IDs and red report; it does not pass module acceptance.
+Change business assertions only with the decision owner's authority. A technical
+test repair can proceed when it preserves the approved outcome; report the change
+for final review.
 
 ## Tight loop
 
@@ -171,6 +155,13 @@ external dependency or contaminated shared environment may need fresh checking
 without a source change; fingerprints alone cannot establish runtime isolation.
 
 ## Evidence interface
+
+Use ordinary focused test output during development. At a completed assignment
+or final verification, record the required commands together with the existing
+recorder. One report can support several acceptance rows. Reuse current recorded
+passes; ordinary output without the required provenance needs a recorded run.
+Preserve relevant failure artifacts and explain their correction in the handoff.
+Update the worksheet after handoff and final review, not after each command.
 
 Each result records exact command/argument vector and working directory,
 selected cases, environment identity (no credentials), source and approved design

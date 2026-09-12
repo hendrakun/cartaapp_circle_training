@@ -8,8 +8,9 @@ description: Review an implemented Carta module or completed plan against its ap
 Perform acceptance review of the named feature or plan. Inspect source and
 reports without implementing fixes or editing decisions/state. Safe focused
 checks and their report outputs are permitted within the declared test boundary.
-Use an independent reviewer when available; otherwise label a self-review and
-apply the same criteria. An executor summary is an input, not a verdict.
+Use an independent reviewer by default under the
+[execution rules](../carta-module-development/references/execution.md#review-and-finish).
+Apply the same criteria to self-review. An executor summary is an input, not a verdict.
 
 ## Establish the review scope
 
@@ -66,7 +67,7 @@ repeated validation where direct use preserves the required behavior.
 
 ## Evaluate evidence
 
-Compare the design inventory with worksheet coverage and plan ownership. Check
+Compare the design inventory with worksheet acceptance and plan ownership. Check
 required branches, invariants and whole sequences, including browser obligations.
 Check every expected outcome against the assertion or visual evidence that proves
 it. Compare distinct workflow branches with the design journey inventory; inspect
@@ -76,7 +77,7 @@ stub forms, schemas, serialization or unresolved components; those stubs cannot
 prove the replaced boundary. Apply the [UI review](../web-ui-surfaces/references/verification.md) to custom
 composition and displayed values. A passed API row leaves a required browser or
 visual row open until that evidence is sufficient.
-Inspect red/green evidence, required test-gate reviews, changed assertions,
+Inspect recorded results, critical-rule tests, changed assertions,
 selected cases, commands, input fingerprints,
 environment identity and results. Reuse current sufficient evidence; rerun the
 smallest affected checks when evidence is missing, stale, failed or insufficient.
@@ -115,7 +116,7 @@ REVIEW: independent | self-review
 DESIGN: path, approved revision and source
 IMPLEMENTATION: scope/drift and direct-owner findings
 ACCEPTANCE: IDs, implementation pointers and evidence
-CHECKS: red/green or stated existing-coverage exception, test gates, reports and freshness
+CHECKS: results, reports, freshness and unverified checks
 UI: case/step evidence or applicability reason
 REWORK: affected IDs, owning plan and exact correction, or None
 BLOCKERS: affected IDs and missing prerequisite, or None

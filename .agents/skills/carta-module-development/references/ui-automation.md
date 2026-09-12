@@ -1,13 +1,13 @@
 # Playwright UI evidence
 
 Use this reference for approved UI acceptance. The design owns the visible
-outcomes; the plan names the cases and data that demonstrate them.
+outcomes; the executor selects cases and data that demonstrate them.
 
 ## Scripted acceptance
 
 Saved Playwright Test TypeScript cases are the default. Agents run commands and
 review reports; computer-controlled clicks are optional diagnosis, not a delivery
-gate. The plan names acceptance IDs, actor, fixtures, steps and assertions. Put IDs
+gate. Select actors, fixtures, steps and assertions from the approved outcomes. Put IDs
 in test titles and name meaningful `test.step` sections. Keep UI-owned assertions
 in browser tests and exhaustive access/state combinations at the API.
 
@@ -44,8 +44,8 @@ record IDs, including after a failed assertion.
 
 ## Evidence and diagnosis
 
-Use the existing Playwright runner and module evidence recorder; no YAML-to-browser
-command engine is needed. Before execution, check the target and selected case IDs.
+Use the existing Playwright runner. Record final evidence under the
+[verification strategy](verification-strategy.md#evidence-interface). Before execution, check the target and selected case IDs.
 After execution, read JSON results and produce a compact summary: required,
 executed, passed, failed and skipped IDs; failed step/assertion; report and attachment
 paths. A missing case or an unexplained retry pass leaves its obligation incomplete.
@@ -54,7 +54,7 @@ The orchestrator checks assertions and source before granting acceptance.
 
 Use the current focused `test:e2e` command and exact spec/test selector. Confirm
 the expected cases actually ran, including denied/empty/failure cases selected
-by the plan. Reuse a passing run when code, tests, relevant dependencies,
+for the approved outcomes. Reuse a passing run when code, tests, relevant dependencies,
 fixtures and environment are still applicable. A valid run need not be repeated
 merely because it was initially called a debug run.
 

@@ -39,13 +39,12 @@ the same public object-array shape after a write.
 
 Reuse `storedAssetSchema`, `storedAssetInput`, and `uploadKey` from
 `src/schema.ts`, and the current conversion functions in `src/storage/assets.ts`.
-Public file fields carry asset objects; persistence stores validated keys.
-`storedAssetInput` extracts the key from the public input object. External URLs
-need a separate explicit schema. Do not persist temporary signed download URLs.
+External URLs need a separate explicit schema. Do not persist temporary signed
+download URLs.
 
 For standard and custom file writes, follow the shared
-[asset-object contract](../../carta-module-development/references/frontend-field-contract.md#objects-and-identifiers).
-Use the schema input shape for HTTP consumers and its parsed output for persistence.
+[asset-object contract](../../carta-module-development/references/frontend-field-contract.md#asset-fields).
+Use `z.input` for the HTTP shape and `z.output` for parsed persistence values.
 
 Use `storedAssetModel(publicSchema)` for canonical records and
 `publicRecord(publicSchema, value)` for a custom result when these fit. Convert

@@ -44,8 +44,8 @@ write them.
 
 For a nested custom form block that has a non-asset submit conversion, put one
 writer on the owning top-level field. Do not also write its child fields or
-write the block again during submit. Stored assets use the API object contract
-and have no submit writer.
+write the block again during submit. For assets, use the
+[asset field contract](#asset-fields).
 
 The live draft always keeps the control value. A writer is pure, changes only
 its field on the submit copy, and never replaces a preview or selected record
@@ -54,8 +54,7 @@ in the live draft.
 The input contract owns basic non-empty control shape:
 
 - `number`: a finite JavaScript number;
-- single `image`: one canonical asset object;
-- `image` with `multi: true`: an array of canonical asset objects;
+- `file` and `image`: the [asset field contract](#asset-fields);
 - `lookup` or `select` with `multi: true`: an array of exact selection record
   objects from the field schema. The schema must use
   `selectionValues(itemSchema)`; the framework rejects a missing or different
@@ -66,19 +65,14 @@ and the final submitted shape. Use action validators only for extra business
 rules. For example, a number renderer already rejects text; use
 `form.validate` only to replace that rule with a domain rule such as 1–15.
 
-Built-in override parameters are typed from the renderer. Number callbacks
-receive `number`; single and multi image callbacks receive their different
-asset types; multi lookup receives a record array. An arbitrary custom
-renderer receives `unknown` until its own contract narrows it.
+Built-in override parameters follow the renderer value type. An arbitrary custom
+renderer receives `unknown` until its own contract narrows it. Check current
+exports before relying on a planned type change.
 
 ## Objects and identifiers
 
 Do not apply one identifier rule to all inputs:
 
-- Image and file controls keep the full canonical asset object, or an array of
-  those objects in multi mode, and submit it unchanged. A retained upload uses
-  the API `storedAssetSchema` for reads and `storedAssetInput` for writes. The
-  backend extracts the validated `id`; the field has no `form.write`.
 - A database-backed single relation keeps its scalar ID or code as the write
   field. The API also returns the named relation object for display, and
   `display.read` reads its label. Do not fetch only to label it.
@@ -92,29 +86,71 @@ Do not apply one identifier rule to all inputs:
   persistence boundary, then sends current labels in the same record array.
   Do not map these values to IDs and do not add a field writer.
 
-The API owns the stored-asset HTTP value. `storedAssetSchema` in `apps/api/src/schema.ts`
-defines the exact object, `storedAssetInput` extracts its upload key for persistence,
-and `storedAsset()` creates fresh read values. The app asset adapter validates this
-object and maps it to the generic input contract. It does not accept raw keys,
-external URLs, partial objects, nested envelopes, or compatibility aliases. A multi
-file field uses an object array and submits the array unchanged.
+## Asset fields
 
-Apply this contract to custom workflow actions as well as create/update. If an
-action expects a raw key from a file control, correct its API input schema to use
-`storedAssetInput`. The form schema uses `storedAssetSchema` so parsing preserves
-the object. Keep the key-extraction transform on the server, including when the
-form uses `fromZod`; a client writer or client schema transform would preserve
-the wrong HTTP contract.
+Use the same field name and asset shape in API reads, the live form draft and
+submitted writes. A single field contains `StoredAsset` (or `null` when allowed);
+a multi field contains `StoredAsset[]`. Preserve every asset property, including
+optional metadata. Array position carries UI order. Framework controls add no
+category, row identity or ordering property to an asset.
 
-The renderer/schema compatibility diagnostic skips its mismatch error only when
-the field has `form.write`. Keep compatibility metadata private to the
-framework.
+The API owns `storedAssetSchema` and its inferred `StoredAsset` type in
+`apps/api/src/schema.ts`. Use that schema for client parsing, including `fromZod`.
+Use `storedAssetInput` only on the server to extract storage IDs. Its HTTP input
+is still the complete object. Project stored IDs with the existing
+`apps/api/src/storage/assets.ts` owner before returning records.
+
+Reuse `apps/web/src/framework/adapters/assets.ts` and the input registry for
+load, upload and preview. Keep asset objects through submission: no asset field
+writer, client ID transform, copied asset type or per-action object reconstruction.
+The contract applies to custom workflow actions as well as create/update.
+Raw keys, URLs, partial objects and compatibility aliases are not asset values.
+
+For ordinary collection edits, submit the desired complete array. On PATCH,
+omission means unchanged; an included array replaces the collection; `[]` requests
+clearing. Keep optional patch arrays free of empty-array defaults. The server
+validates requiredness, access and allowed files before applying the collection
+atomically through the existing persistence owner. Keep client add/remove diffs
+out of this path. An existing domain command with different semantics needs an
+authorized contract change before migration.
+
+Business data belongs in the app. An app can declare separate asset fields or
+wrap an asset in an app-owned record when its behavior requires extra fields.
+Keep that record symmetric across its read/form/write path. A category is never
+a framework asset requirement. Use the app's existing field extension for such
+values; preserve the nested asset object.
+
+The frontend preserves metadata; the server decides authoritative metadata and
+can issue fresh URLs. Do not persist client URLs as authority. A stored key alone
+does not preserve all metadata after reload. Removing a record association does
+not authorize deletion of the shared file. Apply the module's concurrent-edit
+policy and file-access rules on the server.
+
+### Availability and proof
+
+The object schema and app adapter exist. Multi-file field typing, uniform asset
+validation, metadata refresh and form upload readiness are pending in
+[plan 015](../../../../plans/015-symmetric-asset-fields.md). Inspect current source
+before using those capabilities. Report a type/runtime mismatch at its owner;
+use an authorized supported local extension only if it preserves this contract.
+A cast or client conversion must not hide the mismatch. Remove this availability
+note only after the implementation checks pass.
+
+Use shared form readiness when available. Browser checks wait for upload and
+model commit; filename presence does not prove completion. Existing upload
+progress test IDs avoid dependence on translated copy. Keep module-specific
+pending flags out of the normal form path.
+
+For changed asset fields, prove unchanged save, addition, permitted removal or
+clear, retained metadata and reload. Cover omitted PATCH separately from empty
+arrays at the API boundary. Capture a real form submission and parse it through
+the server input schema; a mocked action alone cannot prove symmetry. Reuse a
+shared integration example when it exists, and keep business-rule tests local.
 
 ## Check the boundary
 
 Trace one loaded value through the control, submit and stored result. For a
 changed conversion, check a value that differs across those stages. For a
 lookup, check a pre-filled selection and an invalid parent reference. For an
-asset, check that reload retains its preview and submit sends the canonical
-object. Use the [verification strategy](verification-strategy.md) to select
+asset, use the checks in [Asset fields](#asset-fields). Use the [verification strategy](verification-strategy.md) to select
 checks; repeated assertions of field configuration do not prove this flow.

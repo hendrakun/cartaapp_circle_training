@@ -54,22 +54,15 @@ For a new full-CRUD resource with no
 special behavior, check [bounded.md](references/bounded.md) for generator limits;
 generator ineligibility does not change the approved scope.
 
-Before assigning execution, run the worksheet checker and review the UI contract
-and journey coverage against the approved behavior. Missing mappings return to
-planning. Delegate plan reconciliation as planning, not execution.
-
-Use delegation when available and useful. Assign workers through the
-[execution handoff](references/execution.md#assignment). The orchestrator reviews
-every plan before assigning the next; workers return evidence, not acceptance.
-When delegation is unavailable, execute directly with the same acceptance
-requirements and label the review as a self-review.
+Delegate implementation by default under the
+[assignment and recovery rules](references/execution.md#assignment).
+The parent owns scope, coordination and acceptance. Use direct execution when
+the user requests it or delegation is unavailable; state the reason.
 
 Use [verification-strategy.md](references/verification-strategy.md) to select
-and record evidence. Invoke `$verify-carta-module` for final acceptance whether
-implementation was delegated or direct. A static helper pass or executor summary
-is not a module acceptance verdict. Complete only when every required evidence
-surface and acceptance row has current sufficient evidence, semantic review passes
-and blockers are clear. Apply the verifier's scope-change rule to unfinished work.
+checks and collect final evidence. Invoke `$verify-carta-module` for final
+acceptance. Complete when all required outcomes have current sufficient evidence,
+review passes and the worksheet is updated. Preserve incomplete work as such.
 
 ## Layer contracts
 

@@ -13,11 +13,12 @@ Use [web-ui-surfaces](../web-ui-surfaces/SKILL.md) for page composition and
 ## Define the value contract
 
 Bind standard API schemas with `defineSchema` and `fromZod(schema)`. Infer parsed
-types; add a local form transform only when the control and API shapes differ.
+types. For non-asset fields, add a local form transform only when the control
+and API shapes differ.
 Keep custom action schemas separate from standard CRUD schemas.
 
 For file/image fields in standard or custom actions, read the
-[asset-object contract](../carta-module-development/references/frontend-field-contract.md#objects-and-identifiers)
+[asset-object contract](../carta-module-development/references/frontend-field-contract.md#asset-fields)
 before selecting the write schema. Use that contract to resolve an input mismatch.
 
 Use one `defineFields` catalog. Select only each action's fields in its required
@@ -89,7 +90,7 @@ permission. The server validates it; a query parameter grants no authority.
 
 For multi lookup/select, use `selectionValues(exactItemSchema)`: keep exact
 selected record objects and submit them unchanged. Do not add an ID-array
-writer. Use the asset adapter for file/image hydration and submission.
+writer.
 
 ## Connect writes
 

@@ -1,16 +1,15 @@
 # Module implementation plan
 
-Use `plans/<feature>/NNN-<result>.md`, one plan per observable vertical result.
-Split for a real dependency or risk boundary. Preserve valid numbering on resume.
-The design defines behavior; reference its IDs rather than copying rules.
-The capable planner resolves architecture before assigning the plan to an executor.
+Use `plans/<feature>/NNN-<result>.md`, one plan per complete result.
+Preserve valid numbering on resume. Reference design IDs instead of copying rules.
+The worksheet alone maps acceptance and journeys to tests and results.
 
 ```markdown
 # Plan NNN: <observable result>
 
 - Design: <path, approved revision and authority>
 - Acceptance: <owned IDs>
-- Depends on: <plan IDs and exact required interfaces, or NONE>
+- Depends on: <plan IDs and required interfaces, or NONE>
 - Source: <commit and relevant dirty/untracked input snapshot>
 - Scope: <permitted edits, test target and side effects>
 
@@ -19,70 +18,63 @@ The capable planner resolves architecture before assigning the plan to an execut
 | File / symbol | Existing or new | Required change | Consumers |
 |---|---|---|---|
 
-Specify exact route methods/paths, input/output types, errors, authorization,
-transaction placement and cross-plan interfaces. Name existing exemplars and
-applicable layer contracts. State migration generation/application and consumer
-update order separately. Resolve architecture and dependency choices here.
+Specify route methods/paths, public input/output types, errors, authorization,
+transaction boundaries and interfaces between plans. Name existing examples and
+applicable layer contracts. State migration and consumer update order when needed.
+Leave routine code and test details to the executor.
+
+## Work order
+
+Check the required isolated test environment before implementation. Start with
+one complete path through the most uncertain integration. Include API, UI and
+persistence where the approved path uses them. Prove its result before dependent
+actions. Name remaining results and their dependencies.
 
 ## UI contract
 
 For changed web surfaces, reference `ui-contract.json` from the
 [UI contract](../../web-ui-surfaces/references/ui-contract.md). Record the selected
-component, extension and actual gap once. For each design journey, map one exact
-browser test in the worksheet; put its fixture and assertions in the cycle below.
+component, extension and actual gap once. Use the design's journey IDs; the
+executor returns exact browser test mappings for the parent to merge.
 
-## TDD cycles
+## Test strategy
 
-| Cycle | Acceptance IDs | Test case | Fixture / actor | Assertions | Expected red | Implementation owners | Review timing | Consequence |
-|---|---|---|---|---|---|---|---|---|
-
-Each row names one test as `file::exact test title`, identical to its worksheet
-Test case. Use exact acceptance IDs. An acceptance case can need several cycles
-to prove its required surfaces. Every evidence row needs a matching cycle.
-Review timing is `before-implementation` or `after-plan`; Consequence states the
-qualifying effect or `NONE`. Split independent tests into separate rows; one
-sequence test can cover a journey.
-A plan review gate applies between plans, not between backend and UI layers.
-Define exact inputs,
-expected outputs, unchanged data and test boundaries from the design. Use the
-verification strategy to classify review timing and evidence exceptions.
-YAML acceptance records specify tests; executable Vitest/Playwright code runs them.
+Name test boundaries and critical expected outcomes, including unchanged data
+on rejected writes. Use the verification strategy for test-first requirements.
+Select required evidence surfaces in the worksheet before assignment. Browser
+checks use changed controls and prove saved results; API checks prove access,
+validation and transaction rules. Reuse valid existing coverage.
 
 ## Commands
 
-| Purpose / selected cases | Working directory | Exact command | Setup / isolated target | Evidence path |
-|---|---|---|---|---|
+| Purpose | Working directory | Command | Setup / isolated target |
+|---|---|---|---|
 
-Mark commands as inspected or run. Include focused cycle checks and the affected
-regression checks. Missing setup stays blocked. Browser cases name UI steps and
-persisted outcomes; backend evidence cannot complete a required UI case.
+Mark commands as inspected or run. Include affected regression checks and final
+checks. The executor adds selectors for new tests. Name blocked checks and their
+missing setup; prepare ordinary local requirements within task authority.
 
 ## Handoff
 
-Return changed owners, acceptance IDs, red/green and regression reports, test
-changes, input snapshot and unresolved conflicts. Stop after this plan for the
-orchestrator verdict. Completion and state follow the worksheet contract.
+Return changed owners, test mappings, results, evidence paths, input snapshot
+and unresolved conflicts. The parent merges worksheet updates after handoff
+and final review. Assignment and review follow the development workflow.
 ```
 
 ## Readiness
 
-Map every design inventory obligation to acceptance and every acceptance case to
-one primary plan and its required surfaces in the
+Check design coverage, acceptance ownership and required surfaces in the
 [worksheet](../../carta-module-development/references/module-execution-worksheet.md).
-Check paths, interfaces, command selectors, fixtures, assertions and dependency
-order as an executor without the interview. Use
+Check paths, interfaces, write boundaries, commands and dependency order against
+the checkout. Use the
 [verification strategy](../../carta-module-development/references/verification-strategy.md)
-for test boundaries and serious-consequence review.
+for sufficient checks.
 
-Before marking READY, review the UI contract and journey selection against current
-component source and business rules. Existing code and passing tests cannot select
-the required components or workflow paths. Then review the packet semantically: decision authority, one test
-per cycle, required red-review timing, and UI actions actually performed by the
-browser case. A structural pass does not complete this review. Record the verdict
-and exact next action: write/run the first named test, obtain its required red
-review, or reuse justified existing coverage. Application edits follow that gate.
+Before `READY`, check the selected UI components and journeys against current
+source and approved behavior. The packet is ready when an executor can build the
+selected result without another product decision. Exact new test titles and
+fixtures are execution details. Record the next assignment and any blocked work.
 
-A repository conflict returns its exact evidence to the planner; a new business
-choice returns to design. Preserve unaffected work. The executor may select local
-names and equivalent expressions; changed public interfaces, transactions,
-dependencies or approved assertions need orchestrator review.
+Return repository conflicts with evidence to the planner and new business choices
+to design. Preserve unaffected work. Changed public interfaces, transactions or
+dependencies need coordinator review; changed behavior needs design authority.

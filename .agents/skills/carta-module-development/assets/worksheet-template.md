@@ -17,11 +17,6 @@
 | Artifact | Authority / approval | Currentness evidence | Owns | Gaps or conflicts |
 |---|---|---|---|---|
 
-## Coverage
-
-| Obligation | Acceptance IDs |
-|---|---|
-
 ## Plans
 
 | Plan | File | Depends on | Status | Review |
@@ -41,8 +36,8 @@
 
 ## Acceptance
 
-| Acceptance | Plan | Surface | Test case | Implementation | Red | Green | Review | Result |
-|---|---|---|---|---|---|---|---|---|
+| Acceptance | Plan | Surface | Test case | Implementation | Evidence | Review | Result |
+|---|---|---|---|---|---|---|---|
 
 ## Decisions and blockers
 
@@ -50,5 +45,5 @@ Reference design decisions; name blocked IDs, prerequisites and next actions.
 
 ## Handoff history
 
-Record test-gate reviews, changed assertions, source revisions, failed checks,
+Record reviews, changed decisions, source revisions, failed checks,
 superseded plans and final cross-plan review. Keep output in linked reports.

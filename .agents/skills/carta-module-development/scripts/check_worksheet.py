@@ -36,6 +36,10 @@ def rule_ids(value):
     return set(re.findall(r'\b(?:B|T|I)-\d+\b', value))
 
 
+def exact_test(value):
+    return '::' in value and all(part.strip() for part in value.split('::', 1))
+
+
 def check(folder):
     errors = []
     design = (folder / 'design.md').read_text()
@@ -43,11 +47,10 @@ def check(folder):
     inventory = table(design, ['Obligation', 'Rule references', 'Acceptance IDs'])
     journeys = table(design, ['Journey', 'Obligation', 'Acceptance IDs', 'Distinct interaction'])
     journey_tests = table(worksheet, ['Journey', 'Test case'])
-    coverage = table(worksheet, ['Obligation', 'Acceptance IDs'])
     plans = table(worksheet, ['Plan', 'File', 'Depends on', 'Status', 'Review'])
     required = table(worksheet, ['Acceptance', 'Required surfaces'])
     acceptance = table(worksheet, ['Acceptance', 'Plan', 'Surface', 'Test case',
-                                   'Implementation', 'Red', 'Green', 'Review', 'Result'])
+                                   'Implementation', 'Evidence', 'Review', 'Result'])
 
     def indexed(rows, key):
         result = {}
@@ -59,14 +62,14 @@ def check(folder):
         return result
 
     expected = indexed(inventory, 'Obligation')
-    actual = indexed(coverage, 'Obligation')
     plan_map = indexed(plans, 'Plan')
     requirements = indexed(required, 'Acceptance')
     journey_map = indexed(journeys, 'Journey')
     mapped_journeys = indexed(journey_tests, 'Journey')
     if journey_map.keys() != mapped_journeys.keys():
         errors.append('browser journey mapping differs from design')
-    if len({row['Test case'] for row in journey_tests}) != len(journey_tests):
+    assigned_tests = [row['Test case'] for row in journey_tests if row['Test case'] != 'PENDING']
+    if len(set(assigned_tests)) != len(assigned_tests):
         errors.append('each browser journey needs a distinct test case')
     cases = {}
     evidence_keys = set()
@@ -81,8 +84,6 @@ def check(folder):
         errors.append('duplicate acceptance record IDs in design')
     if not expected or not declared or not plan_map:
         errors.append('design inventory, acceptance records and plans must be nonempty')
-    if expected.keys() != actual.keys():
-        errors.append('worksheet obligations differ from design inventory')
     defined_rules = set(re.findall(r'^id:\s*((?:B|T|I)-\d+)\s*$', design, re.MULTILINE))
     for columns in [
         ['Transition ID', 'From state', 'Action', 'Condition', 'To state', 'Effect references'],
@@ -99,8 +100,6 @@ def check(folder):
         covered |= linked
         if not linked:
             errors.append(f'{name}: no acceptance cases')
-        if name in actual and linked != ids(actual[name]['Acceptance IDs'], 'A'):
-            errors.append(f'{name}: acceptance links differ from design')
     if any(values != set(declared) for values in [covered, set(cases), set(requirements)]):
         errors.append('design records, inventory links, required evidence and acceptance IDs differ')
     for name, row in requirements.items():
@@ -122,7 +121,7 @@ def check(folder):
         if not linked or not linked <= ids(obligation.get('Acceptance IDs', ''), 'A'):
             errors.append(f'{name}: journey differs from inventory acceptance')
         test = mapped_journeys.get(name, {}).get('Test case', '')
-        if '::' not in test or not all(part.strip() for part in test.split('::', 1)):
+        if test != 'PENDING' and not exact_test(test):
             errors.append(f'{name}: expected file::exact test title')
         for case in linked:
             if not any(row['Surface'] == 'BROWSER' and row['Test case'] == test for row in cases.get(case, [])):
@@ -146,36 +145,6 @@ def check(folder):
             assigned_cases = {case['Acceptance'] for case in acceptance if case['Plan'] == name}
             if not declared_cases or declared_cases != assigned_cases:
                 errors.append(f'{name}: plan acceptance differs from worksheet ownership')
-            try:
-                cycles = table(plan_file.read_text(), ['Cycle', 'Acceptance IDs', 'Test case',
-                    'Fixture / actor', 'Assertions', 'Expected red', 'Implementation owners',
-                    'Review timing', 'Consequence'])
-            except ValueError as error:
-                errors.append(f'{name}: {error}')
-                cycles = []
-            indexed(cycles, 'Cycle')
-            cycle_cases = set()
-            cycle_tests = set()
-            evidence_tests = {(case['Acceptance'], case['Test case']) for case in acceptance
-                              if case['Plan'] == name}
-            for cycle in cycles:
-                if any(not value for value in cycle.values()):
-                    errors.append(f'{name}/{cycle["Cycle"]}: empty required property')
-                linked = ids(cycle['Acceptance IDs'], 'A')
-                cycle_cases |= linked
-                if not linked or linked - assigned_cases:
-                    errors.append(f'{name}/{cycle["Cycle"]}: invalid acceptance links')
-                cycle_tests.update((case, cycle['Test case']) for case in linked)
-                if cycle['Review timing'] not in {'before-implementation', 'after-plan'}:
-                    errors.append(f'{name}/{cycle["Cycle"]}: invalid review timing')
-                if cycle['Review timing'] == 'after-plan' and cycle['Consequence'] != 'NONE':
-                    errors.append(f'{name}/{cycle["Cycle"]}: consequence requires earlier review')
-                if cycle['Review timing'] == 'before-implementation' and cycle['Consequence'] in {'', 'NONE'}:
-                    errors.append(f'{name}/{cycle["Cycle"]}: missing consequence')
-            if cycle_cases != assigned_cases:
-                errors.append(f'{name}: cycle coverage differs from acceptance ownership')
-            if cycle_tests != evidence_tests:
-                errors.append(f'{name}: cycle tests differ from evidence rows')
         deps = ids(row['Depends on'], 'P')
         dependencies[name] = deps
         if not deps and row['Depends on'] != 'NONE':
@@ -193,8 +162,8 @@ def check(folder):
             file_link(row['Review'], f'{name} review')
         if row['Status'] in {'IN_PROGRESS', 'IMPLEMENTED', 'VERIFIED'}:
             for dep in deps & plan_map.keys():
-                if plan_map[dep]['Status'] != 'VERIFIED':
-                    errors.append(f'{name}: prerequisite {dep} is not verified')
+                if plan_map[dep]['Status'] not in {'IMPLEMENTED', 'VERIFIED'}:
+                    errors.append(f'{name}: prerequisite {dep} is not implemented')
 
     def visit(name, path):
         if name in path:
@@ -211,26 +180,31 @@ def check(folder):
             errors.append(f'{name}: missing primary plan')
         if row['Surface'] not in {'API', 'UNIT', 'BROWSER', 'VISUAL'}:
             errors.append(f'{name}: invalid evidence surface')
-        if not row['Test case'] or row['Test case'] in {'NONE', 'PENDING'}:
-            errors.append(f'{name}: missing test case or visual check')
+        pending = (row['Test case'] == 'PENDING' and row['Result'] in {'PENDING', 'BLOCKED'}
+                   and plan_map.get(row['Plan'], {}).get('Status') in {'TODO', 'IN_PROGRESS', 'BLOCKED'})
+        if not pending:
+            if row['Surface'] != 'VISUAL' and not exact_test(row['Test case']):
+                errors.append(f'{name}: expected file::exact test title')
+            elif row['Test case'] in {'', 'NONE', 'PENDING'}:
+                errors.append(f'{name}: missing visual check')
         if row['Result'] not in {'PENDING', 'PASS', 'FAIL', 'BLOCKED'}:
             errors.append(f'{name}: invalid result')
         if row['Result'] == 'PASS' or plan_map.get(row['Plan'], {}).get('Status') in {'IMPLEMENTED', 'VERIFIED'}:
             if row['Implementation'] in {'', 'NONE', 'PENDING'}:
                 errors.append(f'{name}: missing implementation')
-            for column in ['Red', 'Green'] + (['Review'] if row['Result'] == 'PASS' else []):
+            for column in ['Evidence'] + (['Review'] if row['Result'] == 'PASS' else []):
                 file_link(row[column], f'{name} {column}')
             if row['Surface'] != 'VISUAL':
                 try:
-                    report = json.loads((folder / row['Green']).read_text())
+                    report = json.loads((folder / row['Evidence']).read_text())
                     before = report.get('before', {})
                     if (report.get('scope') != 'command' or report.get('status') != 'PASS'
                             or report.get('result', {}).get('exitCode') != 0
                             or not before.get('inputs') or not before.get('fingerprint')
                             or before['fingerprint'] != report.get('after', {}).get('fingerprint')):
-                        errors.append(f'{name}: green command evidence is not a stable pass')
+                        errors.append(f'{name}: command evidence is not a stable pass')
                 except (OSError, ValueError, AttributeError) as error:
-                    errors.append(f'{name}: green evidence needs recorder JSON: {error}')
+                    errors.append(f'{name}: evidence needs recorder JSON: {error}')
     if re.search(r'^- State: `?DONE`?\s*$', worksheet, re.MULTILINE):
         if any(row['Status'] not in {'VERIFIED', 'SUPERSEDED'} for row in plans):
             errors.append('DONE requires all selected plans verified')
@@ -270,7 +244,7 @@ def check_browser_report(folder, report_path):
     visit(report)
     for journey in journeys:
         parts = journey['Test case'].split('::', 1)
-        if len(parts) != 2:
+        if not exact_test(journey['Test case']):
             errors.append(f"{journey['Journey']}: invalid browser test reference")
             continue
         file, title = parts

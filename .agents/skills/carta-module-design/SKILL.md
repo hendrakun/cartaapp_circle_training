@@ -51,8 +51,8 @@ Write the applicable contract sections with stable behavior and acceptance IDs.
 Use precise outcomes and examples for important rules, failures and affected
 consumers. Identify distinct UI journeys and conditional required inputs in the
 module contract before planning checks. Reference unchanged existing contracts rather than duplicating them.
-Reserve technical decisions for the planner; leave only routine coding choices
-to the executor.
+Reserve interfaces and transaction boundaries for planning. The executor chooses
+routine code and test details.
 
 Review the handoff from the perspective of an implementer who has not seen the
 conversation: which behavior would they still have to decide? Resolve those

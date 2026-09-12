@@ -37,7 +37,7 @@ A filtered list is not write authorization. The server checks every submitted
 identity, its parent relationship, current state, and actor access. It extracts
 IDs from canonical selected objects and ignores their client display labels.
 For uploads, read the shared
-[asset contract](../../carta-module-development/references/frontend-field-contract.md#objects-and-identifiers).
+[asset contract](../../carta-module-development/references/frontend-field-contract.md#asset-fields).
 The server validates ownership and use. Test the real form schema and submit
 boundary: capture the request object, pass it to the API write schema, and check
 the stored identity. Keep form parsing, field writers and serialization real in

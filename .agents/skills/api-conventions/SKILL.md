@@ -33,9 +33,7 @@ for record-dependent access. UI visibility and URL structure do not authorize a
 request.
 
 For file inputs in CRUD or custom actions, read the
-[asset contract](../carta-module-development/references/frontend-field-contract.md#objects-and-identifiers).
-Check both the accepted HTTP object and parsed storage value. Client form schemas
-must preserve the HTTP object through validation.
+[asset contract](../carta-module-development/references/frontend-field-contract.md#asset-fields).
 
 ## Verification
 

@@ -69,8 +69,9 @@ when the API contract uses another representation.
 | `icon-select` | One icon name from the current icon catalog | icon name string; current icon options |
 | `canvas` | A drawing or signature saved as an image value | saved image string; `width`, `height`, `onSave` |
 
-The asset adapter supplies upload and preview behavior. Keep the canonical asset
-object in the draft and request. The backend extracts its stored identity.
+For file/image values, read the shared
+[asset contract](../../carta-module-development/references/frontend-field-contract.md#asset-fields),
+including current framework limits.
 Location inputs use the app location operations. Use one `form.write` on the
 owning field only when the API location shape differs from the control shape.
 

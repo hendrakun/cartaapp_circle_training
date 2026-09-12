@@ -56,11 +56,15 @@ called a complete application workflow.
 
 ## Organize the work
 
-Start with one observable vertical result. Split when a separate result,
-dependency, independent owner or risk boundary justifies it. Include the
-necessary data, API, web, setup and tests in that result rather than creating
-one plan per layer. A migration or shared interface can be a separate prerequisite
-when its acceptance and rollout boundary are genuinely independent.
+Put test environment preparation first: isolated database, browser, storage and
+ports needed by the selected checks. Use existing setup within task authority.
+Name any blocked check and its missing prerequisite.
+
+Make the first implementation result a complete path through the most uncertain
+integration. Include API, UI and persistence where the approved path uses them.
+Prove its result before adding dependent actions. Keep the path and its tests
+in one assignment. Split further work only
+for a separate result, dependency, independent owner or risk boundary.
 
 Use [plan-template.md](references/plan-template.md) for numbered plans at
 `plans/<feature>/001-<result>.md`. Preserve existing numbering on resume. The
@@ -69,17 +73,17 @@ not a transcript or repeated copy of the design in each file.
 
 Use the [worksheet contract](../carta-module-development/references/module-execution-worksheet.md)
 for the dependency/status index and acceptance ownership. Map every acceptance
-ID to a primary plan and its required evidence surfaces. Map every design journey
-to a distinct browser test and independent starting record. Select assertions
-that detect its different inputs, submission, next actions and saved result. Use
+ID to a primary plan and its required evidence surfaces there. Keep acceptance
+and journey test mappings only in the worksheet. Exact tests can remain `PENDING`
+until the executor returns them for the parent to merge. Use
 [verification strategy](../carta-module-development/references/verification-strategy.md)
 to select the smallest sufficient tests and broader checks justified by impact.
 
-State relevant owners and symbols, intended changes, required interfaces between
-plans, exact commands with working directories, and expected evidence. Code
-excerpts and target code shapes belong where they resolve a fragile boundary;
-settle interfaces, transaction boundaries, dependencies, fixtures and assertions
-before delegation. Leave only routine local coding choices to the executor.
+State affected owners, intended changes, required interfaces, transaction
+boundaries and test strategy. Resolve commands and working directories from the
+checkout; let the executor add selectors for new tests. Specify critical expected
+outcomes; let the executor choose test names, fixtures and routine code details.
+Include code excerpts only to explain a fragile interface.
 
 ## Review and hand off
 
