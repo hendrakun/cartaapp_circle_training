@@ -192,15 +192,42 @@ design and is not superseded by these plans.
 
 | Plan | Finding and title | Priority | Effort | Depends on | Status |
 | --- | --- | --- | --- | --- | --- |
-| [009](009-limit-route-declaration-inputs.md) | 1: Limit declaration entry files to route dependencies | P1 | M | None | TODO |
-| [010](010-reuse-route-declarations.md) | 2: Reuse valid declarations on unchanged builds | P1 | M | 009 | TODO |
+| [009](009-limit-route-declaration-inputs.md) | 1: Limit declaration entry files to route dependencies | P1 | M | None | DONE |
+| [010](010-reuse-route-declarations.md) | 2: Reuse valid declarations on unchanged builds | P1 | M | 009 | DONE |
 | [011](011-build-route-bundle-once.md) | 4: Build each route bundle once | P2 | M | 010 | TODO |
 
-Execute 009 → 010 → 011 only after an execution request. Plan 009 establishes
-declaration roots before reuse is added. Plan 010 must include all type inputs,
-not only runtime dependencies. Plan 011 comes last by user priority and changes
-the same publication path; keep the preceding reuse checks intact. Completed
-prerequisite diffs are expected changes during later plans' drift checks.
+Plan 011 was refined on 2026-09-12 against `a80bfc5` plus the uncommitted
+009/010 source. It now gives source fingerprints, two exact helper algorithms,
+four named tests, fixed edit points, and repeatable measurement commands. This
+refinement does not resume execution; the pause after plan 010 remains active.
+
+
+The user authorized delegated execution of 009 → 010 → 011 on 2026-09-12. Plan
+009 establishes declaration roots before reuse is added. Plan 010 must include
+all type inputs, not only runtime dependencies. Plan 011 comes last by user
+priority and changes the same publication path; keep the preceding reuse checks
+intact. Completed prerequisite diffs are expected changes during later plans'
+drift checks.
+
+Plan 010 uses a TypeScript file-resolution probe and content hashes before it
+reuses a declaration. A separate-process test records one declaration emit on
+the first build, none on an unchanged second build, and a second emit after a
+route edit. The final API measurement recorded a 17.80-second miss and a
+4.41-second median for the next four hits, with high host wall-time variance.
+Invalid metadata, incomplete inventories, damaged files, and output links that
+leave the private directory cause safe misses. The generator, compiler, config,
+framework, selected external files, and workspace metadata are part of the key.
+
+A plan 010 review revision fixes recovery when the content-version path is a
+dangling symbolic link. The old code failed with `ENOTDIR`. The generator now
+uses `lstatSync` to detect the link entry and publishes a valid immutable repair
+version while it keeps the old link and backup. The next unchanged process
+reuses that repair without another declaration emit. The isolated regression
+failed before the fix, and the final tooling suite passed all 49 tests.
+
+The user paused this sequence after plan 010. Plan 011 remains TODO and does not
+start until the user asks to resume. Finding 3 still requires separate explicit
+permission.
 
 ### Audit evidence and limits
 

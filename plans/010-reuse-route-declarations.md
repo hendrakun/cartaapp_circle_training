@@ -1,7 +1,7 @@
 # Plan 010: Reuse valid route declarations on unchanged builds
 
-Follow the steps and run every verification gate. Update the plan and index after
-implementation and review. The user requested plans, not implementation.
+The user authorized implementation on 2026-09-12. Follow the steps and run every
+verification gate. Update the plan and index after implementation and review.
 
 ## Status
 
@@ -11,7 +11,102 @@ implementation and review. The user requested plans, not implementation.
 - Depends on: `plans/009-limit-route-declaration-inputs.md`.
 - Category: perf.
 - Planned at: commit `6fa00d4`, 2026-09-12.
-- Status: TODO.
+- Implementation base: commit `2bf90ef`, plus the completed uncommitted plan 009
+  changes in the shared checkout.
+- Status: DONE, including the dangling-link recovery revision.
+
+## Implementation reconciliation
+
+Plan 009 is DONE and its narrower declaration roots are the base for this work.
+The input proof uses a bounded TypeScript `--listFilesOnly` probe on each build.
+The probe uses the real project options and declaration roots, plus the framework
+definition and public declarations. It hashes the files selected by the current
+resolver before reuse. The first real emit also reports its files. Reuse metadata
+is written only when the probe covers every external file used by that emit.
+After emission, the generator rehashes the initial resolved files and fresh
+local inputs. It does not run a second resolver process. A newly selected file
+must be in the initial probe set or the build publishes no reusable record.
+
+This is a documented change from the original preference to avoid a second
+compiler pass on lookup. It keeps the important boundary: a hit skips source
+staging and declaration emission. It is smaller and safer than a second resolver
+or a recursive `node_modules` inventory. The timing gate must show that its cost
+still gives a useful repeat-build reduction.
+
+| Input class | Reuse validation |
+| --- | --- |
+| Routes, helpers, ambient inputs, siblings, and overlay additions or deletions | Hash sorted overlay paths and contents, declaration roots, and route method/path data. |
+| TypeScript options and extended configuration | Hash effective `--showConfig` output and all supported local configuration files. A non-local `extends` causes a conservative miss. |
+| Framework and generator | Hash the route definition, public declaration graph selected by the probe, and the running generator module. |
+| External and compiler types | Hash logical paths, resolved real paths, contents, and ancestor package manifests from `--listFilesOnly`; hash the compiler package and entry file. |
+| Dependency and workspace state | Hash project and ancestor package manifests, workspace files, and lockfiles when present. |
+| Resolution additions, deletions, and symlink changes | Re-run the TypeScript resolver probe; path and real-path changes alter the key. |
+| Project, output, and mode | Hash absolute project, route, declaration, and output identities and the declaration mode. Declaration-disabled calls remove reuse metadata. |
+
+## Implementation and review evidence
+
+The implementation keeps runtime route discovery active on each call. A valid
+metadata record can skip only declaration staging and declaration emission. The
+record contains the input key, the active declaration hash, and the exact active
+contract file inventory with content hashes. Invalid metadata, an incomplete
+inventory, damaged files, and contract links outside the output cause a normal
+miss. A damaged immutable directory is kept, and the rebuilt contract uses a
+content version with a unique repair suffix.
+
+The Carta proof found 1,677 external real files in the actual declaration emit.
+All were members of the 1,726-file initial probe set after staged paths were
+normalized. A coverage mismatch prevents metadata publication. The generator
+also rehashes the initial file set and fresh local inputs after emission. This
+prevents a record when an input changes during the miss.
+
+| Input class | Evidence |
+| --- | --- |
+| Unchanged separate process and route source edit | `separate unchanged builds skip declaration staging and emission` records declaration compiler calls as 1 after the miss, 1 after an unchanged hit, and 2 after a route edit. |
+| Routes, moves, deletion, helpers, scopes, ambient files, direct siblings, aliases, and type-only inputs | Existing manifest tests cover these outputs and invalidations. `emits a self-contained contextual consumer contract through moves and deletion`, `limits declaration roots without losing route types`, both sibling-source cases, and `versions type-only changes` passed. These tests do not mutate every item in the input table separately. |
+| Local and extended compiler configuration | `writes one atomic artifact with file, helper, and extended config inputs` covers a local extended config edit. Package-based `extends` is not tested; the implementation makes it a conservative miss. |
+| New higher-priority external resolution | `invalidates reuse when TypeScript selects a new external declaration` adds a `moduleSuffixes` candidate after the first build and observes a new input key. |
+| Metadata and output integrity | `rejects invalid reuse metadata and repairs a damaged immutable contract` covers invalid JSON, empty and truncated file arrays, and modified contract content. `does not reuse a contract through a link outside the output directory` covers the output boundary. |
+| Declaration mode, failure, and concurrent readers | The disabled-declaration test covers metadata removal. Existing sibling failure and concurrent-publication tests cover last-valid-output retention and active readers. |
+| Generator, framework, compiler, package, workspace, lockfile, and real-path identity | The key hashes these files and identities. They were inspected in the Carta coverage proof. They do not each have a mutation test. An unreadable or unsupported input causes a conservative miss. |
+
+The final same-path measurement removed only the API declaration metadata before
+the first call. The miss took 17.80 seconds. The next four unchanged calls took
+13.84, 5.70, 2.70, and 3.12 seconds; their median was 4.41 seconds. Four more
+hits took 10.94, 6.91, 3.31, and 2.40 seconds; the eight-hit median was 4.51
+seconds. The host had high wall-time variance. The stable process-call test is
+the work-reduction proof. The cold miss cost is higher because it runs the probe
+and the emitter. An earlier run of the same final logic measured a 3.40-second
+median for four hits.
+
+Verification on the final source passed the focused metadata, repair, symlink,
+and disabled-mode tests; Sprindle type-check and lint; API type-check and build;
+SDK type-check; and `git diff --check`. The final complete tooling run passed all
+49 tests. Earlier loaded runs exposed old fixed one-second polling limits in
+watcher tests and the five-second default limit on the expanded disabled-mode
+test. The integration test now has the same 120-second limit as the other compiler
+tests. Positive watcher checks now wait for their asserted callback conditions
+with a bounded 30-second limit.
+
+## Dangling-link recovery revision
+
+Review found that `existsSync` did not see a dangling symbolic link at the
+content-version contract path. The rebuild then tried to rename the staged
+directory onto that link and failed with `ENOTDIR`. The pre-fix temporary
+reproduction and the new separate-process regression both produced that exact
+failure.
+
+The publication check now uses `lstatSync` to detect the directory entry without
+following its target. A dangling link therefore selects the existing unique
+repair-version path. The old link and its backup stay unchanged. The outside-link
+test now stores its backup in an excluded `.sprindle-` path, and it proves that
+the input key stays unchanged while output validation selects a repair version.
+The separate-process test covers a dangling link, the valid rebuilt files, the
+preserved link and backup, and a next unchanged call that does not add an emit.
+
+The focused pre-fix regression failed with `ENOTDIR`. After the fix, both focused
+link recovery tests passed. Final serial gates passed: tooling tests 49 of 49;
+Sprindle type-check and lint; API type-check and build; SDK type-check; and
+`git diff --check`.
 
 ## Why this matters
 
@@ -221,14 +316,14 @@ Verify: all gates exit 0 and the new cross-process work-reduction test passes.
 
 ## Test plan and done criteria
 
-- [ ] An unchanged second process skips declaration emission and retains valid output.
-- [ ] All input classes in step 1 have invalidation tests or an explicit miss rule.
-- [ ] Missing/corrupt metadata and missing/modified contract files rebuild safely.
-- [ ] Type-only edits update exact consumer types even if runtime hash is unchanged.
-- [ ] Failure, concurrent publication, source removal, and mode isolation tests pass.
-- [ ] All Commands-table gates pass; diagnostic commands remain unchanged.
-- [ ] API repeat-run timing shows a lower median, recorded without a fixed CI timer.
-- [ ] Only in-scope files changed; index status and this plan contain review evidence.
+- [x] An unchanged second process skips declaration emission and retains valid output.
+- [x] All input classes in step 1 have invalidation evidence or an explicit conservative miss rule.
+- [x] Missing/corrupt metadata and missing/modified contract files rebuild safely.
+- [x] Type-only edits update exact consumer types even if runtime hash is unchanged.
+- [x] Failure, concurrent publication, source removal, and mode isolation tests pass.
+- [x] All Commands-table gates pass; diagnostic commands remain unchanged.
+- [x] API repeat-run timing and compiler-call counts are recorded without a fixed CI timer.
+- [x] Only in-scope files changed; index status and this plan contain review evidence.
 
 ## STOP conditions
 

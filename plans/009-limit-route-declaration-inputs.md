@@ -1,8 +1,8 @@
 # Plan 009: Limit declaration entry files to the route contract
 
-Follow the steps and run each verification gate. Update this plan and its index
-row only after implementation and review. This document authorizes no execution
-by itself; the user requested plans.
+The user authorized delegated execution on 2026-09-12. Follow the steps and run
+each verification gate. Update this plan and its index row only after
+implementation and review.
 
 ## Status
 
@@ -12,7 +12,7 @@ by itself; the user requested plans.
 - Depends on: none. Plans 005–007 are already complete.
 - Category: perf.
 - Planned at: commit `6fa00d4`, 2026-09-12.
-- Status: TODO.
+- Status: DONE. The user authorized delegated execution on 2026-09-12.
 
 ## Why this matters
 
@@ -180,14 +180,46 @@ small or negative change. Do not claim a speed improvement without evidence.
 
 ## Test plan and done criteria
 
-- [ ] New root-scope regression fails before and passes after the change.
-- [ ] Required ambient types, aliases, helper re-exports, nested scopes, and
+- [x] New root-scope regression fails before and passes after the change.
+- [x] Required ambient types, aliases, helper re-exports, nested scopes, and
       type-only sibling edits pass consumer compilation.
-- [ ] An explicitly imported module with a test/script name remains usable.
-- [ ] Existing source-removal, cycle, failed-publication, and concurrent tests pass.
-- [ ] All Commands-table gates pass; no type-check command is removed.
-- [ ] Timing and active output counts are recorded in this plan.
-- [ ] Only listed files contain changes from this work; index status is updated.
+- [x] An explicitly imported module with a test/script name remains usable.
+- [x] Existing source-removal, cycle, failed-publication, and concurrent tests pass.
+- [x] All Commands-table gates pass; no type-check command is removed.
+- [x] Timing and active output counts are recorded in this plan.
+- [x] Only listed files contain changes from this work; index status is updated.
+
+## Execution evidence
+
+The drift check from `6fa00d4` to `2bf90ef` found no changes in the three
+Sprindle source and document files. The worktree was clean before execution.
+The old implementation failed `limits declaration roots without losing route
+types` because it emitted `scripts/unrelated.d.ts` and
+`tests/unrelated.test.d.ts`. A direct unreferenced ambient `.d.ts` was not a
+supported root. The regression therefore uses the supported triple-slash
+reference form. Configured script globals, `declare global`, and external module
+augmentation were supported and remain roots.
+
+The active API contract changed from 119 declaration files and 441,851 bytes to
+83 files and 435,629 bytes. These counts use only the version referenced by
+`.sprindle/routes.d.ts`. The first baseline build took 2.77 seconds; the median
+of the next four was 2.84 seconds. After the change, the first prepared build
+took 8.16 seconds; the median of the next four was 8.565 seconds. The second
+sequence was slower and variable. This timing does not prove a speed gain. The
+stable file-count result proves that the compiler emitted fewer files.
+
+All command-table gates passed. The tooling suite passed 45 tests, and the
+focused manifest file passed 18 tests. Sprindle type-check and lint, API
+type-check and production build, SDK type-check, and `git diff --check` exited
+with status 0. The first sandbox runs reported macOS watcher `EMFILE` errors
+and denied the `tsx` IPC socket. The same exact tooling and production build
+commands passed outside the sandbox. No API database test ran.
+
+Parent review also passed on 2026-09-12. The parent read the full source and
+test diff, checked the five-file scope, and independently reran the 45-test
+tooling suite, Sprindle type-check and lint, API type-check and build, and SDK
+type-check. All exited 0. No further source correction was required after the
+module-augmentation case was added during review.
 
 ## STOP conditions
 
