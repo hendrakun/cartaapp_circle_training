@@ -335,3 +335,16 @@ package commands, web CI, and installed Playwright report/server behavior.
 No source, framework, database, storage, or environment file was changed.
 Product modules, a full framework audit, dependency security, and infrastructure
 performance were not audited. No new product direction was proposed.
+
+## Symmetric asset fields — 2026-09-12
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+| --- | --- | --- | --- | --- | --- |
+| [015](015-symmetric-asset-fields.md) | Keep asset fields symmetric through read, edit and submit | P1 | M | None | TODO — plan only |
+
+The user selected this migration. Reuse the existing asset schema and adapters;
+keep category and other business data in applications. Plan 015 covers file
+typing, value preservation, upload readiness and an executable form example.
+It is independent of the paused routing and E2E plans above. No source or runtime
+check was changed or run during this planning pass. Skill conventions are updated
+separately under the user's explicit request; pending framework support is marked.
