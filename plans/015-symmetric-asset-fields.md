@@ -8,7 +8,7 @@
 - Depends on: None
 - Category: migration, dx, correctness
 - Planned at: commit `fc5eeae`, 2026-09-12
-- Status: TODO — source implementation is not authorized by this planning task
+- Status: IMPLEMENTED on branch `sallliisa/improve-carta-module-dev` — uncommitted; independent review still open after REWORK revision
 
 The user selected this migration. Execute it only when implementation is requested.
 Keep existing work. No commit, push, package update or external-project write is
@@ -276,16 +276,17 @@ as unverified and inspect frontmatter and links directly.
 
 ## Done criteria
 
-- [ ] All commands in step 5 pass with nonzero selected test cases.
-- [ ] Type tests accept single/multi file and image fields without casts and
+- [x] All commands in step 5 pass with nonzero selected test cases, including
+  guarded command A against an isolated remote test target (see review).
+- [x] Type tests accept single/multi file and image fields without casts and
   reject built-in asset writers.
-- [ ] Form integration tests cover unchanged, add, remove, clear, omission and
+- [x] Form integration tests cover unchanged, add, remove, clear, omission and
   metadata preservation using real schemas and controls.
-- [ ] Browser tests prove pending upload and delayed conversion prevent submit;
+- [x] Browser tests prove pending upload and delayed conversion prevent submit;
   wrapper tests cover FormView and DialogForm buttons and cancellation.
-- [ ] Image reordering adds no property to an asset; refreshed metadata is used.
-- [ ] The example uses the same field names and shapes for reads and writes.
-- [ ] No new shared category schema, collection engine, dependency or DB migration.
+- [x] Image reordering adds no property to an asset; refreshed metadata is used.
+- [x] The example uses the same field names and shapes for reads and writes.
+- [x] No new shared category schema, collection engine, dependency or DB migration.
 - [ ] Independent review passes; plan/index status reflects observed results.
 
 ## Drift and stop conditions
@@ -326,3 +327,91 @@ actions; step 3 and scope now include both wrappers. Skill validators and local
 Markdown link checks passed. GPT-5.6 Sol at low reasoning effort passed a bounded
 decision test for collection payloads, application-owned photo details, and
 current type/upload limits. This was not a module build or runtime test.
+
+## Implementation review — 2026-09-12
+
+Branch `sallliisa/improve-carta-module-dev`, uncommitted. Independent file reads
+covered every plan owner, the new pending registry, the new web boundary spec,
+the API schema/projection specs, and the README/skill edits.
+
+Observed gates on 2026-09-12:
+
+- T `pnpm --filter @southneuhof/loom type-check`: exit 0.
+- L `pnpm --filter @southneuhof/loom test`: 57 files, 442 tests, all pass.
+- B `pnpm --filter @southneuhof/loom test:browser -- src/components/inputs/__tests__/FileInput.browser.spec.ts`:
+  5 files, 20 tests, all pass in Chromium.
+- W `pnpm --filter @southneuhof/framework-web test:focused -- framework/adapters/assets.spec.ts framework/adapters/assets.form.spec.ts`:
+  2 files, 11 tests, all pass.
+- A `pnpm --filter @southneuhof/api test:focused -- src/schema.spec.ts src/storage/assets.spec.ts`:
+  pass on 2026-09-12. Guard reports `VALID` for isolated target
+  `10.8.69.67:54432/pinfish_015_test`; migrations applied, then Vitest ran
+  2 files, 17 tests, all pass. Target is a fresh database owned by a dedicated
+  `pinfish015` role on `gamingmachine`; no existing database was touched.
+  Credentials live only in gitignored `apps/api/.env.test`.
+- WT `pnpm --filter @southneuhof/framework-web type-check`: exit 0.
+- AT `pnpm --filter @southneuhof/api type-check`: exit 0.
+- F `pnpm --filter @southneuhof/framework-web lint:focused -- src/framework/adapters/assets.ts src/framework/adapters/assets.spec.ts src/framework/adapters/assets.form.spec.ts src/framework/inputs/registry.ts`:
+  exit 0.
+- D `git diff --check`: exit 0.
+- `quick_validate.py` for `carta-module-development`, `build-resource-form`,
+  and `api-conventions`: each reports `Skill is valid!`.
+
+Type-level note: single-asset writer rejection uses whole-call inference
+failure (`TS2769`, no overload matches), because `defineFields` resolves all
+three overloads to `never` for that definition. The multi-asset rejection keeps
+the narrower `@ts-expect-error` on the property. Step 1 expected
+“reject writers”; the behavior is preserved, but a future reader should not
+mistake the missing single-field directive for missing coverage. Loom
+type-check passes with the current directives.
+
+Scope note: `apps/api/src/schema.ts` and `apps/api/src/storage/assets.ts` were
+not changed. Only their spec files changed, as the plan permits. No new shared
+category schema, collection engine, dependency, or DB migration was added.
+`useFormInputState.ts` and `assets.form.spec.ts` are the only new files from
+this plan in the working tree.
+
+Remaining work before commit is procedural, not behavioral: then commit on the
+current branch. Do not push, update packages, or touch either external project
+as part of this plan.
+
+## Rework after independent REWORK review — 2026-09-12
+
+An independent review returned REWORK with six required corrections:
+dynamically resolved renderers, pending cleanup on disposal, FormView Cancel,
+browser proof, real-control integration proof, and stronger control tests.
+This revision addresses each item. The independent-review done criterion stays
+open until a separate reviewer passes it.
+
+## Rework verification — 2026-09-12
+
+Observed gates after the revision (branch `sallliisa/improve-carta-module-dev`,
+uncommitted):
+
+- T `pnpm --filter @southneuhof/loom type-check`: exit 0.
+- L `pnpm --filter @southneuhof/loom test`: 57 files, 445 tests, all pass.
+- B `pnpm --filter @southneuhof/loom test:browser -- src/components/inputs/__tests__/FileInput.browser.spec.ts`:
+  5 files, 21 tests, all pass in Chromium.
+- W `pnpm --filter @southneuhof/framework-web test:focused -- framework/adapters/assets.spec.ts framework/adapters/assets.form.spec.ts`:
+  2 files, 12 tests, all pass.
+- A `pnpm --filter @southneuhof/api test:focused -- src/schema.spec.ts src/storage/assets.spec.ts`:
+  2 files, 17 tests, all pass on the isolated `pinfish_015_test` target.
+- WT `pnpm --filter @southneuhof/framework-web type-check`: exit 0.
+- AT `pnpm --filter @southneuhof/api type-check`: exit 0.
+- F `pnpm --filter @southneuhof/framework-web lint:focused -- src/framework/adapters/assets.ts src/framework/adapters/assets.spec.ts src/framework/adapters/assets.form.spec.ts src/framework/inputs/registry.ts`:
+  exit 0.
+- D `git diff --check`: exit 0.
+- `quick_validate.py` for `carta-module-development`, `build-resource-form`,
+  and `api-conventions`: each reports `Skill is valid!`.
+
+The boundary proof (`apps/web/src/framework/adapters/assets.form.spec.ts`)
+mounts the real Form with fields from `assets.create()` (`defineResource` over
+`defineFields`), the real `fromZod(readSchema)` create schema, the application
+input registry, and the asset adapter with only `uploadFile` stubbed. Load comes
+through Form's `load` path, upload/remove/clear act through the rendered
+`FileInput` controls, and every submitted payload is parsed with the API write
+schema. It covers unchanged save with refreshed server metadata, add through an
+empty multi control, remove through the second rendered `Hapus` control, full
+clear through every rendered `Hapus` control, patch omission, raw/partial/client-
+transform rejection, an `order_number` rejection case, and server authority for
+denied writes. No commit, push, package update, or external-project write was
+made.

@@ -340,7 +340,7 @@ performance were not audited. No new product direction was proposed.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 | --- | --- | --- | --- | --- | --- |
-| [015](015-symmetric-asset-fields.md) | Keep asset fields symmetric through read, edit and submit | P1 | M | None | TODO — plan only |
+| [015](015-symmetric-asset-fields.md) | Keep asset fields symmetric through read, edit and submit | P1 | M | None | IMPLEMENTED — REWORK revision verified on `sallliisa/improve-carta-module-dev`, independent review still open |
 
 The user selected this migration. Reuse the existing asset schema and adapters;
 keep category and other business data in applications. Plan 015 covers file
@@ -348,3 +348,49 @@ typing, value preservation, upload readiness and an executable form example.
 It is independent of the paused routing and E2E plans above. No source or runtime
 check was changed or run during this planning pass. Skill conventions are updated
 separately under the user's explicit request; pending framework support is marked.
+
+## Faster Carta module delivery — 2026-09-12
+
+Planned with `$improve` against commit `7eb093d`. The user selected all four
+parts after discussion. The order is configuration, local readiness, bounded
+generation, then skill alignment and controlled measurement. This task changed
+plans only. It did not implement source, change either external project, apply a
+migration, run a seed, or start a service.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+| --- | --- | --- | --- | --- | --- |
+| [016](016-centralize-app-port-settings.md) | Read application ports only from each app environment | P1 | S | None | TODO — plan only |
+| [017](017-prepare-local-module-environment.md) | Prepare and check the local module environment | P1 | M | 016 | TODO — plan only |
+| [018](018-expand-bounded-module-generator.md) | Generate selected standard module actions and their proof | P1 | L | 016, 017 | TODO — plan only |
+| [019](019-align-module-workflow-and-measure-time.md) | Use the new module path and measure its effect | P1 | M | 016, 017, 018 | TODO — plan only |
+
+The generator stays in the current command. It creates only selected standard
+actions and the technical read that Update needs. It uses Drizzle for one reviewed
+migration, registers only exact seed records, and creates useful API and browser
+proof when the path is standard. Custom Detail pages, relations, dependent input,
+child resources, scoped access, workflows, concurrency, existing-data changes,
+custom queries, and reports stay in normal module work.
+
+Ports have one owner in each app `.env`. The prepared-environment work adds one
+idempotent file setup command and one read-only preflight. The final plan updates
+the existing skills with short pointers and compares two controlled module runs.
+Raw evaluation logs remain ignored and redacted.
+
+The source evidence includes two supplied time reports. Project A reports about
+6-7 hours of active work, a 72-minute empty worker, and 106 minutes of broad work
+without a usable result. Project B reports 5 hours 35 minutes, 8.18 million input
+tokens, five compactions, and 121 minutes in E2E and verification. The new plans
+do not claim a time reduction before the controlled runs are complete.
+
+### Approaches considered and rejected
+
+- A second module generator or new skill would create two contracts. Extend the
+  current bounded command and reference.
+- Shared port defaults or compatibility aliases would keep more than one owner.
+  Read only the two app `.env` files and fail on invalid values.
+- Automatic migration application, seed execution, or E2E data reset would make
+  generation destructive. Generate and report these artifacts, then stop.
+- Relation, workflow, scope, report, and custom Detail generation would make the
+  first version guess business behavior. Keep those parts in the module plan.
+- Generated source-shape tests repeat renderer logic. Generate direct API and
+  browser behavior proof when the standard path can support it.
