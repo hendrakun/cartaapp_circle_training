@@ -81,3 +81,6 @@ sections, explicit parameters, and bare-parent entry with no available child.
 Prove denied entry with the existing guard before the page body mounts.
 Route-record assertions alone do not prove the visible result. Reuse existing
 checks for unchanged behavior and report any required browser check not run.
+
+For optional file creation, use the shared generator’s
+[route-only operation](../../carta-module-development/references/bounded.md#route-only-operation).

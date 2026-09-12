@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert'
-import { mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync, symlinkSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { isAbsolute, join, resolve } from 'node:path'
 import { test } from 'node:test'
@@ -220,5 +220,55 @@ test('rejects missing metadata, duplicate keys, and unsupported types', () => {
     mutate(value)
     const setup = workspace(value)
     assert.throws(() => execute(['--config', setup.configPath], { root: setup.outputRoot, cwd: setup.directory }), error)
+  }
+})
+
+test('route operation previews and creates nested API scopes, actions, and web pages only', () => {
+  const routes = [
+    { path: 'apps/api/src/routes/(authenticated)/projects/[projectId]/tasks/+scope.ts', imports: [{ binding: '{ defineScope }', from: '@southneuhof/sprindle' }], script: 'export default defineScope({})' },
+    { path: 'apps/api/src/routes/(authenticated)/projects/[projectId]/tasks/detail/[taskId]/+server.ts', imports: [{ binding: '{ detail }', from: '@southneuhof/sprindle' }, { binding: '{ requirePermission }', path: 'apps/api/src/identity.ts' }], script: "export const GET = detail({ param: 'taskId', authorize: requirePermission('detail-tasks') })" },
+    { path: 'apps/web/src/routes/(authenticated)/projects/[projectId]/detail/tasks/index.route.vue', imports: [{ binding: '{ tasks }', path: 'apps/web/src/routes/(authenticated)/projects/tasks.resource.ts' }], template: '<ListView v-bind="tasks.list()" />' },
+  ]
+  const { configPath, outputRoot } = workspace({ kind: 'routes', routes })
+  const args = ['--config', configPath, '--root', outputRoot, '--json']
+  const preview = JSON.parse(execute([...args, '--check']))
+  assert.deepEqual(preview.writes, [])
+  assert.throws(() => readFileSync(preview.files[0].path), /ENOENT/)
+  const result = JSON.parse(execute(args))
+  assert.equal(result.writes.length, 3)
+  assert.deepEqual(result.files, preview.files)
+  for (const file of result.files) assert.equal(readFileSync(file.path, 'utf8'), `${file.contents.trimEnd()}\n`)
+  assert.match(result.files[1].contents, /from '\.\.\/\.\.\/\.\.\/\.\.\/\.\.\/\.\.\/\.\.\/identity'/)
+  assert.match(result.files[2].contents, /from '\.\.\/\.\.\/\.\.\/tasks.resource'/)
+  assert.throws(() => execute(args), /Refusing to overwrite/)
+})
+
+test('route operation rejects invalid batches before writing', () => {
+  const valid = { path: 'apps/api/src/routes/health/+server.ts', script: 'export const GET = handler' }
+  for (const invalid of [
+    { ...valid, path: '../outside/+server.ts' },
+    { ...valid, path: 'apps/web/src/routes/page.ts' },
+    { ...valid, template: '<div />' },
+    { ...valid, script: undefined },
+    { ...valid, imports: [{ binding: '{ x }', from: 'x', path: 'x.ts' }] },
+    valid,
+  ]) {
+    const { configPath, outputRoot } = workspace({ kind: 'routes', routes: [valid, invalid] })
+    assert.throws(() => execute(['--config', configPath, '--root', outputRoot]))
+    assert.throws(() => readFileSync(join(outputRoot, valid.path)), /ENOENT/)
+  }
+})
+
+
+test('route operation rejects symbolic link destinations and blocked parents', () => {
+  for (const link of [false, true]) {
+    const { directory, configPath, outputRoot } = workspace({ kind: 'routes', routes: [
+      { path: 'apps/api/src/routes/health/+server.ts', script: 'export const GET = handler' },
+    ] })
+    const parent = join(outputRoot, 'apps/api/src/routes')
+    mkdirSync(parent, { recursive: true })
+    if (link) symlinkSync(directory, join(parent, 'health'))
+    else writeFileSync(join(parent, 'health'), 'keep')
+    assert.throws(() => execute(['--config', configPath, '--root', outputRoot, '--check']), /Symbolic links|not a directory/)
   }
 })

@@ -102,3 +102,6 @@ Keep `entity`, `enrich`, `identity`, `pipeline`, and `source` out of returned
 business context; these keys are reserved. Use supported `state.where`
 and `state.values` for canonical read/write constraints; arbitrary context keys
 do not change source behavior.
+
+For optional file creation, use the shared generator’s
+[route-only operation](../../carta-module-development/references/bounded.md#route-only-operation).

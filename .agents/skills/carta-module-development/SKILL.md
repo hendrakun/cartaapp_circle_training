@@ -48,7 +48,9 @@ purpose beyond renaming an existing API.
 Use [execution.md](references/execution.md) when implementation is authorized.
 Assess uncertainty, dependency impact, risk and generator eligibility separately.
 A known relation does not require a heavier interview, and a small resource can
-still have an unresolved business rule. For a new full-CRUD resource with no
+still have an unresolved business rule. For selected route files at any supported application route depth, use the
+[route-only operation](references/bounded.md#route-only-operation).
+For a new full-CRUD resource with no
 special behavior, check [bounded.md](references/bounded.md) for generator limits;
 generator ineligibility does not change the approved scope.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { existsSync, lstatSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { basename, dirname, isAbsolute, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -325,7 +325,8 @@ export default defineScope({ entity: ${entity} })
 
 function renderServer(config, action) {
   const helper = action === 'delete' ? 'deleteRoute' : action
-  const identityPath = ['detail', 'update', 'delete'].includes(action) ? '../../../../../identity' : '../../../../identity'
+  const segment = ['detail', 'update', 'delete'].includes(action) ? `${action}/[id]` : action
+  const identityPath = importPath(`apps/api/src/routes/(authenticated)/${config.slug}/${segment}/+server.ts`, 'apps/api/src/identity.ts')
   return `import { ${helper} } from '@southneuhof/sprindle'
 import { requirePermission } from '${identityPath}'
 
@@ -609,6 +610,67 @@ function filesFor(config, root) {
   return files.map(([relativePath, contents]) => ({ path: resolve(root, relativePath), contents }))
 }
 
+function importPath(file, target) {
+  const path = relative(dirname(file), target).split(sep).join('/').replace(/\.(?:ts|tsx)$/, '')
+  return path.startsWith('.') ? path : `./${path}`
+}
+
+function checkFiles(files, root) {
+  const paths = files.map(file => file.path)
+  if (new Set(paths).size !== paths.length) throw new Error('Duplicate output path.')
+  for (const file of files) {
+    for (let path = file.path; path !== dirname(path); path = dirname(path)) {
+      let stat
+      try { stat = lstatSync(path) } catch (error) { if (error.code !== 'ENOENT') throw error }
+      if (stat?.isSymbolicLink()) throw new Error(`Symbolic links are not supported: ${path}`)
+      if (stat && path === file.path) throw new Error(`Refusing to overwrite existing generated file: ${file.path}`)
+      if (stat && !stat.isDirectory()) throw new Error(`Output parent is not a directory: ${path}`)
+      if (path === root) break
+    }
+  }
+}
+
+function writeFiles(files, root) {
+  checkFiles(files, root)
+  for (const file of files) {
+    mkdirSync(dirname(file.path), { recursive: true })
+    writeFileSync(file.path, `${file.contents.trimStart().trimEnd()}\n`, { flag: 'wx' })
+  }
+}
+
+function routeFiles(value, root) {
+  knownKeys(value, ['kind', 'routes'], 'manifest')
+  if (!Array.isArray(value.routes) || !value.routes.length) throw new Error('routes must be a non-empty array.')
+  const files = value.routes.map((route, index) => {
+    const name = `routes[${index}]`
+    if (!isObject(route)) throw new Error(`${name} must be an object.`)
+    knownKeys(route, ['path', 'imports', 'script', 'template'], name)
+    const destination = requiredString(route.path, `${name}.path`)
+    const path = resolve(root, destination)
+    const within = relative(root, path).split(sep).join('/')
+    if (isAbsolute(destination) || !/^apps\/(api|web)\/src\/routes\/.+/.test(within)) throw new Error(`${name}.path must be inside an application route directory.`)
+    const web = within.startsWith('apps/web/')
+    if (web ? !basename(path).endsWith('.route.vue') : !['+server.ts', '+scope.ts'].includes(basename(path))) throw new Error(`${name}.path has an unsupported route filename.`)
+    if (route.imports !== undefined && !Array.isArray(route.imports)) throw new Error(`${name}.imports must be an array.`)
+    const imports = (route.imports ?? []).map(entry => {
+      if (!isObject(entry)) throw new Error(`${name}.imports entries must be objects.`)
+      knownKeys(entry, ['binding', 'from', 'path'], `${name}.imports`)
+      const binding = requiredString(entry.binding, 'import binding')
+      if ((entry.from === undefined) === (entry.path === undefined)) throw new Error('Each import requires either from or path.')
+      const source = entry.path === undefined ? requiredString(entry.from, 'import from') : importPath(path, resolve(root, requiredString(entry.path, 'import path')))
+      return `import ${binding} from ${literal(source)}`
+    }).join('\n')
+    const script = route.script === undefined && web ? '' : requiredString(route.script, `${name}.script`)
+    if (web && route.script !== undefined && typeof route.script !== 'string') throw new Error(`${name}.script must be text.`)
+    const body = [imports, script].filter(Boolean).join('\n\n')
+    if (!web && route.template !== undefined) throw new Error(`${name}.template is only supported for web routes.`)
+    const contents = web ? `${body ? `<script setup lang="ts">\n${body}\n</script>\n\n` : ''}<template>\n${requiredString(route.template, `${name}.template`)}\n</template>\n` : body
+    return { path, contents }
+  })
+  checkFiles(files, root)
+  return files
+}
+
 export function expectedGeneratedPaths(config, { root = repoRoot } = {}) {
   const value = config.navigation?.position ? config : validateConfig(config)
   return filesFor(value, resolve(root)).map((file) => file.path).sort((left, right) => left.localeCompare(right))
@@ -628,13 +690,7 @@ export function scaffold(value, { root = repoRoot } = {}) {
   ].map((path) => resolve(outputRoot, path)).sort((left, right) => left.localeCompare(right))
   const manual = [resolve(outputRoot, 'apps/web/src/route-map.d.ts')]
 
-  const existing = files.find((file) => existsSync(file.path))
-  if (existing) throw new Error(`Refusing to overwrite existing generated file: ${existing.path}`)
-
-  for (const file of files) {
-    mkdirSync(dirname(file.path), { recursive: true })
-    writeFileSync(file.path, `${file.contents.trimStart()}\n`, { flag: 'wx' })
-  }
+  writeFiles(files, outputRoot)
 
   return {
     generated,
@@ -703,7 +759,7 @@ function output(result, json) {
 }
 
 export function execute(argv, { root = repoRoot, cwd = process.cwd() } = {}) {
-  if (argv.includes('--help')) return 'Usage: node scripts/scaffold-bounded-module.mjs --config <file.json> [--root <directory>] [--check] [--json]\n--check validates only. Otherwise generates new files without overwriting. No database writes.'
+  if (argv.includes('--help')) return 'Usage: node scripts/scaffold-bounded-module.mjs --config <file.json> [--root <directory>] [--check] [--json]\n--config selects kind: bounded-module (complete CRUD module) or routes (route files only).\n--check validates without writes; routes also previews paths and source. Otherwise creates files without overwriting.\nRoutes manifest: { kind: "routes", routes: [{ path, imports?, script?, template? }] }.\npath: repository-relative +server.ts, +scope.ts, or *.route.vue under apps/api/src/routes or apps/web/src/routes.\nimports: [{ binding, from }] for package imports, or [{ binding, path }] for repository-relative source targets.\nscript: agent-supplied TypeScript (required for API). template: required Vue template for web.\nNo database writes. Review scope, access checks, and parent outlets before generation.'
   const { configPath, outputRoot, json, check } = parseArgs(argv)
   const absoluteConfigPath = resolve(cwd, configPath)
   let config
@@ -712,6 +768,13 @@ export function execute(argv, { root = repoRoot, cwd = process.cwd() } = {}) {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     throw new Error(`Cannot read scaffold config ${absoluteConfigPath}: ${message}`)
+  }
+  const targetRoot = outputRoot ? resolve(cwd, outputRoot) : resolve(root)
+  if (config?.kind === 'routes') {
+    const files = routeFiles(config, targetRoot)
+    if (!check) writeFiles(files, targetRoot)
+    const result = { status: check ? 'VALID' : 'GENERATED', files, writes: check ? [] : files.map(file => file.path) }
+    return json ? JSON.stringify(result, null, 2) : `${result.status}\n${files.map(file => `- ${file.path}\n${file.contents}`).join('\n')}`
   }
   if (check) { validateConfig(config); return output({ status: 'VALID', scope: 'manifest', writes: [] }, json) }
   return output(scaffold(config, { root: outputRoot ? resolve(cwd, outputRoot) : root }), json)
