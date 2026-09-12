@@ -183,17 +183,68 @@ application configuration, or user generation command is planned.
 
 ## E2E iteration speed — 2026-09-12
 
-Design: [008](008-e2e-iteration-design.md), approved 2026-09-12. Goal is a fast
-agent iteration loop. Full reset stays for final acceptance. No skill change.
-Plans 009-011 are a separate backend track and are unaffected.
+Design: [008](008-e2e-iteration-design.md). Plans reviewed against `cdbc12b`
+with the improve skill on 2026-09-12. Only plans changed during this review.
+No E2E timing or implementation test was run. Plans 009–011 are unrelated.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 | --- | --- | --- | --- | --- | --- |
-| [012](012-e2e-iteration-prepare-once.md) | Iteration mode with prepare-once and warm servers | P1 | M | None | TODO |
-| [013](013-e2e-fast-auth.md) | Fast auth with API login and stored session | P2 | S | 012 | TODO |
-| [014](014-e2e-failure-bundle.md) | Failure bundle with scoped S3 cleanup rule | P2 | S | 012 | TODO |
+| [012](012-e2e-iteration-prepare-once.md) | Prepare once per worker and reuse local servers | P1 | M | None | DONE — unit, guard, iteration, and default gates pass; medians 48.73 s cold, 33.49 s warm prepare, 10.85 s warm skip |
+| [013](013-e2e-fast-auth.md) | Reuse API auth state after preparation | P2 | S | 012 DONE with evidence | IMPLEMENTED — combined, repeat, and default proofs pass; equivalent timing incomplete |
+| [014](014-e2e-failure-bundle.md) | Preserve failure evidence in one local bundle | P2 | M | None | IMPLEMENTED — failed and green proofs pass; timing incomplete; collector review and 8 Node tests pass |
 
-Execute 012 first. Execute 013 and 014 after 012 is VERIFIED, in either order.
-Plan 012 keeps per-test UI login. Plan 013 keeps the UI login test and moves
-render specs to stored state. Plan 014 adds the bundle script and the S3
-prefix rule. It adds no upload journey.
+Recommended order: 012 → 013 → 014. Plan 014 can run independently; retain any
+fixture changes already made by 012/013. Use DONE with evidence for dependency
+checks. Do not require an undefined VERIFIED status.
+
+Plan 012 measures reset-count savings separately from server reuse and explicit
+skip-prepare reuse. Warm servers run in owned terminals, and backend changes
+require a compile/restart. Plan 013 creates auth after prepare and stores it in
+worker memory. The UI journey keeps a separate session. Plan 014 improves failure
+diagnosis, not passing-test speed. It adds bounded missing diagnostics and uses
+the existing trace for DOM details.
+
+### Review findings
+
+All findings have HIGH confidence from direct source and plan reads. Effort is
+for the plan correction; implementation effort is in the status table above.
+
+| Finding | Category | Impact | Effort | Fix risk | Evidence |
+| --- | --- | --- | --- | --- | --- |
+| Server reuse needs an external process owner | perf | Separate CLI runs otherwise still pay startup | S | LOW | `apps/web/playwright.config.ts:53–70`; installed Playwright `lib/runner/index.js:836–851` stops processes it starts |
+| Prepare-once must be restricted to iteration | correctness | An unconditional module flag removes default per-test isolation | S | MED | `apps/web/e2e/fixtures.ts:48–53`; original 012 step 3 omitted the default branch |
+| Auth must follow prepare and remain separate from logout | correctness | Reset deletes cached sessions; global state breaks anonymous/logout cases | S | MED | `apps/api/scripts/reset-e2e.ts:6–31`; `apps/web/e2e/auth.spec.ts:16–25` |
+| Report data needs explicit capture and private storage | dx/security | JSON has no network field; raw traces can contain session data | S | MED | installed Playwright `types/testReporter.d.ts:329–359`; `.gitignore:30–32`; `apps/web/e2e/fixtures.ts:48` |
+| Prefix helper cannot control API object keys | tech-debt | Unused helper gives a false cleanup contract | S | LOW | `apps/api/src/routes/(authenticated)/files/presigned-url/+server.ts:17–19` |
+| Dependencies and proof commands were inconsistent | docs/tests | Executor could update the wrong plan or stop on normal dependency changes | S | LOW | Original 013/014 referred to 009–011 and wrong status rows; `apps/api/package.json:19` focused test also migrates Vitest DB |
+
+### Design details corrected in this review
+
+- Keep design 008's local iteration and full acceptance goals. Explicitly start
+  warm servers outside Playwright; `reuseExistingServer` alone cannot retain them.
+- Use API storage state in memory after prepare. A setup project and shared disk
+  file add reset-order problems without a current need.
+- Keep raw bundles in ignored local reports. DOM remains in the native trace;
+  standalone console/network summaries require fixture capture.
+- Keep the owned-object cleanup rule, but defer its implementation until an
+  upload journey exists. The server chooses the actual object key.
+
+### Findings considered and rejected
+
+- More E2E workers: rejected; the suite shares one mutable E2E database.
+- Faster prepare on a one-case run from a worker flag alone: rejected; one case
+  already prepares once. Measure server startup and explicit state reuse instead.
+- New auth setup project or persistent session cache: not needed for the current
+  serial read-only RBAC cases. Reconsider only with measured need.
+- S3 prefix helper now: rejected; no caller and no API prefix input.
+- Failure bundle as a passing-test speed improvement: rejected; measure diagnosis
+  usefulness and successful-run overhead separately.
+
+### Review scope and limits
+
+Reviewed the three plans, design 008, their index, E2E config and all current
+browser specs, reset/seed/storage guards, auth route contract, related scripts,
+package commands, web CI, and installed Playwright report/server behavior.
+No source, framework, database, storage, or environment file was changed.
+Product modules, a full framework audit, dependency security, and infrastructure
+performance were not audited. No new product direction was proposed.

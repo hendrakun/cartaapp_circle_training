@@ -2,6 +2,7 @@ import { defineConfig } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { parse } from 'dotenv'
+import { isE2eIteration } from './e2e/state'
 
 const webRoot = __dirname
 const repoRoot = resolve(webRoot, '../..')
@@ -20,6 +21,7 @@ const apiPort = process.env.CARTA_E2E_API_PORT ?? process.env.BACKEND_PORT ?? e2
 const frontendPort = process.env.CARTA_E2E_FRONTEND_PORT ?? process.env.FRONTEND_PORT ?? e2eEnv.CARTA_E2E_FRONTEND_PORT ?? '5181'
 const apiUrl = process.env.E2E_API_URL ?? `http://127.0.0.1:${apiPort}`
 const webUrl = process.env.E2E_WEB_URL ?? `http://127.0.0.1:${frontendPort}`
+const reuseExistingServer = isE2eIteration()
 
 process.env.E2E_API_URL ??= apiUrl
 process.env.E2E_WEB_URL ??= webUrl
@@ -54,7 +56,7 @@ export default defineConfig({
       cwd: apiRoot,
       url: `${apiUrl}/health`,
       timeout: 120_000,
-      reuseExistingServer: false,
+      reuseExistingServer,
       env: {
         API_PORT: apiPort,
         BETTER_AUTH_URL: apiUrl,
@@ -67,7 +69,7 @@ export default defineConfig({
       cwd: webRoot,
       url: webUrl,
       timeout: 120_000,
-      reuseExistingServer: false,
+      reuseExistingServer,
       env: { VITE_API_URL: apiUrl },
     },
   ],

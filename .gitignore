@@ -30,6 +30,7 @@ coverage
 /apps/web/playwright-report/
 /apps/web/test-results/
 /apps/web/e2e/.auth/
+/plans/e2e-iteration/reports/
 /docs/out/screenshots/
 apps/mobile/.expo/
 

@@ -1,238 +1,214 @@
-# Plan 013: E2E fast auth with API login and stored session
+# Plan 013: Reuse API auth state after E2E preparation
 
-> **Implementation instructions**: Follow this plan step by step. Run every
-> verification command and confirm the expected result before you move to the
-> next step. If anything in the "STOP conditions" section occurs, stop and
-> report. Do not improvise. When you finish, update the status row for this
-> plan in `plans/README.md` after the implementation and review pass.
+> Read the full plan, run each check, and report failed or blocked checks.
+> Update the 013 row to DONE only after implementation and review.
 >
-> **Drift check (run first)**: `git diff --stat 6fa00d4..HEAD -- apps/web/e2e/fixtures.ts apps/web/e2e/auth.spec.ts apps/web/e2e/rbac-smoke.spec.ts apps/web/playwright.config.ts "apps/web/src/routes/(public)/auth/login/index.route.vue"`
-> If any in-scope file changed since this plan was written, compare the
-> "Current state" excerpts against the live code before you proceed. On a
-> mismatch, treat it as a STOP condition.
+> **Drift check**: `git diff --stat cdbc12b..HEAD -- apps/web/e2e/fixtures.ts apps/web/e2e/rbac-smoke.spec.ts apps/web/e2e/auth.spec.ts apps/web/e2e/fast-auth.spec.ts plans/013-e2e-fast-auth.md plans/README.md`
+> Also run `git status --short`. Changes from plan 012 are expected. Compare
+> them with the dependency contract below; stop only for unexplained drift.
 
 ## Status
 
 - **Priority**: P2
 - **Effort**: S
-- **Risk**: LOW
-- **Depends on**: 012 (needs the iteration flag and prepare-once fixture)
+- **Risk**: MED — resets and logout can invalidate a shared session.
+- **Depends on**: 012 DONE with passing evidence
 - **Category**: perf
-- **Planned at**: commit `6fa00d4`, 2026-09-12
-- **Design**: `plans/008-e2e-iteration-design.md`, approved 2026-09-12
+- **Planned at**: commit `cdbc12b`, 2026-09-12
+- **Status**: TODO; plan reviewed, speed gain not measured.
+- **Design**: `plans/008-e2e-iteration-design.md`; retain the UI login journey
+  and the full-reset acceptance mode.
 
 ## Why this matters
 
-Plan 012 removes repeat prepare and cold boots. UI login still runs for each
-test. Login loads the login page, fills credentials, clicks, and waits for
-navigation. That costs seconds per test. This plan logs in once through the API
-and reuses the stored session for the render specs. It keeps one UI login test
-to prove the visible login path.
+RBAC tests currently use UI login for every test. In local iteration mode,
+create one API session after preparation and reuse its browser state within
+the worker. Default mode keeps UI login. A separate setup project and a shared
+state file are not needed for the current serial suite.
 
-## Current state
+## Current state and dependency contract
 
-The relevant files, each with one line on its role:
+- `apps/web/e2e/fixtures.ts:10` reads administrator credentials from `.env`,
+  then `.env.e2e`. Reuse `localEnv`; never print credential values.
+- `apps/web/e2e/fixtures.ts:35` fills the visible login form. Keep this function
+  and its call for the UI journey and all default-mode authenticated tests.
+- `apps/web/e2e/rbac-smoke.spec.ts:1` imports `test` from `./fixtures`.
+  Both cases use `authenticatedPage` and only read seeded users and roles.
+- `apps/web/e2e/auth.spec.ts:3` tests login, reload, and logout. Lines 16–18
+  revoke its session and clear cookies. Its plain-page case expects `/me` 401.
+- `apps/api/src/routes/auth/auth.routes.spec.ts:35` confirms the API path:
 
-- `apps/web/e2e/fixtures.ts` — owns `authenticatedPage`, `waitForApi`, and `login`.
-- `apps/web/e2e/auth.spec.ts` — owns the UI login journey test.
-- `apps/web/e2e/rbac-smoke.spec.ts` — owns two render specs that need auth but do not test login.
-- `apps/web/playwright.config.ts` — owns the E2E ports and base URL.
-- `apps/web/src/routes/(public)/auth/login/index.route.vue` — owns the login form that posts to `sign-in.email`.
+  ```ts
+  app.request('/api/auth/sign-in/email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Origin: origin },
+    // JSON credentials are supplied here.
+  })
+  ```
 
-Excerpts of the code as it exists today:
-
-```ts
-// apps/web/e2e/fixtures.ts:35-46
-async function login(page: Page) {
-  const env = localEnv()
-  const email = env.CARTA_ADMIN_EMAIL
-  const password = env.CARTA_ADMIN_PASSWORD
-  if (!email || !password) throw new Error('The local administrator credentials are missing.')
-
-  await page.goto('/auth/login')
-  await page.getByRole('textbox').first().fill(email)
-  await page.locator('input[type="password"]').fill(password)
-  await page.getByRole('button', { name: 'Login', exact: true }).click()
-  await page.waitForURL((url) => !url.pathname.startsWith('/auth/login'))
-}
-```
-
-```ts
-// apps/web/e2e/auth.spec.ts:3-10
-test('session lifecycle: login, dashboard, reload, logout', async ({ authenticatedPage: page }) => {
-  await page.goto('/dashboard')
-  await expect(page.getByText('Dashboard', { exact: true }).first()).toBeVisible()
-  await page.reload()
-  ...
-```
-
-```ts
-// apps/web/e2e/rbac-smoke.spec.ts:3-7
-test('users list renders', async ({ authenticatedPage: page }) => {
-  await page.goto('/settings/users')
-  await expect(page.getByRole('table')).toBeVisible()
-  await expect(page.getByRole('cell', { name: 'admin@example.com', exact: true })).toBeVisible()
-})
-```
-
-```ts
-// apps/web/e2e/rbac-smoke.spec.ts:9-13
-test('roles list renders with assignment persistence', async ({ authenticatedPage: page }) => {
-  await page.goto('/settings/roles')
-  await expect(page.getByRole('table')).toBeVisible()
-  await expect(page.getByRole('cell', { name: 'administrator', exact: true })).toBeVisible()
-})
-```
-
-Repo conventions that apply here:
-
-- The UI login test stays. It is the only proof that the visible login works.
-- Render specs may use stored auth. They must still assert the visible result and reload persistence where the design needs it.
-- Credentials stay in `.env` plus `.env.e2e`. Never log them. Never commit them.
-- The E2E guard stays. Session setup uses the same E2E API URL and user.
-- `apps/web/e2e/.auth/` is already ignored by `.gitignore:32`. Stored state goes there.
-
-## Commands you will need
-
-| Purpose | Working directory | Command | Expected on success |
-|---|---|---|---|
-| Auth journey, iteration mode | repo root | `E2E_ITERATION=1 pnpm --filter @southneuhof/framework-web test:e2e -- auth.spec.ts` | pass, record wall time |
-| Render specs, iteration mode | repo root | `E2E_ITERATION=1 pnpm --filter @southneuhof/framework-web test:e2e -- rbac-smoke.spec.ts` | pass, record wall time |
-| Render specs, default mode | repo root | `pnpm --filter @southneuhof/framework-web test:e2e -- rbac-smoke.spec.ts` | pass, proves parity |
-| Web lint for touched files | repo root | `pnpm --filter @southneuhof/framework-web lint:focused -- playwright.config.ts e2e/fixtures.ts e2e/auth.setup.ts e2e/rbac-smoke.spec.ts e2e/auth.spec.ts` | exit 0 |
+- `apps/api/scripts/reset-e2e.ts:6` drops all public tables after its guard.
+  This also deletes sessions. State saved before a reset cannot be reused.
+- Plan 012 adds a page-independent `e2eState` test fixture that prepares before
+  auth. Local iteration prepares once per worker; default prepares per test.
+  It exports the mode check from `apps/web/e2e/state.ts` and rejects local flags
+  in CI. It retains a single Chromium project and one worker.
+- Use Playwright's built-in `storageState` fixture and fresh context per test.
+  See [authentication guidance](https://playwright.dev/docs/auth). No global
+  authenticated state is allowed for anonymous or logout tests.
 
 ## Scope
 
-**In scope** (the only files you should modify):
+Only modify:
 
-- `apps/web/e2e/auth.setup.ts` (new setup file, API login plus stored state)
-- `apps/web/playwright.config.ts` (setup project entry only, no server change)
-- `apps/web/e2e/fixtures.ts` (use stored state for render specs, keep UI login path)
-- `apps/web/e2e/rbac-smoke.spec.ts` (use stored-state fixture, same assertions)
-- `apps/web/e2e/auth.spec.ts` (keep UI login test, same assertions unless a session change forces a small fix)
-- `plans/README.md` (status row only)
+- `apps/web/e2e/fixtures.ts`
+- `apps/web/e2e/rbac-smoke.spec.ts` (add opt-in only; retain titles/assertions)
+- `apps/web/e2e/fast-auth.spec.ts` (new regression proof)
+- This plan (evidence) and `plans/README.md` (013 row).
 
-**Out of scope** (do NOT touch, even though they look related):
+Read but do not change `auth.spec.ts`, the login form, API, reset scripts, config,
+framework packages, or plan 012 mode rules. Add no setup project, auth endpoint,
+new account, persistent state file, custom browser context, or dependency.
+Use the current branch; do not commit, push, or create a PR without a request.
 
-- Login form, auth API, session logic — no product change.
-- Iteration flag semantics — plan 012 owns them.
-- Failure bundle — plan 011 owns it.
-- Framework packages — this plan is app-local only.
-- `packages/loom/*` — dirty work exists in the tree. Do not touch it.
-- Production, deployment, or dev database — never touch them.
+## Steps and commands
 
-## Git workflow
+All commands run from the repo root, with existing E2E infrastructure.
 
-- Branch: `advisor/013-e2e-fast-auth`
-- Commit per step or per logical unit. Message style matches `git log`: short imperative.
-- Do NOT push or open a PR unless the operator instructed it.
+### 1. Check the dependency and record a baseline
 
-## Steps
+Run `rg -n '012|013' plans/README.md`. The 012 row must be DONE with evidence.
+Confirm that `e2eState` does not depend on page or storage state.
+Using the known warm servers from 012, run three times:
 
-### Step 1: Run 009 first
+```sh
+E2E_ITERATION=1 /usr/bin/time -p pnpm --filter @southneuhof/framework-web test:e2e -- rbac-smoke.spec.ts
+```
 
-Plan 013 needs plan 012 VERIFIED. Check `plans/README.md`. If 012 is not
-VERIFIED, stop. This is not a failure. Return to 009.
+**Verify**: two cases pass each time. Record the median and prepare count.
+Do not compare a cold default run with a warm fast-auth run to claim auth gains.
+If warm servers are unavailable, use cold runs before and after and label them.
 
-**Verify**: 009 row says DONE or VERIFIED with evidence.
+### 2. Add auth as a test option, after preparation
 
-### Step 2: Add a setup file that logs in once through the API
+Add a `fastAuth` boolean test option, default false. In the RBAC file add
+`test.use({ fastAuth: true })`. It has an effect only in local iteration mode.
 
-Create `apps/web/e2e/auth.setup.ts`. It uses `test as setup` from Playwright.
-It reads the E2E API URL and web URL from the same env names the config uses.
-It reads admin credentials from `apps/api/.env` plus `apps/api/.env.e2e` the
-same way `fixtures.ts:localEnv` does. Do not duplicate secrets handling. Reuse
-the same parse order.
-It uses `page.request.post` to the sign-in endpoint with JSON email and password
-and the `Origin` header set to the web URL. Then it goes to `/dashboard` and
-waits for the visible Dashboard text. Then it saves storage state to
-`e2e/.auth/admin.json`. That directory is ignored. Create it if missing.
-Name the test exactly `authenticate as seeded admin`.
-If the sign-in endpoint path differs from the login form path, use the form
-path. Check `index.route.vue:46` for the exact call.
+Override the built-in `storageState` fixture. Its dependencies must include
+`e2eState`, `fastAuth`, and `playwright`, so preparation finishes before any
+session is created and before Playwright creates the test context. It must
+not depend on `page`, `context`, or `authenticatedPage` (that creates a cycle).
+For default mode or no opt-in, yield empty cookies and origins.
 
-**Verify**: `ls apps/web/e2e/auth.setup.ts` exists. Lint passes for the new file.
+For fast iteration auth, keep a typed module-local storage-state value. On
+first use, create an isolated `playwright.request.newContext` with the resolved
+`E2E_API_URL`. Read credentials with `localEnv`, require both fields, and POST
+`/api/auth/sign-in/email` with JSON credentials and the resolved web `Origin`.
+Require success and an authenticated `/me` response with the seeded admin
+identity. Save `request.storageState()` in memory only after all checks pass.
+Dispose the request context in `finally`. Do not navigate a setup browser to
+Dashboard; the real render cases already prove browser access.
 
-### Step 3: Register the setup project in the config
+Yield the cached state to each fresh browser context. Keep it only for this
+worker. New commands and replacement workers create a new session after their
+prepare step. Do not keep or retry invalid state across resets. A 401 during a
+test remains a failure; do not hide it with automatic login retries.
 
-In `apps/web/playwright.config.ts`, add a `setup` project that runs
-`auth.setup.ts`. Make the `chromium` project depend on it only when storage
-state is used. Keep `workers: 1`, `fullyParallel: false`, `retries: 0`, and all
-server settings unchanged. Do not change ports or URLs.
+In `authenticatedPage`, retain health polling. Skip UI login only when both
+local iteration and `fastAuth` are enabled. Otherwise use the existing login.
+This preserves the existing page fixture, trace, screenshot, and teardown.
 
-**Verify**: config loads. `grep -n "auth.setup\|storageState\|dependencies" apps/web/playwright.config.ts`
-shows the new entries. Lint passes for the config.
+**Verify**:
 
-### Step 4: Point render specs at stored state
+```sh
+pnpm --filter @southneuhof/framework-web lint:focused -- e2e/fixtures.ts e2e/rbac-smoke.spec.ts
+pnpm --filter @southneuhof/framework-web test:e2e -- --list
+```
 
-Change `rbac-smoke.spec.ts` to use stored state instead of per-test UI login.
-Keep both test titles and all assertions exactly the same.
-Keep `auth.spec.ts` on the UI login path. Its title and assertions stay the
-same unless the session change forces a small fix. If a fix is needed, record
-the exact diff and reason in the handoff.
+Both exit 0; the four existing cases still appear. No setup project appears.
 
-**Verify**: `grep -n "storageState\|authenticatedPage" apps/web/e2e/rbac-smoke.spec.ts apps/web/e2e/fixtures.ts`
-shows render specs no longer run UI login. Lint passes.
+### 3. Prove isolation with one small regression file
 
-### Step 5: Prove parity and record the gain
+Add `fast-auth.spec.ts` using the fixture import and assertions from
+`auth.spec.ts`. Keep three ordered cases in one file with no serial retry mode:
+first, an opted-in authenticated page loads Dashboard and `/me`; second, a
+non-opted-in UI session logs out; third, an opted-in page still loads Dashboard
+and `/me`. Check that the two fast cases have different browser contexts but
+reuse the same session cookie in iteration mode. Compare values in memory;
+never print cookies. Default mode must not require cookie equality.
+Use nested `test.describe` groups or scoped `test.use` to set the option for
+only the two fast cases. Preserve the anonymous 401 case in `auth.spec.ts`.
 
-Run `rbac-smoke.spec.ts` with `E2E_ITERATION=1`. Then run it in default mode.
-Run `auth.spec.ts` with `E2E_ITERATION=1`.
-All three runs must pass with the same assertions as before plan 010.
-Record all three wall times. Compare the render-spec time against the plan 009
-evidence. The gain must be visible. If stored state is stale or dirty, delete
-`apps/web/e2e/.auth/admin.json`, rerun once, and record it.
+**Verify**, with warm servers running:
 
-**Verify**: three passes. Timing numbers recorded for the index row.
+```sh
+E2E_ITERATION=1 pnpm --filter @southneuhof/framework-web test:e2e -- auth.spec.ts rbac-smoke.spec.ts fast-auth.spec.ts
+E2E_ITERATION=1 pnpm --filter @southneuhof/framework-web test:e2e -- fast-auth.spec.ts --repeat-each=2
+pnpm --filter @southneuhof/framework-web lint:focused -- e2e/fixtures.ts e2e/rbac-smoke.spec.ts e2e/fast-auth.spec.ts
+```
 
-### Step 6: Update the index row
+Expect seven passing cases, then six passing cases, and lint exit 0. Run the
+first command again in a new process: it must pass after a new prepare, without
+any stored file. Stop the owned warm servers; run the combined command with
+`E2E_ITERATION` unset. All seven cases must pass with per-test prepare/UI login.
+Test discovery is a load check, not a type check. The web type-check script's
+configured include list does not directly cover E2E files.
 
-Update `plans/README.md` for plan 012 with DONE and the evidence:
-setup file path, config change, three passes, and timing numbers.
+### 4. Measure and record the result
 
-**Verify**: `git status --short` shows only in-scope files.
+Repeat the step 1 benchmark with the same servers, case selection, prepare
+policy, and three samples. Record the median, auth request count, and whether
+UI login occurred. The two RBAC cases must use one API login per iteration
+worker and no UI login. Default mode must still use UI login for each case.
+Use local traces for request counts; do not copy auth bodies or cookies into
+this plan. If the median does not improve, record that result; do not mark the
+performance objective complete. Keep failures visible.
 
-## Test plan
-
-- Existing tests that must pass unchanged:
-  `apps/web/e2e/auth.spec.ts::session lifecycle: login, dashboard, reload, logout`,
-  `apps/web/e2e/auth.spec.ts::unauthenticated /me is 401`,
-  `apps/web/e2e/rbac-smoke.spec.ts::users list renders`,
-  `apps/web/e2e/rbac-smoke.spec.ts::roles list renders with assignment persistence`.
-- New setup case: `apps/web/e2e/auth.setup.ts::authenticate as seeded admin`.
-  It is setup, not acceptance proof. The UI login test stays the proof.
-- Regression check: default-mode `rbac-smoke.spec.ts` still passes without stored state.
+**Verify**: `git diff --check` exits 0; `git status --short` shows only the
+in-scope changes from this pass. Update the 013 row, never 009, 010, or 012.
 
 ## Done criteria
 
-Machine-checkable. ALL must hold:
+- [ ] Preparation finishes before cached auth is created.
+- [ ] RBAC iteration uses one API session per worker and fresh browser contexts.
+- [ ] UI logout cannot revoke the fast-auth session; anonymous `/me` stays 401.
+- [ ] Combined, repeated, fresh-process, and default-mode checks pass.
+- [ ] Existing test titles/assertions and the UI login path remain unchanged.
+- [ ] Focused lint and `git diff --check` pass.
+- [ ] Equivalent before/after timing and auth counts are recorded in this plan.
+- [ ] No state file, credential output, config change, or unrelated change.
+- [ ] The 013 row is DONE only with this evidence.
 
-- [ ] `ls apps/web/e2e/auth.setup.ts` exists and saves state to `e2e/.auth/admin.json`.
-- [ ] Playwright config has a setup project for `auth.setup.ts`.
-- [ ] `rbac-smoke.spec.ts` keeps both exact test titles and all assertions.
-- [ ] `auth.spec.ts` keeps the UI login test and its assertions.
-- [ ] `rbac-smoke.spec.ts` passes with `E2E_ITERATION=1` and in default mode.
-- [ ] `auth.spec.ts` passes with `E2E_ITERATION=1`.
-- [ ] Timing numbers are recorded and render specs are faster than plan 012 evidence.
-- [ ] No credentials in logs or new files. `e2e/.auth/` stays ignored.
-- [ ] No files outside the in-scope list are modified (`git status`).
-- [ ] `plans/README.md` status row for 013 is DONE with evidence.
+## STOP conditions and maintenance
 
-## STOP conditions
+Stop if 012 is not DONE, reset can occur after cached auth, the cookie contract
+requires product changes, a check fails twice after an in-scope fix, or a
+required change is outside scope. Do not turn a failed UI login into API login.
 
-Stop and report back (do not improvise) if:
+Shared auth is only for read-only tests. Tests that revoke sessions, change
+credentials, or modify shared permissions need their own session and owned data.
+A new CLI run intentionally repeats one API login. Add disk persistence only
+if measured login cost justifies a separate invalidation design.
 
-- Plan 012 is not VERIFIED.
-- The code at the locations in "Current state" does not match the excerpts.
-- A step verification fails twice after a reasonable fix attempt.
-- Stored state hides a real login fault. If the render spec passes but the UI login fails, keep the failure. Do not delete the UI login test.
-- Session cookies do not persist across the setup and chromium projects. Record the exact behavior. Do not invent a custom auth bypass.
-- The fix appears to require touching an out-of-scope file.
+## Implementation record — 2026-09-12
 
-## Maintenance notes
+STATUS: STOPPED
 
-For the human or agent who owns this code after the change lands:
+Plan 012 is not DONE because its required E2E and timing gates are blocked by
+host disk and file-watcher limits. This meets the dependency STOP condition.
+No plan 013 source file was changed.
 
-- Stored state is a speed tool for render specs only. The login journey still uses the UI.
-- Delete `apps/web/e2e/.auth/admin.json` when auth behavior changes. It regenerates on the next run.
-- Reviewer focus: setup uses the same E2E user and guard. No new user. No new permission.
+### Resumed result after plan 012 verification
+
+STATUS: COMPLETE WITH INCOMPLETE MEASUREMENT
+
+- Focused lint passed. Discovery listed one project and 7 cases.
+- The iteration combined proof passed 7 cases with one prepare and one cached
+  API session for opted-in tests.
+- The repeat proof passed 6 cases. Its replacement worker prepared again and
+  created a new in-memory session.
+- Final default acceptance passed 7 cases with per-test prepare and UI login.
+- UI logout did not revoke fast auth. Fast cases used fresh browser contexts
+  with the same worker-local session cookie. No cookie or credential was logged.
+
+Deviation: equivalent three-sample before and after RBAC timing was not
+recorded. Do not claim the performance measurement as verified.
