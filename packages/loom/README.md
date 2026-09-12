@@ -194,6 +194,21 @@ name: {
 
 This keeps field definitions independent from specific Vue component implementations.
 
+## Asset fields
+
+Built-in `file` and `image` fields keep the same asset object shape through
+read, edit, and submit. A single field holds one asset object (or `null` when
+allowed); a multi field holds an asset array with `props: { multi: true }`.
+Controls preserve every received asset property, keep array position as UI
+order, and add no category, row identity, or ordering property.
+
+Asset fields allow no `form.write`. The server extracts storage IDs from the
+submitted objects. Form blocks submit while an upload, model conversion, or
+model commit is pending, exposes that state as `inputPending` through Form,
+its actions slot, FormView, and DialogForm, and never queues a partial submit.
+Cancellation still closes DialogForm. The executable boundary example is
+`apps/web/src/framework/adapters/assets.form.spec.ts`.
+
 ## Application boundary
 
 Loom does not own application transport.

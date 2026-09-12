@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, defineComponent, h, nextTick, ref, type App } from 'vue'
 import Form from '../../core/Form.vue'
 import { FrameworkPlugin } from '../../../adapters/plugin'
@@ -42,7 +42,7 @@ afterEach(() => {
 })
 
 describe('FileInput browser behavior', () => {
-  it('keeps the uploaded file visible when a controlled form stores its identity', async () => {
+  it('keeps the uploaded asset object visible through the canonical control value', async () => {
     const upload = async () => asset('first.pdf')
     const model = ref<Record<string, unknown>>({ file: null })
     const host = document.createElement('div')
@@ -55,10 +55,6 @@ describe('FileInput browser behavior', () => {
             form: {
               renderer: 'file',
               props: { upload },
-              write: (value: unknown) => {
-                const file = value as { id?: unknown }
-                return typeof file?.id === 'string' ? file.id : value
-              },
             },
           },
         },
@@ -77,5 +73,63 @@ describe('FileInput browser behavior', () => {
 
     expect(model.value.file).toMatchObject({ kind: 'file', id: '/uploads/first.pdf' })
     expect(host.textContent).toContain('first.pdf')
+  })
+
+  it('blocks button and Enter submission during deferred upload and conversion, then submits once', async () => {
+    let resolveUpload!: (value: Asset) => void
+    let resolveModel!: (value: Asset) => void
+    const upload = () => new Promise<Asset>((resolve) => { resolveUpload = resolve })
+    const toModel = () => new Promise<Asset>((resolve) => { resolveModel = resolve })
+    const submit = vi.fn(async () => undefined)
+    const host = document.createElement('div')
+    document.body.append(host)
+    const Root = defineComponent({
+      setup: () => () => h(Form, {
+        fields: {
+          file: {
+            label: 'File',
+            form: { renderer: 'file', props: { upload, toModel } },
+          },
+        },
+        initialData: { file: null },
+        submit,
+      }),
+    })
+    const app = createApp(Root)
+    app.use(FrameworkPlugin, { queryClient: createFrameworkQueryClient({ retry: 0, staleTime: 0 }) })
+    app.mount(host)
+    apps.push(app)
+    await settle()
+
+    selectFile(host.querySelector<HTMLInputElement>('input[type="file"]')!, new File(['first'], 'first.pdf', { type: 'application/pdf' }))
+    await settle()
+
+    const form = host.querySelector('form')!
+    const button = host.querySelector<HTMLButtonElement>('button[type="submit"]')!
+    expect(button.disabled).toBe(true)
+
+    button.click()
+    await settle()
+    form.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+    await settle()
+    expect(submit).not.toHaveBeenCalled()
+
+    resolveUpload(asset('first.pdf'))
+    await settle()
+    expect(button.disabled).toBe(true)
+    button.click()
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+    await settle()
+    expect(submit).not.toHaveBeenCalled()
+
+    resolveModel(asset('first.pdf'))
+    await settle()
+    expect(button.disabled).toBe(false)
+
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+    await settle()
+    expect(submit).toHaveBeenCalledTimes(1)
+    expect(submit).toHaveBeenCalledWith({ file: asset('first.pdf') })
   })
 })

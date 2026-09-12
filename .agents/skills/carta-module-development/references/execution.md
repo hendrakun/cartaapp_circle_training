@@ -62,7 +62,7 @@ before dependent work uses them. Routine implementation choices need no new gate
 ## Progress and recovery
 
 Workers report a completed boundary, failed check or blocker with the next action.
-At dispatch, set a progress checkpoint of at most ten minutes. At that checkpoint,
+At a checkpoint,
 inspect worker status and available output. A running command with useful output
 can continue. If progress is unclear, request status and set the next checkpoint.
 

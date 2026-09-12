@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { defineAsyncComponent, ref, watch, computed, type PropType } from 'vue'
+import { defineAsyncComponent, ref, watch, computed, onBeforeUnmount, type PropType } from 'vue'
 import type { UploadOperation, UploadProgress } from '../../contracts'
+import { useFormInputPending } from '../core/useFormInputState'
 import FileComponent from '@southneuhof/loom/components/utils/FileComponent.vue'
 import { toast } from 'vue-sonner'
 import BaseInput from './BaseInput.vue'
@@ -43,6 +44,17 @@ const props = defineProps({
 const fileManager = useOptionalAssetProvider()
 const AssetPicker = defineAsyncComponent(() => import('../../file-manager/AssetPicker.vue'))
 const mutation = useUploadMutation(() => props.upload)
+const inputPending = useFormInputPending()
+let disposed = false
+const pendingOperations = new Set<{ release: () => void }>()
+function releaseOperation(operation: { release: () => void }) {
+  operation.release()
+  pendingOperations.delete(operation)
+}
+onBeforeUnmount(() => {
+  disposed = true
+  for (const operation of [...pendingOperations]) releaseOperation(operation)
+})
 const emit = defineEmits<{
   (event: 'validation:touch'): void
 }>()
@@ -110,19 +122,29 @@ function progressPercentage(progress?: UploadProgress) {
   return Math.min(100, Math.max(0, Math.round((progress.loaded / progress.total) * 100)))
 }
 
+function sameAsset(left: InputAssetValue, right: InputAssetValue) {
+  return left.id === right.id
+    && left.kind === right.kind
+    && left.url === right.url
+    && left.name === right.name
+    && left.size === right.size
+    && left.mimeType === right.mimeType
+    && left.updatedAt === right.updatedAt
+    && JSON.stringify(left.metadata ?? null) === JSON.stringify(right.metadata ?? null)
+}
+
 function syncPersistedRows(value: unknown) {
+  const values = Array.isArray(value) ? value : (value === undefined || value === null ? [] : [value])
+  for (const item of values) {
+    if (item !== null && typeof item === 'object' && toInputAssetValue(item) === null) {
+      throw new Error('[loom] FileInput received a malformed asset value.')
+    }
+  }
   const current = persistedItems()
-  const normalized = (Array.isArray(value) ? value : [value])
-    .map((item) => toInputAssetValue(item) ?? (typeof item === 'string' ? current.find((currentItem) => currentItem.id === item) : null))
+  const normalized = values
+    .map((item) => toInputAssetValue(item))
     .filter((item): item is InputAssetValue => Boolean(item))
-  if (
-    current.length === normalized.length &&
-    current.every((item, index) =>
-      item.id === normalized[index].id &&
-      item.url === normalized[index].url &&
-      item.name === normalized[index].name,
-    )
-  ) return
+  if (current.length === normalized.length && current.every((item, index) => sameAsset(item, normalized[index]))) return
 
   const pending = rows.value.filter((row): row is PendingFileRow => row.kind === 'pending')
   rows.value = [...normalized.map((item) => persistedRow(item)), ...pending]
@@ -131,15 +153,19 @@ function syncPersistedRows(value: unknown) {
 function startFileUpload(file: File) {
   const row: PendingFileRow = { id: nextRowID(), kind: 'pending', file }
   rows.value.push(row)
+  const operation = inputPending.begin()
+  pendingOperations.add(operation)
 
-  mutation.execute(file, props.uploadPath, (progress) => {
-    const current = rows.value.find(
-      (candidate): candidate is PendingFileRow => candidate.id === row.id && candidate.kind === 'pending',
-    )
-    if (current) current.progress = progress
-  })
-    .then((res) => props.toModel(res))
-    .then((model) => {
+  void (async () => {
+    try {
+      const uploaded = await mutation.execute(file, props.uploadPath, (progress) => {
+        const current = rows.value.find(
+          (candidate): candidate is PendingFileRow => candidate.id === row.id && candidate.kind === 'pending',
+        )
+        if (current) current.progress = progress
+      })
+      const model = await props.toModel(uploaded)
+      if (disposed || operation.released()) return
       const normalized = toInputAssetValue(model)
       if (!normalized) throw new Error('Invalid upload response')
       const index = rows.value.findIndex((candidate) => candidate.id === row.id && candidate.kind === 'pending')
@@ -147,12 +173,15 @@ function startFileUpload(file: File) {
       rows.value.splice(index, 1, { id: row.id, kind: 'persisted', item: normalized })
       emitChanges()
       emit('validation:touch')
-    })
-    .catch((err) => {
+    } catch (err) {
+      if (disposed || operation.released()) return
       const index = rows.value.findIndex((candidate) => candidate.id === row.id && candidate.kind === 'pending')
       if (index !== -1) rows.value.splice(index, 1)
       toast.error(`Gagal mengunggah berkas: ${mutation.error.value?.message ?? String(err)}`)
-    })
+    } finally {
+      releaseOperation(operation)
+    }
+  })()
 }
 
 const handleFileUpload = (files: File | File[]) => {

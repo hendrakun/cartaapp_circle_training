@@ -42,7 +42,7 @@ describe('input props registry', () => {
     expect(registry.hydrate('image', 'asset-1')).toBe(canonical)
   })
 
-  it('validates built-in number, image, and multi-lookup control values', () => {
+  it('validates built-in number, file/image, and multi-lookup control values', () => {
     const canonical = { kind: 'file', id: 'asset-1', url: 'https://files.test/asset-1', name: 'asset-1' }
     const registry = createInputPropsRegistry({})
 
@@ -50,10 +50,15 @@ describe('input props registry', () => {
     expect(registry.contract('number').validate?.(12, {})).toBeUndefined()
     expect(registry.contract('number').validate?.('12', {})).toContain('finite number')
     expect(registry.contract('number').validate?.(Number.NaN, {})).toContain('finite number')
-    expect(registry.contract('image').validate?.(canonical, {})).toBeUndefined()
-    expect(registry.contract('image').validate?.({ id: 'asset-1' }, {})).toContain('uploaded asset')
-    expect(registry.contract('image').validate?.([canonical], { props: { multi: true } })).toBeUndefined()
-    expect(registry.contract('image').validate?.(canonical, { props: { multi: true } })).toContain('array')
+    for (const renderer of ['file', 'image'] as const) {
+      expect(registry.contract(renderer).validate?.(canonical, {})).toBeUndefined()
+      expect(registry.contract(renderer).validate?.({ id: 'asset-1' }, {})).toContain('uploaded asset')
+      expect(registry.contract(renderer).validate?.('asset-1', {})).toContain('uploaded asset')
+      expect(registry.contract(renderer).validate?.([canonical], { props: { multi: true } })).toBeUndefined()
+      expect(registry.contract(renderer).validate?.(canonical, { props: { multi: true } })).toContain('array')
+      expect(registry.contract(renderer).validate?.(['asset-1'], { props: { multi: true } })).toContain('array')
+      expect(registry.contract(renderer).validate?.([], { props: { multi: true } })).toBeUndefined()
+    }
     expect(registry.contract('lookup').validate?.([{ id: 'lookup-1' }], { props: { multi: true } })).toBeUndefined()
     expect(registry.contract('lookup').validate?.(['lookup-1'], { props: { multi: true } })).toContain('lookup records')
   })

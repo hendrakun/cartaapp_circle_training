@@ -9,13 +9,14 @@ function selectFile(input: HTMLInputElement, file: File) {
 }
 
 describe('ImageInput upload surface', () => {
-  it('keeps the preview when the form writer stores the asset identity', async () => {
-    const upload = vi.fn(async () => ({
+  it('keeps the uploaded asset object and preview through the control value', async () => {
+    const uploaded = {
       kind: 'file' as const,
       id: '/uploads/first.png',
       url: 'https://files.test/first.png',
       name: 'first.png',
-    }))
+    }
+    const upload = vi.fn(async () => uploaded)
     const model = ref<unknown[]>([])
     const host = defineComponent({
       setup: () => () => h(ImageInput, {
@@ -24,9 +25,7 @@ describe('ImageInput upload surface', () => {
         limit: 4,
         upload,
         'onUpdate:modelValue': (value: unknown) => {
-          model.value = (Array.isArray(value) ? value : [])
-            .map((item) => (item && typeof item === 'object' && typeof (item as { id?: unknown }).id === 'string' ? (item as { id: string }).id : undefined))
-            .filter((item): item is string => Boolean(item))
+          model.value = value as unknown[]
         },
       }),
     })
@@ -36,8 +35,33 @@ describe('ImageInput upload surface', () => {
     selectFile(view.find<HTMLInputElement>('input[type="file"]')!, new File(['first'], 'first.png', { type: 'image/png' }))
     await flush()
 
-    expect(model.value).toEqual(['/uploads/first.png'])
+    expect(model.value).toEqual([uploaded])
     expect(view.find<HTMLImageElement>('img')?.getAttribute('src')).toBe('https://files.test/first.png')
+    view.unmount()
+  })
+
+  it('reorders multi-image objects without adding framework properties', async () => {
+    const first = { kind: 'file' as const, id: '/uploads/first.png', url: 'https://files.test/first.png', name: 'first.png' }
+    const second = { kind: 'file' as const, id: '/uploads/second.png', url: 'https://files.test/second.png', name: 'second.png' }
+    const model = ref<unknown[]>([first, second])
+    const host = defineComponent({
+      setup: () => () => h(ImageInput, {
+        modelValue: model.value,
+        multi: true,
+        upload: async () => first,
+        'onUpdate:modelValue': (value: unknown) => {
+          model.value = value as unknown[]
+        },
+      }),
+    })
+    const view = mountCore(host, {})
+    await flush()
+
+    model.value = [second, first]
+    await flush()
+
+    expect(model.value).toEqual([second, first])
+    expect(model.value).not.toContainEqual(expect.objectContaining({ order_number: expect.anything() }))
     view.unmount()
   })
 })

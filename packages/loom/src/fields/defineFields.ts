@@ -64,18 +64,18 @@ type NumberFormProjection<TDraft> = FormProjectionBase<TDraft, number> & {
   renderer: 'number'
 }
 
-type ImageFormProjection<TDraft> =
-  | (FormProjectionBase<TDraft, InputAssetValue> & {
-      renderer: 'image'
+type AssetFormProjection<TDraft> =
+  | (Omit<FormProjectionBase<TDraft, InputAssetValue>, 'write'> & {
+      renderer: 'file' | 'image'
       props?: Record<string, unknown> & { multi?: false | undefined }
       validate?: FieldValidate<InputAssetValue>
-      write?: FieldWrite<InputAssetValue>
+      write?: never
     })
-  | (FormProjectionBase<TDraft, InputAssetValue[]> & {
-      renderer: 'image'
+  | (Omit<FormProjectionBase<TDraft, InputAssetValue[]>, 'write'> & {
+      renderer: 'file' | 'image'
       props: Record<string, unknown> & { multi: true }
       validate?: FieldValidate<InputAssetValue[]>
-      write?: FieldWrite<InputAssetValue[]>
+      write?: never
     })
 
 type LookupFormProjection<TDraft, TValue> =
@@ -88,7 +88,7 @@ type SelectFormProjection<TDraft, TValue> =
 
 type KnownFormProjectionForKey<TDraft, TValue> =
   | NumberFormProjection<TDraft>
-  | ImageFormProjection<TDraft>
+  | AssetFormProjection<TDraft>
   | LookupFormProjection<TDraft, TValue>
   | SelectFormProjection<TDraft, TValue>
   | {
@@ -119,14 +119,22 @@ type IsSelectionRenderer<TRenderer> = TRenderer extends 'lookup' | 'select'
   ? true
   : string extends TRenderer ? true : false
 
-type SelectionFormGuard<TForm> = TForm extends { renderer: infer TRenderer; props: infer TProps }
-  ? IsSelectionRenderer<TRenderer> extends true
-    ? IsMultiProps<TProps> extends true
-      ? TForm extends { write: unknown }
-        ? never
+type IsAssetRenderer<TRenderer> = TRenderer extends 'file' | 'image' ? true : false
+
+type SelectionFormGuard<TForm> = TForm extends { renderer: infer TRenderer }
+  ? IsAssetRenderer<TRenderer> extends true
+    ? TForm extends { write: unknown }
+      ? never
+      : unknown
+    : IsSelectionRenderer<TRenderer> extends true
+      ? TForm extends { props: infer TProps }
+        ? IsMultiProps<TProps> extends true
+          ? TForm extends { write: unknown }
+            ? never
+            : unknown
+          : unknown
         : unknown
       : unknown
-    : unknown
   : unknown
 
 type SelectionDefinitionGuard<TDefinition> = TDefinition extends { form?: infer TForm }

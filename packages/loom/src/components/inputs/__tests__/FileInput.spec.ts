@@ -45,22 +45,21 @@ describe('FileInput upload surface', () => {
     view.unmount()
   })
 
-  it('keeps the uploaded row in the live draft when the form writer stores its identity', async () => {
+  it('keeps the uploaded asset object in the live draft through submission', async () => {
     const upload = vi.fn(async () => asset('first.pdf'))
+    const submit = vi.fn(async () => undefined)
     const model = ref<Record<string, unknown>>({ file: null })
     const host = defineComponent({
       setup: () => () => h(Form, {
         fields: {
           file: {
             label: 'File',
-            form: { renderer: 'file', props: { upload }, write: (value: unknown) => {
-              const file = value as { id?: unknown }
-              return typeof file?.id === 'string' ? file.id : value
-            } },
+            form: { renderer: 'file', props: { upload } },
           },
         },
         modelValue: model.value,
         'onUpdate:modelValue': (value: Record<string, unknown>) => { model.value = value },
+        submit,
       }),
     })
     const view = mountCore(host, {})
@@ -70,8 +69,247 @@ describe('FileInput upload surface', () => {
     selectFiles(input, [new File(['first'], 'first.pdf', { type: 'application/pdf' })])
     await flush()
 
-    expect(model.value.file).toMatchObject(asset('first.pdf'))
+    expect(model.value.file).toEqual(asset('first.pdf'))
     expect(view.text()).toContain('first.pdf')
+    view.find('form')!.dispatchEvent(new Event('submit'))
+    await flush()
+    expect(submit).toHaveBeenCalledWith({ file: asset('first.pdf') })
+    view.unmount()
+  })
+
+  it('refreshes optional asset metadata with the same storage identity', async () => {
+    const first = { ...asset('first.pdf'), size: 1 }
+    const refreshed = { ...asset('first.pdf'), size: 2, mimeType: 'application/pdf' }
+    const view = mountInput<Asset | null>(FileInput, { model: first, props: { multi: false } })
+    await view.flush()
+
+    view.setProps({ modelValue: refreshed } as unknown as Record<string, unknown>)
+    view.model.value = refreshed
+    await view.flush()
+
+    expect(view.model.value).toEqual(refreshed)
+    expect(view.host.textContent).toContain('first.pdf')
+    view.cleanup()
+  })
+
+  it('keeps reordered multi-file objects unchanged apart from array position', async () => {
+    const first = asset('first.pdf')
+    const second = asset('second.pdf')
+    const view = mountInput<Asset[]>(FileInput, { model: [first, second], props: { multi: true } })
+    await view.flush()
+
+    view.model.value = [second, first]
+    await view.flush()
+
+    expect(view.model.value).toEqual([second, first])
+    expect(view.host.textContent).toContain('first.pdf')
+    expect(view.host.textContent).toContain('second.pdf')
+    view.cleanup()
+  })
+
+  it('preserves an unchanged save without adding framework properties', async () => {
+    const current = { ...asset('first.pdf'), size: 4, metadata: { source: 'upload' } }
+    const view = mountInput<Asset[]>(FileInput, { model: [current], props: { multi: true } })
+    await view.flush()
+
+    expect(view.model.value).toEqual([current])
+    expect(view.model.value?.[0]).not.toHaveProperty('order_number')
+    expect(view.model.value?.[0]).not.toHaveProperty('category')
+    view.cleanup()
+  })
+
+  it('registers concurrent uploads as one pending interval and releases each operation separately', async () => {
+    const first = deferred<Asset>()
+    const second = deferred<Asset>()
+    let call = 0
+    const upload = vi.fn(() => (call++ === 0 ? first.promise : second.promise))
+    const submit = vi.fn(async () => undefined)
+    const view = mountCore(Form, {
+      fields: { files: { label: 'Files', form: { renderer: 'file', props: { multi: true, upload } } } },
+      initialData: { files: [] },
+      submit,
+    })
+    await flush()
+
+    const exposed = view.exposed() as { inputPending: boolean; submit: () => Promise<void> }
+    const input = view.find<HTMLInputElement>('input[type="file"]')!
+    selectFiles(input, [new File(['first'], 'first.pdf', { type: 'application/pdf' }), new File(['second'], 'second.pdf', { type: 'application/pdf' })])
+    await flush()
+
+    expect(exposed.inputPending).toBe(true)
+    expect(view.find<HTMLButtonElement>('button[type="submit"]')?.disabled).toBe(true)
+    await exposed.submit()
+    await flush()
+    expect(submit).not.toHaveBeenCalled()
+
+    second.resolve(asset('second.pdf'))
+    await flush()
+    expect(exposed.inputPending).toBe(true)
+    await exposed.submit()
+    await flush()
+    expect(submit).not.toHaveBeenCalled()
+
+    first.resolve(asset('first.pdf'))
+    await flush()
+    expect(exposed.inputPending).toBe(false)
+    expect(view.find<HTMLButtonElement>('button[type="submit"]')?.disabled).toBe(false)
+    view.find('form')!.dispatchEvent(new Event('submit'))
+    await flush()
+    expect(submit).toHaveBeenCalledWith({ files: [asset('first.pdf'), asset('second.pdf')] })
+    view.unmount()
+  })
+
+  it('keeps an attempted submit from queueing after a failed upload releases its operation', async () => {
+    const result = deferred<Asset>()
+    const upload = vi.fn(() => result.promise)
+    const submit = vi.fn(async () => undefined)
+    const view = mountCore(Form, {
+      fields: { files: { label: 'Files', form: { renderer: 'file', props: { multi: true, upload } } } },
+      initialData: { files: [] },
+      submit,
+    })
+    await flush()
+
+    const exposed = view.exposed() as { inputPending: boolean; submit: () => Promise<void> }
+    selectFiles(view.find<HTMLInputElement>('input[type="file"]')!, [new File(['bad'], 'bad.pdf', { type: 'application/pdf' })])
+    await flush()
+    expect(exposed.inputPending).toBe(true)
+
+    await exposed.submit()
+    await flush()
+    expect(submit).not.toHaveBeenCalled()
+
+    result.reject(new Error('upload failed'))
+    await flush()
+    expect(exposed.inputPending).toBe(false)
+    expect(submit).not.toHaveBeenCalled()
+    view.unmount()
+  })
+
+  it('includes delayed model conversion in the same pending interval', async () => {
+    const uploaded = deferred<Asset>()
+    const converted = deferred<Asset>()
+    const upload = vi.fn(() => uploaded.promise)
+    const submit = vi.fn(async () => undefined)
+    const view = mountCore(Form, {
+      fields: { file: { label: 'File', form: { renderer: 'file', props: { upload, toModel: () => converted.promise } } } },
+      initialData: { file: null },
+      submit,
+    })
+    await flush()
+
+    const exposed = view.exposed() as { inputPending: boolean; submit: () => Promise<void> }
+    selectFiles(view.find<HTMLInputElement>('input[type="file"]')!, [new File(['first'], 'first.pdf', { type: 'application/pdf' })])
+    await flush()
+    expect(exposed.inputPending).toBe(true)
+
+    uploaded.resolve(asset('first.pdf'))
+    await flush()
+    expect(exposed.inputPending).toBe(true)
+    await exposed.submit()
+    await flush()
+    expect(submit).not.toHaveBeenCalled()
+
+    converted.resolve(asset('first.pdf'))
+    await flush()
+    expect(exposed.inputPending).toBe(false)
+    view.find('form')!.dispatchEvent(new Event('submit'))
+    await flush()
+    expect(submit).toHaveBeenCalledWith({ file: asset('first.pdf') })
+    view.unmount()
+  })
+
+  it('releases pending work when its owning input is hidden and ignores the late result', async () => {
+    const uploaded = deferred<Asset>()
+    const converted = deferred<Asset>()
+    const upload = vi.fn(() => uploaded.promise)
+    const submit = vi.fn(async () => undefined)
+    const show = ref(true)
+    const view = mountCore(Form, {
+      fields: {
+        toggle: { label: 'Toggle', form: { renderer: 'text' } },
+        file: { label: 'File', form: { renderer: 'file', props: { upload, toModel: () => converted.promise }, behavior: { visible: () => show.value } } },
+      },
+      initialData: { toggle: '', file: null },
+      submit,
+    })
+    await flush()
+
+    selectFiles(view.find<HTMLInputElement>('input[type="file"]')!, [new File(['first'], 'first.pdf', { type: 'application/pdf' })])
+    await flush()
+    const exposed = view.exposed() as { inputPending: boolean; submit: () => Promise<void> }
+    expect(exposed.inputPending).toBe(true)
+
+    show.value = false
+    await flush()
+    expect(view.find('input[type="file"]')).toBeNull()
+    expect(exposed.inputPending).toBe(false)
+
+    uploaded.resolve(asset('first.pdf'))
+    converted.resolve(asset('first.pdf'))
+    await flush()
+    expect(exposed.inputPending).toBe(false)
+    view.find('form')!.dispatchEvent(new Event('submit'))
+    await flush()
+    expect(submit).toHaveBeenCalledWith({ toggle: '' })
+    view.unmount()
+  })
+
+  it('keeps concurrent operations independent when one input is disposed', async () => {
+    const first = deferred<Asset>()
+    const second = deferred<Asset>()
+    let call = 0
+    const upload = vi.fn(() => (call++ === 0 ? first.promise : second.promise))
+    const submit = vi.fn(async () => undefined)
+    const view = mountCore(Form, {
+      fields: { files: { label: 'Files', form: { renderer: 'file', props: { multi: true, upload } } } },
+      initialData: { files: [] },
+      submit,
+    })
+    await flush()
+
+    const exposed = view.exposed() as { inputPending: boolean; submit: () => Promise<void> }
+    selectFiles(view.find<HTMLInputElement>('input[type="file"]')!, [
+      new File(['first'], 'first.pdf', { type: 'application/pdf' }),
+      new File(['second'], 'second.pdf', { type: 'application/pdf' }),
+    ])
+    await flush()
+    expect(exposed.inputPending).toBe(true)
+
+    view.unmount()
+    first.resolve(asset('first.pdf'))
+    second.resolve(asset('second.pdf'))
+    await flush()
+    expect(exposed.inputPending).toBe(false)
+    expect(submit).not.toHaveBeenCalled()
+  })
+
+  it('allows submit after form reset during pending work once operations settle', async () => {
+    const result = deferred<Asset>()
+    const upload = vi.fn(() => result.promise)
+    const submit = vi.fn(async () => undefined)
+    const view = mountCore(Form, {
+      fields: { files: { label: 'Files', form: { renderer: 'file', props: { multi: true, upload } } } },
+      initialData: { files: [] },
+      submit,
+    })
+    await flush()
+
+    const exposed = view.exposed() as { inputPending: boolean; submit: () => Promise<void>; reset: () => void }
+    selectFiles(view.find<HTMLInputElement>('input[type="file"]')!, [new File(['first'], 'first.pdf', { type: 'application/pdf' })])
+    await flush()
+    expect(exposed.inputPending).toBe(true)
+
+    exposed.reset()
+    await flush()
+    expect(exposed.inputPending).toBe(true)
+
+    result.resolve(asset('first.pdf'))
+    await flush()
+    expect(exposed.inputPending).toBe(false)
+    view.find('form')!.dispatchEvent(new Event('submit'))
+    await flush()
+    expect(submit).toHaveBeenCalledWith({ files: [asset('first.pdf')] })
     view.unmount()
   })
 

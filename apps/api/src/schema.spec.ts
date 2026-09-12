@@ -45,6 +45,15 @@ describe('stored asset', () => {
     expect(storedAssetInput.array().parse([asset, { ...asset, id: 'uploads/second.pdf' }])).toEqual(['uploads/photo-1.jpg', 'uploads/second.pdf'])
     expect(storedAssetInput.parse({ ...asset, name: 'client name', url: 'https://client.test/file' })).toBe(asset.id)
   })
+
+  it('keeps an omitted patch collection omitted and accepts an explicit empty clear', () => {
+    const patch = z.object({ attachments: storedAssetInput.array().optional() })
+    expect(patch.parse({})).toEqual({})
+    expect(patch.parse({ attachments: [] })).toEqual({ attachments: [] })
+    expect(patch.parse({ attachments: [asset, { ...asset, id: 'uploads/second.pdf' }] })).toEqual({
+      attachments: ['uploads/photo-1.jpg', 'uploads/second.pdf'],
+    })
+  })
 })
 
 describe('selection values', () => {

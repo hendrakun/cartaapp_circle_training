@@ -80,11 +80,12 @@ const computedWithoutFormExclusion = defineFields(schema, {
 })
 void computedWithoutFormExclusion
 
+type AssetValue = { kind: 'file'; id: string; url: string; name: string; size?: number; mimeType?: string; updatedAt?: string; metadata?: Record<string, unknown> }
 const builtInSchema = defineSchema({
   identity: 'id',
-  record: { schema: { validate: (value: unknown): ValidationResult<{ id: string; amount: number; image: string; images: string[]; lookupValues: Selection[] }> => ({ success: true, data: value as never }) } },
-  create: { schema: { validate: (value: unknown): ValidationResult<{ amount: number; image: string; images: string[]; lookupValues: Selection[] }> => ({ success: true, data: value as never }) } },
-  update: { schema: { validate: (value: unknown): ValidationResult<{ amount: number; image: string; images: string[]; lookupValues: Selection[] }> => ({ success: true, data: value as never }) } },
+  record: { schema: { validate: (value: unknown): ValidationResult<{ id: string; amount: number; image: AssetValue; images: AssetValue[]; document: AssetValue; documents: AssetValue[]; lookupValues: Selection[] }> => ({ success: true, data: value as never }) } },
+  create: { schema: { validate: (value: unknown): ValidationResult<{ amount: number; image: AssetValue; images: AssetValue[]; document: AssetValue; documents: AssetValue[]; lookupValues: Selection[] }> => ({ success: true, data: value as never }) } },
+  update: { schema: { validate: (value: unknown): ValidationResult<{ amount: number; image: AssetValue; images: AssetValue[]; document: AssetValue; documents: AssetValue[]; lookupValues: Selection[] }> => ({ success: true, data: value as never }) } },
 })
 const builtInFields = defineFields(builtInSchema, {
   amount: {
@@ -97,10 +98,45 @@ const builtInFields = defineFields(builtInSchema, {
     },
   },
   image: { form: { renderer: 'image', validate: (value) => value.id } },
-  images: { form: { renderer: 'image', props: { multi: true }, write: (value) => value.map((entry) => entry.id) } },
+  images: { form: { renderer: 'image', props: { multi: true }, validate: (value) => value.map((entry) => entry.id).join(',') } },
+  document: {
+    form: {
+      renderer: 'file',
+      validate: (value) => {
+        const asset: AssetValue = value
+        void asset
+        return asset.id
+      },
+    },
+  },
+  documents: {
+    form: {
+      renderer: 'file',
+      props: { multi: true },
+      validate: (value) => value.map((entry) => entry.id).join(','),
+    },
+  },
   lookupValues: { form: { renderer: 'lookup', props: { multi: true, pick: 'id', view: 'name' } } },
 })
 void builtInFields
+
+const invalidAssetWriter = defineFields(builtInSchema, {
+  // @ts-expect-error asset values stay as asset objects; no writer is allowed
+  documents: { form: { renderer: 'file', props: { multi: true }, write: (value: AssetValue[]) => value.map((entry) => entry.id) } },
+})
+void invalidAssetWriter
+
+const invalidSingleAssetWriter = defineFields(builtInSchema, {
+  // @ts-expect-error asset values stay as asset objects; no writer is allowed
+  image: { form: { renderer: 'image', write: (value: AssetValue) => value.id, props: {} } },
+})
+void invalidSingleAssetWriter
+
+const invalidSingleFileWriter = defineFields(builtInSchema, {
+  // @ts-expect-error asset values stay as asset objects; no writer is allowed
+  document: { form: { renderer: 'file', write: (value: AssetValue) => value.id, props: {} } },
+})
+void invalidSingleFileWriter
 
 const invalidSelectionField = defineFields(builtInSchema, {
   lookupValues: {

@@ -128,13 +128,12 @@ policy and file-access rules on the server.
 
 ### Availability and proof
 
-The object schema and app adapter exist. Multi-file field typing, uniform asset
-validation, metadata refresh and form upload readiness are pending in
-[plan 015](../../../../plans/015-symmetric-asset-fields.md). Inspect current source
-before using those capabilities. Report a type/runtime mismatch at its owner;
-use an authorized supported local extension only if it preserves this contract.
-A cast or client conversion must not hide the mismatch. Remove this availability
-note only after the implementation checks pass.
+The object schema, app adapter, shared file/image field typing, uniform asset
+validation, metadata refresh, and form upload readiness are implemented.
+Inspect current source before using those capabilities. Report a type/runtime
+mismatch at its owner; use an authorized supported local extension only if it
+preserves this contract. A cast or client conversion must not hide the
+mismatch.
 
 Use shared form readiness when available. Browser checks wait for upload and
 model commit; filename presence does not prove completion. Existing upload
@@ -144,8 +143,9 @@ pending flags out of the normal form path.
 For changed asset fields, prove unchanged save, addition, permitted removal or
 clear, retained metadata and reload. Cover omitted PATCH separately from empty
 arrays at the API boundary. Capture a real form submission and parse it through
-the server input schema; a mocked action alone cannot prove symmetry. Reuse a
-shared integration example when it exists, and keep business-rule tests local.
+the server input schema; a mocked action alone cannot prove symmetry. Reuse
+[the shared integration example](../../../../apps/web/src/framework/adapters/assets.form.spec.ts),
+and keep business-rule tests local.
 
 ## Check the boundary
 

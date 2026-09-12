@@ -312,6 +312,33 @@ describe('DialogForm', () => {
     view.view.unmount()
   })
 
+  it('disables DialogForm submit while an input operation is pending and keeps cancel enabled', async () => {
+    const pendingUpload = deferred<{ kind: 'file'; id: string; url: string; name: string }>()
+    const view = mountDialogForm({
+      props: {
+        fields: { files: { label: 'Files', form: { renderer: 'file', props: { multi: true, upload: () => pendingUpload.promise } } } },
+        initialData: { files: [] },
+      },
+    })
+    await flush()
+
+    const input = view.view.find<HTMLInputElement>('input[type="file"]')!
+    Object.defineProperty(input, 'files', { configurable: true, value: [new File(['first'], 'first.pdf', { type: 'application/pdf' })] })
+    input.dispatchEvent(new Event('change'))
+    await flush()
+
+    expect(button(view.view, 'Submit')?.disabled).toBe(true)
+    expect(button(view.view, 'Cancel')?.disabled).toBe(false)
+
+    button(view.view, 'Cancel')!.click()
+    await flush()
+    expect(view.view.exposed().open).toBe(false)
+
+    pendingUpload.resolve({ kind: 'file', id: '/uploads/first.pdf', url: 'https://files.test/first.pdf', name: 'first.pdf' })
+    await flush()
+    view.view.unmount()
+  })
+
   it('keeps draft v-model independent from named open model', async () => {
     const submitBound = mountDialogForm()
     await flush()

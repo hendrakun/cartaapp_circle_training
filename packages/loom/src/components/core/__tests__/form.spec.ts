@@ -182,8 +182,10 @@ describe('Form core', () => {
     const canonical = { kind: 'file', id: 'asset-1', url: 'https://files.test/asset-1', name: 'asset-1' }
     const mismatchCases = [
       { key: 'amount', renderer: 'number', value: 1, schema: z.object({ amount: z.string() }), text: 'renderer "number" with schema kind "string"' },
-      { key: 'photo', renderer: 'image', value: canonical, schema: z.object({ photo: z.string() }), text: 'renderer "image" with schema kind "string"' },
-      { key: 'photos', renderer: 'image', props: { multi: true }, value: [canonical], schema: z.object({ photos: z.array(z.string()) }), text: 'renderer "image" with schema kind "string[]"' },
+      { key: 'file', renderer: 'file', value: canonical, schema: z.object({ file: z.string() }), text: 'Asset field "file" expects an asset object' },
+      { key: 'photo', renderer: 'image', value: canonical, schema: z.object({ photo: z.string() }), text: 'Asset field "photo" expects an asset object' },
+      { key: 'photos', renderer: 'image', props: { multi: true }, value: [canonical], schema: z.object({ photos: z.array(z.string()) }), text: 'Asset field "photos" expects an array of asset objects' },
+      { key: 'documents', renderer: 'file', props: { multi: true }, value: [canonical], schema: z.object({ documents: z.array(z.string()) }), text: 'Asset field "documents" expects an array of asset objects' },
       { key: 'owners', renderer: 'lookup', props: { multi: true }, value: [{ id: 'owner-1', name: 'Owner' }], schema: z.object({ owners: z.array(z.string()) }), text: 'requires selectionValues(itemSchema)' },
     ] as const
     for (const current of mismatchCases) {
@@ -230,6 +232,69 @@ describe('Form core', () => {
     await flush()
     await expect(writer.exposed().submit()).rejects.toThrow('no form.write')
     writer.unmount()
+
+    const singleWriter = mountCore(Form, {
+      fields: { file: { label: 'file', form: { renderer: 'file', write: (candidate) => candidate } } },
+      initialData: { file: canonical },
+      schema: fromZod(z.object({ file: z.object({ id: z.string() }) })),
+      submit: async () => undefined,
+    })
+    await flush()
+    await expect(singleWriter.exposed().submit()).rejects.toThrow('allows no form.write')
+    singleWriter.unmount()
+
+    for (const key of ['photo', 'document'] as const) {
+      const matched = mountCore(Form, {
+        fields: { [key]: { label: key, form: { renderer: key === 'photo' ? 'image' : 'file', write: (candidate) => candidate } } },
+        initialData: { [key]: canonical },
+        submit: async () => undefined,
+      })
+      await flush()
+      await expect(matched.exposed().submit()).rejects.toThrow('allows no form.write')
+      matched.unmount()
+    }
+
+    const dynamicWriterSpy = vi.fn((candidate: unknown) => candidate)
+    const dynamicWriter = mountCore(Form, {
+      fields: {
+        mode: { label: 'Mode', form: { renderer: 'text' } },
+        attachment: {
+          label: 'Attachment',
+          form: {
+            renderer: 'text',
+            write: dynamicWriterSpy,
+            behavior: { presentation: ({ draft }: never) => (draft as { mode?: string }).mode === 'file' ? { renderer: 'file' } : {} },
+          },
+        },
+      },
+      initialData: { mode: 'file', attachment: canonical },
+      schema: fromZod(z.object({ mode: z.string(), attachment: z.object({ id: z.string() }) })),
+      submit: async () => undefined,
+    })
+    await flush()
+    await expect(dynamicWriter.exposed().submit()).rejects.toThrow('allows no form.write')
+    expect(dynamicWriterSpy).not.toHaveBeenCalled()
+    dynamicWriter.unmount()
+
+    const dynamicMismatch = mountCore(Form, {
+      fields: {
+        mode: { label: 'Mode', form: { renderer: 'text' } },
+        photos: {
+          label: 'Photos',
+          form: {
+            renderer: 'text',
+            props: { multi: true },
+            behavior: { presentation: ({ draft }: never) => (draft as { mode?: string }).mode === 'file' ? { renderer: 'file', props: { multi: true } } : {} },
+          },
+        },
+      },
+      initialData: { mode: 'file', photos: [canonical] },
+      schema: fromZod(z.object({ mode: z.string(), photos: z.array(z.string()) })),
+      submit: async () => undefined,
+    })
+    await flush()
+    await expect(dynamicMismatch.exposed().submit()).rejects.toThrow('expects an array of asset objects')
+    dynamicMismatch.unmount()
 
     const missingSchema = mountCore(Form, {
       fields: { owners: { label: 'Owners', form: { renderer: 'lookup', props: { multi: true } } } },
@@ -281,12 +346,13 @@ describe('Form core', () => {
       props: { setValue: { type: Function, required: true }, field: { type: Object, required: true } },
       setup: (props) => () => h('button', {
         type: 'button',
-        onClick: () => props.setValue(props.field.key === 'amount' ? '12' : props.field.key === 'image' ? { id: 'not-canonical' } : 'lookup-1'),
+        onClick: () => props.setValue(props.field.key === 'amount' ? '12' : { id: 'not-canonical' }),
       }, props.field.key),
     })
     for (const [key, form] of [
       ['amount', { renderer: 'number' }],
       ['image', { renderer: 'image' }],
+      ['file', { renderer: 'file' }],
     ] as const) {
       phases.length = 0
       const submit = vi.fn(async () => undefined)
@@ -295,7 +361,7 @@ describe('Form core', () => {
         fields: { [key]: { label: key, form } },
         schema,
         submit,
-      }, { renderers: { form: { number: Control, image: Control, lookup: Control } } })
+      }, { renderers: { form: { number: Control, image: Control, file: Control, lookup: Control } } })
       await flush()
 
       view.find('button')!.click()
@@ -805,6 +871,24 @@ describe('Form core', () => {
     expect(mocks.toastError).toHaveBeenCalledWith('Form ditolak')
     expect(view.find('#form-errors')).toBeNull()
     expect(view.text()).not.toContain('Form ditolak')
+    view.unmount()
+  })
+
+  it('exposes additive input pending state and keeps the default submit enabled when idle', async () => {
+    const submit = vi.fn(async () => undefined)
+    const view = mountCore(Form, {
+      fields: { document: { label: 'Document', form: { renderer: 'file' } } },
+      initialData: {},
+      submit,
+    })
+    await flush()
+
+    const exposed = view.exposed() as { inputPending: boolean; submit: () => Promise<void> }
+    expect(exposed.inputPending).toBe(false)
+    expect(view.find<HTMLButtonElement>('button[type="submit"]')?.disabled).toBe(false)
+    view.find('form')!.dispatchEvent(new Event('submit'))
+    await flush()
+    expect(submit).toHaveBeenCalledTimes(1)
     view.unmount()
   })
 

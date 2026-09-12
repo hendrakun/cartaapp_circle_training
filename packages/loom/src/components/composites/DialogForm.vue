@@ -33,6 +33,7 @@ interface CoreFormExposed {
   dirty: boolean
   submitting: boolean
   validating: boolean
+  inputPending: boolean
   submit: () => unknown
   reset: () => unknown
   refresh: () => unknown
@@ -78,7 +79,9 @@ const forwardedFormSlots = computed(() =>
 const dirty = computed(() => Boolean(form.value?.dirty))
 const submitting = computed(() => Boolean(form.value?.submitting))
 const validating = computed(() => Boolean(form.value?.validating))
-const actionsDisabled = computed(() => Boolean(props.disabled || submitting.value || validating.value || checkingClose.value))
+const inputPending = computed(() => Boolean(form.value?.inputPending))
+const submitDisabled = computed(() => Boolean(props.disabled || submitting.value || validating.value || inputPending.value))
+const cancelDisabled = computed(() => Boolean(props.disabled || submitting.value || validating.value || checkingClose.value))
 
 async function requestClose(reason: DialogFormCloseReason): Promise<boolean> {
   if (submitting.value || validating.value || checkingClose.value) return false
@@ -137,6 +140,7 @@ defineExpose({
   dirty,
   submitting,
   validating,
+  inputPending,
   checkingClose,
   submit,
   reset,
@@ -181,7 +185,7 @@ defineExpose({
             <slot :name="name" v-bind="slotProps ?? {}" />
           </template>
 
-          <template #actions="{ submit: submitForm, reset: resetForm, submitting: formSubmitting, dirty: formDirty }">
+          <template #actions="{ submit: submitForm, reset: resetForm, submitting: formSubmitting, dirty: formDirty, inputPending: formInputPending }">
             <slot
               name="actions"
               :submit="submitForm"
@@ -189,6 +193,7 @@ defineExpose({
               :submitting="formSubmitting"
               :validating="validating"
               :dirty="formDirty"
+              :input-pending="formInputPending"
               :request-close="requestClose"
             >
               <div class="flex flex-col gap-2 border-t border-outline-variant pt-5 sm:flex-row sm:justify-end">
@@ -196,7 +201,7 @@ defineExpose({
                   type="button"
                   variant="text"
                   class="w-full sm:w-auto"
-                  :disabled="actionsDisabled"
+                  :disabled="cancelDisabled"
                   @click="requestClose('cancel')"
                 >
                   {{ cancelLabel }}
@@ -205,7 +210,7 @@ defineExpose({
                   v-if="hasSubmit"
                   type="submit"
                   class="w-full sm:w-auto"
-                  :disabled="actionsDisabled"
+                  :disabled="submitDisabled"
                 >
                   {{ formSubmitting ? resolvedSubmittingLabel : resolvedSubmitLabel }}
                 </Button>

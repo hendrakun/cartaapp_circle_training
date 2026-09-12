@@ -127,7 +127,7 @@ async function submitted(result: unknown) {
   }
 }
 
-const instance = ref<{ submit: () => Promise<void>; reset: () => void; submitting: boolean; validating: boolean; dirty: boolean } | null>(null)
+const instance = ref<{ submit: () => Promise<void>; reset: () => void; submitting: boolean; validating: boolean; dirty: boolean; inputPending: boolean } | null>(null)
 const discardDialogOpen = ref(false)
 const allowNextLeave = ref(false)
 let resolvePendingLeave: ((allow: boolean) => void) | undefined
@@ -193,11 +193,16 @@ onBeforeUnmount(() => {
             <template v-for="(_, name) in $slots" #[name]="slotProps" :key="name">
               <slot :name="name" v-bind="slotProps ?? {}" />
             </template>
-            <template #actions>
-              <slot name="form-actions" :submit="() => instance?.submit()" :reset="() => instance?.reset()">
+            <template #actions="actions">
+              <slot
+                name="form-actions"
+                :submit="() => instance?.submit()"
+                :reset="() => instance?.reset()"
+                :input-pending="actions.inputPending"
+              >
                 <div class="is-form-view-controls flex flex-col gap-2 border-t border-outline-variant pt-5 sm:flex-row sm:justify-end">
                   <Button type="button" variant="text" class="w-full sm:w-auto" :disabled="instance?.submitting || instance?.validating" @click="router.back()">Cancel</Button>
-                  <Button type="submit" class="w-full sm:w-auto" :disabled="instance?.submitting || instance?.validating">{{ instance?.submitting ? resolvedSubmittingLabel : resolvedSubmitLabel }}</Button>
+                  <Button type="submit" class="w-full sm:w-auto" :disabled="instance?.submitting || instance?.validating || actions.inputPending">{{ instance?.submitting ? resolvedSubmittingLabel : resolvedSubmitLabel }}</Button>
                 </div>
               </slot>
             </template>

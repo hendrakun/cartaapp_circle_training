@@ -66,7 +66,7 @@ function numberValidate(value: unknown): string | undefined {
   return typeof value === 'number' && Number.isFinite(value) ? undefined : 'Expected a finite number.'
 }
 
-function imageValidate(value: unknown, context: InputPropsResolutionContext): string | undefined {
+function assetValidate(value: unknown, context: InputPropsResolutionContext): string | undefined {
   if (empty(value) || (context.props?.multi === true && Array.isArray(value) && value.length === 0)) return undefined
   const valid = context.props?.multi === true
     ? Array.isArray(value) && value.every((entry) => Boolean(toInputAssetValue(entry)))
@@ -81,8 +81,11 @@ function lookupValidate(value: unknown, context: InputPropsResolutionContext): s
 
 const builtInAdapters: Record<string, InputPropsAdapter> = {
   number: { validate: numberValidate },
+  file: {
+    validate: assetValidate,
+  },
   image: {
-    validate: imageValidate,
+    validate: assetValidate,
   },
   lookup: {
     validate: lookupValidate,

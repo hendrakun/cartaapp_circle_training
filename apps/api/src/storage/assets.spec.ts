@@ -76,6 +76,17 @@ describe('stored asset contract', () => {
     expect(result.files[0]?.url).toBe('https://api.test:3000/files/object?key=uploads%2Ftwo.pdf')
   })
 
+  it('projects stored IDs back to object arrays without equating client metadata', async () => {
+    const readSchema = z.object({ attachments: z.array(storedAssetSchema) }).strict()
+    const stored = await runWithAssetRequestUrl(apiOrigin, () => publicRecord(readSchema, {
+      attachments: ['uploads/one.pdf', 'uploads/two.pdf'],
+    }))
+
+    expect(stored.attachments.map((asset) => asset.id)).toEqual(['uploads/one.pdf', 'uploads/two.pdf'])
+    expect(stored.attachments[0]?.url).toBe('https://api.test:3000/files/object?key=uploads%2Fone.pdf')
+    expect(stored.attachments.every((asset) => storedAssetSchema.safeParse(asset).success)).toBe(true)
+  })
+
   it('projects nested JSON responses through the install after hook', async () => {
     const response = new Response(JSON.stringify({ data: { file: 'uploads/rtm.jpg', plain: 'hello' } }), {
       status: 201,

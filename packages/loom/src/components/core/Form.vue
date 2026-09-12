@@ -11,7 +11,7 @@
  * function is one computed over the draft, hidden fields contribute no value to
  * the submitted draft, and validation runs on the visibility-filtered draft.
  */
-import { computed, getCurrentInstance, nextTick, onUnmounted, reactive, ref, watch } from 'vue'
+import { computed, getCurrentInstance, nextTick, onUnmounted, provide, reactive, ref, watch } from 'vue'
 import { toast } from 'vue-sonner'
 import type { FormProps, FormValidationTrigger, RecordLoadContext, SubmitError, ValidationIssue } from '../../contracts'
 import { createBehaviorRuntime, resolveFields, useFrameworkFieldDefaults } from '../../fields'
@@ -24,6 +24,7 @@ import Button from '../base/Button.vue'
 import { assertSingleDataSource, instanceIdentity, recordCacheKey } from './useCoreData'
 import { getSchemaKind } from '../../fields/schemaMetadata'
 import { useFrameworkUiDefaults } from '../views/uiDefaults'
+import { formInputPendingKeyOf, provideFormInputPending } from './useFormInputState'
 
 const props = withDefaults(defineProps<FormProps>(), {
   searchParameters: () => ({}),
@@ -52,6 +53,10 @@ const renderers = useRendererRegistry('form')
 const fieldDefaults = useFrameworkFieldDefaults()
 const inputProps = useInputPropsRegistry()
 const { submitLabel: defaultSubmitLabel } = useFrameworkUiDefaults()
+const inputPendingCount = ref(0)
+const inputPendingRegistry = provideFormInputPending(inputPendingCount)
+provide(formInputPendingKeyOf(), inputPendingRegistry)
+const inputPending = computed(() => inputPendingCount.value > 0)
 
 const fields = computed(() => {
   const schema = props.schema as { source?: Parameters<typeof inferFieldLayers>[0] } | undefined
@@ -197,29 +202,45 @@ function assertInputSchemaCompatibility(
     }
     return
   }
+  const isAsset = renderer === 'file' || renderer === 'image'
+  if (isAsset) {
+    const expected = props.multi === true ? 'an array of asset objects' : 'an asset object'
+    if (hasWriter) {
+      throw new Error(`[loom] Asset field "${key}" keeps the ${expected} through submit and allows no form.write. Use the public stored asset object schema.`)
+    }
+    if (schemaKind === undefined || schemaKind === 'unknown') return
+    const compatible = props.multi === true ? schemaKind === 'object[]' || schemaKind === 'array' : schemaKind === 'object'
+    if (compatible) return
+    throw new Error(`[loom] Asset field "${key}" expects ${expected} from the public stored asset object schema, not schema kind "${schemaKind}".`)
+  }
   if (hasWriter || schemaKind === undefined || schemaKind === 'unknown') return
   const compatible = renderer === 'number'
     ? schemaKind === 'number'
-    : renderer === 'image'
-      ? props.multi === true ? schemaKind === 'object[]' || schemaKind === 'array' : schemaKind === 'object'
-      : true
+    : true
   if (compatible) return
   throw new Error(`[loom] Field "${key}" uses renderer "${renderer}" with schema kind "${schemaKind}". Add form.write for the submitted value conversion.`)
 }
 
+function assetControlIssue(key: string, renderer: string, resolved: Record<string, unknown>, value: unknown) {
+  if (value === undefined || value === null || value === '') return undefined
+  const contract = inputProps.contract(renderer)
+  return contract.validate?.(value, { field: { key }, props: resolved })
+}
+
 function inputContractFor(current: (typeof fields.value)[number]) {
+  const renderer = rendererFor(current.key, current.renderer)
   const resolvedProps = behavior.state(current.key).value.props
-  const contract = current.renderer
-    ? inputProps.contract(current.renderer)
+  const contract = renderer
+    ? inputProps.contract(renderer)
     : undefined
-  if (current.renderer) assertInputSchemaCompatibility(
+  if (renderer) assertInputSchemaCompatibility(
     current.key,
-    current.renderer,
+    renderer,
     resolvedProps,
     getSchemaKind(current),
     current.write !== undefined,
   )
-  return { resolvedProps, contract }
+  return { resolvedProps, contract, renderer }
 }
 
 function setValue(key: string, value: unknown) {
@@ -249,11 +270,12 @@ async function validate(trigger: FormValidationTrigger = 'submit', field?: strin
     for (const current of visibleFields.value) {
       if (field !== undefined && current.key !== field) continue
       const value = payload[current.key]
-      const { resolvedProps, contract } = inputContractFor(current)
+      const { resolvedProps, contract, renderer } = inputContractFor(current)
       if (value === undefined || value === null || value === '') continue
-      const validateValue = current.validate ?? contract?.validate
-      if (!validateValue) continue
-      const message = validateValue(value, { ...(props.context ?? {}), field: { key: current.key, label: current.label }, props: resolvedProps })
+      const isAsset = renderer === 'file' || renderer === 'image'
+      const message = isAsset && !current.validate
+        ? assetControlIssue(current.key, renderer!, resolvedProps, value)
+        : (current.validate ?? contract?.validate)?.(value, { ...(props.context ?? {}), field: { key: current.key, label: current.label }, props: resolvedProps })
       if (message) fieldIssues.push({ path: [current.key], message })
     }
     if (fieldIssues.length) {
@@ -326,7 +348,7 @@ function reset() {
 }
 
 async function submit() {
-  if (props.disabled || submitting.value || validating.value) return
+  if (props.disabled || submitting.value || validating.value || inputPending.value) return
   issues.value = []
   submitAttempted.value = true
 
@@ -336,6 +358,7 @@ async function submit() {
     await focusFirstInvalid()
     return
   }
+  if (inputPending.value) return
 
   const submitTarget = props.submit
   if (!submitTarget) {
@@ -360,7 +383,7 @@ async function submit() {
 
 onUnmounted(() => validationController?.abort())
 
-defineExpose({ draft, reset, submit, refresh: loaded.refresh, dirty, submitting, validating })
+defineExpose({ draft, reset, submit, refresh: loaded.refresh, dirty, submitting, validating, inputPending })
 </script>
 
 <template>
@@ -447,8 +470,8 @@ defineExpose({ draft, reset, submit, refresh: loaded.refresh, dirty, submitting,
       </div>
       </div>
 
-      <slot name="actions" :submit="submit" :reset="reset" :submitting="submitting" :dirty="dirty">
-        <Button v-if="!isModelBound" type="submit" :disabled="props.disabled || loaded.loading.value || validating || submitting">
+      <slot name="actions" :submit="submit" :reset="reset" :submitting="submitting" :dirty="dirty" :input-pending="inputPending">
+        <Button v-if="!isModelBound" type="submit" :disabled="props.disabled || loaded.loading.value || validating || submitting || inputPending">
           {{ submitting ? (props.submittingLabel ?? props.submitLabel ?? defaultSubmitLabel) : (props.submitLabel ?? defaultSubmitLabel) }}
         </Button>
       </slot>

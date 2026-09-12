@@ -594,6 +594,36 @@ describe('FormView', () => {
     view.unmount()
   })
 
+  it('disables FormView submit while an input operation is pending and keeps cancel enabled', async () => {
+    const first = deferred<{ kind: 'file'; id: string; url: string; name: string }>()
+    const upload = () => first.promise
+    const view = mountCore(FormView, {
+      formProps: {
+        fields: { files: { label: 'Files', form: { renderer: 'file', props: { multi: true, upload } } } },
+        initialData: { files: [] },
+        submit: async () => undefined,
+      },
+    })
+    await flush()
+
+    const input = view.find<HTMLInputElement>('input[type="file"]')!
+    Object.defineProperty(input, 'files', { configurable: true, value: [new File(['first'], 'first.pdf', { type: 'application/pdf' })] })
+    input.dispatchEvent(new Event('change'))
+    await flush()
+
+    const actions = view.find('.is-form-view-controls')!
+    const submit = actions.querySelector<HTMLButtonElement>('button[type="submit"]')!
+    const cancel = [...actions.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent === 'Cancel')!
+    expect(submit.disabled).toBe(true)
+    expect(cancel.disabled).toBe(false)
+
+    first.resolve({ kind: 'file', id: '/uploads/first.pdf', url: 'https://files.test/first.pdf', name: 'first.pdf' })
+    await flush()
+    expect(submit.disabled).toBe(false)
+    expect(cancel.disabled).toBe(false)
+    view.unmount()
+  })
+
   it('uses browser history through Cancel without resetting the draft', async () => {
     const view = mountCore(FormView, { formProps: formProps(async () => undefined) })
     await flush()

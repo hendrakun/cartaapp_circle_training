@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, ref, watch, type PropType } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, ref, watch, type PropType } from 'vue'
 import type { UploadOperation } from '../../contracts'
+import { useFormInputPending } from '../core/useFormInputState'
 import { toast } from 'vue-sonner'
 import ImagePreview from '@southneuhof/loom/components/base/ImagePreview.vue'
 import Draggable from 'vuedraggable'
@@ -60,11 +61,20 @@ const props = defineProps({
 const fileManager = useOptionalAssetProvider()
 const AssetPicker = defineAsyncComponent(() => import('../../file-manager/AssetPicker.vue'))
 const mutation = useUploadMutation(() => props.upload)
+const inputPending = useFormInputPending()
+let disposed = false
+const pendingOperations = new Set<{ release: () => void }>()
+function releaseOperation(operation: { release: () => void }) {
+  operation.release()
+  pendingOperations.delete(operation)
+}
+onBeforeUnmount(() => {
+  disposed = true
+  for (const operation of [...pendingOperations]) releaseOperation(operation)
+})
 const imageURLResolver = props.imageURLResolver ?? ((payload: any) => ({ imageURL: payload?.url ?? '', thumbnailURL: payload?.url ?? '' }))
 
-type ImageAssetValue = InputAssetValue & { order_number?: number }
-
-const modelValue = defineModel<ImageAssetValue | Array<ImageAssetValue>>()
+const modelValue = defineModel<InputAssetValue | Array<InputAssetValue>>()
 const emit = defineEmits(['update:modelValue', 'update:uploadState', 'validation:touch'])
 
 const uploadPercentage = computed(() => {
@@ -93,11 +103,13 @@ const handleUpload = (file?: File, options: { replace?: boolean } = {}) => {
     toast.error('Ukuran berkas terlalu besar')
     return
   }
-  mutation.execute(file, props.uploadPath)
-    .then((res) => {
-      return props.toModel(res)
-    })
-    .then((model) => {
+  const operation = inputPending.begin()
+  pendingOperations.add(operation)
+  void (async () => {
+    try {
+      const uploaded = await mutation.execute(file, props.uploadPath)
+      const model = await props.toModel(uploaded)
+      if (disposed || operation.released()) return
       const normalized = normalizeImageAsset(model)
       if (!normalized) throw new Error('Invalid upload response')
       if (options.replace && !props.multi && images.value.length) {
@@ -107,10 +119,13 @@ const handleUpload = (file?: File, options: { replace?: boolean } = {}) => {
       }
       emitData()
       emit('validation:touch')
-    })
-    .catch(() => {
+    } catch {
+      if (disposed || operation.released()) return
       toast.error(mutation.error.value?.message ?? 'Gagal mengunggah gambar')
-    })
+    } finally {
+      releaseOperation(operation)
+    }
+  })()
 }
 
 const handleFileUpload = (e: Event) => {
@@ -180,34 +195,33 @@ watch(modelValue, () => {
   syncImages(modelValue.value)
 })
 
-function handleChange(event: any) {
+function handleChange() {
   if (!props.multi) return
-  images.value = images.value.map((item, index) => ({ ...item, order_number: index + 1 }))
+  emitData()
 }
 
-function resolvePreviewURLs(payload: ImageAssetValue) {
+function resolvePreviewURLs(payload: InputAssetValue) {
   return imageURLResolver(payload)
 }
 
-function resolveDragKey(item: ImageAssetValue, index: number): string {
+function resolveDragKey(item: InputAssetValue, index: number): string {
   return item?.id || item?.url || `image-${index}`
 }
 
-function normalizeImageAsset(payload: unknown): ImageAssetValue | null {
-  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return null
-  const { order_number: orderNumber, ...candidate } = payload as Record<string, unknown>
-  const normalized = toInputAssetValue(candidate)
-  if (!normalized) return null
-
-  return typeof orderNumber === 'number' ? { ...normalized, order_number: orderNumber } : normalized
+function normalizeImageAsset(payload: unknown): InputAssetValue | null {
+  return toInputAssetValue(payload)
 }
 
 function syncImages(value: unknown) {
-  const current = images.value
-  const values = Array.isArray(value) ? value : [value]
+  const values = Array.isArray(value) ? value : (value === undefined || value === null ? [] : [value])
+  for (const item of values) {
+    if (item !== null && typeof item === 'object' && toInputAssetValue(item) === null) {
+      throw new Error('[loom] ImageInput received a malformed asset value.')
+    }
+  }
   images.value = values
-    .map((item) => normalizeImageAsset(item) ?? (typeof item === 'string' ? current.find((currentItem) => currentItem.id === item || currentItem.url === item) : null))
-    .filter((item): item is ImageAssetValue => Boolean(item))
+    .map((item) => toInputAssetValue(item))
+    .filter((item): item is InputAssetValue => Boolean(item))
 }
 
 async function selectFileManagerAsset(payload: ManagedAsset) {
