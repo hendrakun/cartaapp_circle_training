@@ -1,5 +1,7 @@
 import { test, expect } from './fixtures'
 
+test.use({ fastAuth: true })
+
 test('users list renders', async ({ authenticatedPage: page }) => {
   await page.goto('/settings/users')
   await expect(page.getByRole('table')).toBeVisible()

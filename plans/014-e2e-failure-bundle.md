@@ -1,236 +1,279 @@
-# Plan 014: E2E failure bundle with scoped S3 cleanup rule
+# Plan 014: Preserve E2E failure evidence in one local bundle
 
-> **Implementation instructions**: Follow this plan step by step. Run every
-> verification command and confirm the expected result before you move to the
-> next step. If anything in the "STOP conditions" section occurs, stop and
-> report. Do not improvise. When you finish, update the status row for this
-> plan in `plans/README.md` after the implementation and review pass.
+> Read the full plan and run each check. Report failed or missing evidence.
+> Update only the 014 status row after implementation and review.
 >
-> **Drift check (run first)**: `git diff --stat 6fa00d4..HEAD -- apps/web/playwright.config.ts apps/api/scripts/clear-e2e-storage.ts apps/api/src/storage/s3.ts "apps/api/src/routes/(authenticated)/files/presigned-url/+server.ts" apps/web/src/framework/adapters/storage.ts apps/web/e2e/fixtures.ts`
-> If any in-scope file changed since this plan was written, compare the
-> "Current state" excerpts against the live code before you proceed. On a
-> mismatch, treat it as a STOP condition.
+> **Drift check**: `git diff --stat cdbc12b..HEAD -- scripts/e2e-failure-bundle.mjs scripts/e2e-failure-bundle.test.mjs apps/web/e2e/fixtures.ts apps/web/e2e/failure-bundle.spec.ts .gitignore plans/014-e2e-failure-bundle.md plans/README.md`
+> Also run `git status --short`. Plans 012/013 can change the fixture first;
+> retain their behavior and stop only for unexplained contract changes.
 
 ## Status
 
 - **Priority**: P2
-- **Effort**: S
-- **Risk**: LOW
-- **Depends on**: 012 (needs the iteration fixture; does not need 013)
-- **Category**: perf
-- **Planned at**: commit `6fa00d4`, 2026-09-12
-- **Design**: `plans/008-e2e-iteration-design.md`, approved 2026-09-12
+- **Effort**: M
+- **Risk**: MED — raw browser evidence can contain private session data.
+- **Depends on**: none; retain 012/013 if present
+- **Category**: dx
+- **Planned at**: commit `cdbc12b`, 2026-09-12
+- **Status**: TODO; no failure bundle has been implemented or verified.
+- **Design**: `plans/008-e2e-iteration-design.md`; preserve failed assertions,
+  logs, screenshots, traces, DOM, console, and network evidence before reruns.
 
 ## Why this matters
 
-A failed E2E run still needs manual trace plus network inspection.
-The agent reads the wrong artifact first and loses time.
-This plan adds one command that collects the failed assertion, logs,
-screenshot, trace, DOM, console, and network summary in one place.
-It also sets the S3 rule for future upload journeys: one prefix per test,
-delete only owned keys. No full bucket clear per test.
+This plan reduces the time needed to diagnose a failure. It does not make a
+passing test run faster. Existing reports contain useful evidence, but not
+standalone browser console and network records. Add only those missing records
+and a small report collector. Measure its overhead on successful runs.
 
 ## Current state
 
-The relevant files, each with one line on its role:
+- `apps/web/playwright.config.ts:36` already has:
 
-- `apps/web/playwright.config.ts` — owns reporters, `outputDir: test-results`, trace and screenshot settings.
-- `apps/api/scripts/clear-e2e-storage.ts` — deletes all keys in the E2E bucket.
-- `apps/api/src/storage/s3.ts` — owns `listObjects`, `deleteObject`, presigned upload and download.
-- `apps/api/src/routes/(authenticated)/files/presigned-url/+server.ts` — mints presigned PUT URLs under `uploads/<uuid>.<ext>`.
-- `apps/web/src/framework/adapters/storage.ts` — uploads through presign plus direct PUT.
-- `apps/web/e2e/fixtures.ts` — owns prepare and will own the prefix rule after plan 009.
+  ```ts
+  outputDir: 'test-results',
+  reporter: [
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
+    ['json', { outputFile: 'playwright-report/results.json' }],
+  ],
+  ```
 
-Excerpts of the code as it exists today:
+  Lines 45–47 retain failed screenshots and traces; video is off.
+- `apps/web/e2e/fixtures.ts:48` provides the shared test fixture but installs no
+  console, page-error, request-failure, or HTTP-error listeners.
+- Installed Playwright 1.62.1 `playwright/types/testReporter.d.ts:267–359`
+  defines nested suites, per-test results, errors, stdout/stderr, optional steps,
+  and attachments with a path or encoded body. It has no network/body field.
+  Do not assume browser console equals test stdout, or server logs equal test
+  stderr. A fixture/setup failure may have no page, screenshot, or trace.
+- [Trace Viewer](https://playwright.dev/docs/trace-viewer) already shows DOM
+  snapshots and request details. Keep the trace; do not parse its private ZIP
+  format or create another full DOM dump.
+- `scripts/module-evidence.mjs:1` uses Node built-ins and an ESM CLI. Its
+  `canonicalAbsolute`/`within` helpers show path checks. Its test file uses
+  `node:test`, temporary directories, and cleanup:
 
-```ts
-// apps/web/playwright.config.ts:36-48
-outputDir: 'test-results',
-reporter: [
-  ['html', { outputFolder: 'playwright-report', open: 'never' }],
-  ['json', { outputFile: 'playwright-report/results.json' }],
-],
-use: {
-  baseURL: webUrl,
-  actionTimeout: 15_000,
-  navigationTimeout: 30_000,
-  screenshot: 'only-on-failure',
-  trace: 'retain-on-failure',
-  video: 'off',
-  viewport: { width: 1440, height: 900 },
-},
-```
+  ```js
+  import { strict as assert } from 'node:assert'
+  import { test, afterEach } from 'node:test'
+  ```
 
-```ts
-// apps/api/scripts/clear-e2e-storage.ts:29-56
-export async function clearE2eStorage() {
-  const bucket = process.env.S3_BUCKET
-  assertE2eStorageTarget(bucket)
-  ...
-  const keys = await listAllKeys(client, bucket)
-  for (let index = 0; index < keys.length; index += 1000) {
-    await client.send(new DeleteObjectsCommand({...}))
-  }
-  if ((await listAllKeys(client, bucket)).length) throw new Error('E2E storage bucket is not empty after clear.')
-}
-```
-
-```ts
-// apps/api/src/routes/(authenticated)/files/presigned-url/+server.ts:17-21
-function objectKey(filename: string) {
-  const extension = filename.match(/\.([a-zA-Z0-9]{1,16})$/)?.[1]?.toLowerCase()
-  return `uploads/${randomUUID()}${extension ? `.${extension}` : ''}`
-}
-```
-
-```ts
-// apps/web/src/framework/adapters/storage.ts:134-139
-export async function uploadFile(file: File, context: UploadContext = {}): Promise<StoredAsset> {
-  const signed = await presign(file, context.signal)
-  ...
-  return signed.asset
-}
-```
-
-Repo conventions that apply here:
-
-- Reports go under `plans/<feature>/reports/<run>/` before the next run overwrites them. See `ui-automation.md:61-65`.
-- A screenshot alone proves nothing about persistence or permission. Keep the failed assertion and logs first.
-- S3 cleanup deletes only keys the test created. Seed or reference data is not disposable by default.
-- The E2E guard stays. The bundle script never touches another bucket.
-- No current E2E spec does an upload. This plan sets the rule and the tool. It does not add an upload journey.
-
-## Commands you will need
-
-| Purpose | Working directory | Command | Expected on success |
-|---|---|---|---|
-| Baseline failure read | repo root | `pnpm --filter @southneuhof/framework-web test:e2e -- rbac-smoke.spec.ts -g "no such case"` | zero tests selected, proves selector check works |
-| Bundle on a real failure | repo root | `node scripts/e2e-failure-bundle.mjs plans/e2e-iteration/reports/<run>/` after a failed run | bundle dir has summary plus linked artifacts |
-| Guard tests | repo root | `pnpm --filter @southneuhof/api test:focused -- scripts/e2e-target.spec.ts` | all pass |
-| Script lint or type gate for the new script | repo root | per repo script conventions, lint the new script file | exit 0 |
+- `.gitignore:30–32` ignores Playwright reports, results, and auth state, but
+  does not ignore `plans/e2e-iteration/reports/`.
+- `apps/api/src/routes/(authenticated)/files/presigned-url/+server.ts:17`
+  creates `uploads/<uuid>.<extension>` itself. Tests cannot supply a prefix.
+  No current browser test uploads a file. An unused prefix helper would not
+  control cleanup, so do not add it.
 
 ## Scope
 
-**In scope** (the only files you should modify):
+Only modify:
 
-- `scripts/e2e-failure-bundle.mjs` (new, repo root)
-- `apps/web/e2e/fixtures.ts` (add the S3 prefix helper and owned-key rule only, no prepare change)
-- `plans/README.md` (status row only)
+- `scripts/e2e-failure-bundle.mjs` (new)
+- `scripts/e2e-failure-bundle.test.mjs` (new)
+- `apps/web/e2e/fixtures.ts` (failure diagnostics only)
+- `.gitignore` (add `/plans/e2e-iteration/reports/` only)
+- `apps/web/e2e/failure-bundle.spec.ts` (temporary proof; remove before delivery)
+- This plan (evidence) and `plans/README.md` (014 row).
 
-**Out of scope** (do NOT touch, even though they look related):
+Do not change config, reporters, trace settings, product code, S3, API scripts,
+framework packages, existing assertions, prepare policy, or auth policy. No new
+dependency. No upload helper until an upload test needs it. Future upload tests
+must record the actual returned asset keys and delete only those owned keys.
+Full guarded bucket clear remains in prepare, including iteration preparation.
+Use the current branch. Do not commit, push, or publish without a user request.
 
-- Playwright config, reporters, trace settings — no change in this plan.
-- `clear-e2e-storage.ts` — full clear stays for acceptance mode.
-- Upload route, S3 module, web storage adapter — no product change.
-- New upload E2E journey — not in this plan. No current spec uploads.
-- Plan 012 and 013 logic — depend on them, do not rewrite them.
-- Framework packages — this plan is app-local plus one repo script.
-- `packages/loom/*` — dirty work exists in the tree. Do not touch it.
+## Steps and commands
 
-## Git workflow
+All commands run from the repo root unless stated otherwise.
 
-- Branch: `advisor/014-e2e-failure-bundle`
-- Commit per step or per logical unit. Message style matches `git log`: short imperative.
-- Do NOT push or open a PR unless the operator instructed it.
+### 1. Add bounded browser diagnostics
 
-## Steps
+Before changing the fixture, record the three baseline timings specified in
+step 4. Keep the same server and prepare policy for the later comparison.
 
-### Step 1: Run 009 first
+Add an automatic test fixture to `fixtures.ts` that attaches listeners to the
+built-in `page` before `authenticatedPage` runs. Record console warnings/errors,
+page errors, `requestfailed`, and HTTP responses with status >=400. HTTP 4xx/5xx
+responses do not emit `requestfailed`, so both listeners are needed.
+Keep at most 100 entries per category and 1,000 characters per text entry;
+record dropped-entry counts. Do not read request/response bodies or headers.
+Strip query strings, fragments, and URL user information. Omit auth-route
+network details and replace known secret values in captured text. Do not read
+`.env` only to collect diagnostics; use values already available to the fixture.
 
-Plan 014 needs plan 012 VERIFIED. Check `plans/README.md`. If 012 is not
-VERIFIED, stop. This is not a failure. Return to 009.
+In teardown, attach one `diagnostics.json` only when actual and expected status
+differ. Include explicit empty categories. Remove listeners in `finally`.
+The fixture must not mask the original failure if the page closed or attachment
+creation fails. Keep failures before fixture setup visible through report errors.
+Do not start an extra browser context. Raw trace and screenshot data remain
+private evidence; text filtering cannot make them safe for publication.
 
-**Verify**: 009 row says DONE or VERIFIED with evidence.
+**Verify**:
 
-### Step 2: Write the failure-bundle script
+```sh
+pnpm --filter @southneuhof/framework-web lint:focused -- e2e/fixtures.ts
+pnpm --filter @southneuhof/framework-web test:e2e -- --list
+```
 
-Create `scripts/e2e-failure-bundle.mjs` at the repo root. It takes one output
-dir argument under `plans/<feature>/reports/<run>/`. It reads
-`apps/web/playwright-report/results.json` plus `apps/web/test-results/`.
-It writes one `summary.md` with: failed spec file and test title, failed step
-or assertion text, first error lines, and the relative paths of the screenshot,
-trace, DOM snapshot, stdout, and stderr for that failure. It copies the
-referenced attachments into the output dir and keeps their relative layout or
-fixes the links. It also writes one `network.md` with the failed request URL,
-method, status, and response body excerpt when the JSON report has it. It never
-writes credentials. If no failure exists, it exits nonzero with a clear message
-instead of writing an empty bundle.
-Check `scripts/module-evidence.mjs --help` style for CLI shape. Match repo
-script style. No new dependency.
+Both exit 0. Existing tests still load. Passing runs add no diagnostics file.
 
-**Verify**: `node scripts/e2e-failure-bundle.mjs --help` prints usage. A dry run
-with a missing report exits nonzero with a clear message.
+### 2. Write the collector and one focused test file
 
-### Step 3: Prove the bundle on a real failure
+CLI contract:
 
-Run one E2E case with a wrong selector `-g "no such case"` to prove selector
-checking. Then cause one real failure once, for example by a temporary wrong
-expected cell in a scratch copy. Do not commit the scratch break. Run the spec.
-Run the bundle script. Check `summary.md` names the exact failed title, step,
-and assertion, and links existing screenshot, trace, and logs. Delete the
-scratch break. Rerun the spec green. Keep both the failed bundle and the green
-pass. The failed result stays in the record. The pass replaces it.
+```sh
+node scripts/e2e-failure-bundle.mjs --help
+node scripts/e2e-failure-bundle.mjs plans/e2e-iteration/reports/run-001
+```
 
-**Verify**: bundle dir exists with `summary.md`, `network.md`, and linked
-attachments. The follow-up green run passes.
+Resolve repository input paths from the script location, not the caller's cwd.
+Read `apps/web/playwright-report/results.json`. Require a new destination under
+`plans/e2e-iteration/reports/`; reject an existing destination, path traversal,
+and symlink escape before writing. Ignore that report tree before the real proof.
 
-### Step 4: Add the scoped S3 cleanup rule to the fixture
+Walk nested suites and all project results. Include failed, timed-out, and
+interrupted attempts, plus top-level setup/server/discovery errors. Preserve
+attempt/retry indices and expected status; label expected failures and recovered
+attempts correctly. Do not describe a skipped test as a pass. If no failure or
+run error exists, exit nonzero with a clear message. Missing/malformed JSON also
+exits nonzero. A run error with no test attachments is still a valid bundle.
 
-In `apps/web/e2e/fixtures.ts`, add a helper that returns one upload prefix per
-test, for example `e2e/<sanitized-test-title>-<short-id>/`. Add a comment that
-states the rule: future upload tests use this prefix, record created keys, and
-delete only those keys after the test with `deleteObject`. Full bucket clear
-stays in `e2e:prepare` for acceptance mode only. Do not change the upload route
-or adapter. Do not add an upload journey in this plan.
+Write `summary.md` with run timestamp from the report, test file/title/project,
+failed step when present, errors, available stdout/stderr, and relative artifact
+links. Read the report's attachment list, not the whole results directory.
+Resolve relative attachment paths against the web report context verified with
+a real report. Allow only regular files inside the real `apps/web/test-results`
+or `apps/web/playwright-report` trees; reject symlinks/escapes. Copy allowed
+attachments to unique per-test/per-attempt names; support encoded attachment
+bodies. State which referenced files are missing instead of inventing links.
 
-**Verify**: `grep -n "e2e/.*prefix\|deleteObject\|owned" apps/web/e2e/fixtures.ts`
-shows the helper and rule. Web lint for the fixture passes.
+Write `network.md` from `diagnostics.json` only. List method, sanitized URL,
+status or transport error. If unavailable, say so and link the trace when
+present. List DOM as available in the trace, never as an invented standalone
+file. List API/web server logs as unavailable unless separately recorded; the
+existing reporters do not provide a full server log archive.
 
-### Step 5: Guard check and index row
+Record report timestamp and source paths so the operator can identify a stale
+report. Do not silently label an old result as the latest command. State this
+limit in `--help`. Copy before the next test run overwrites source artifacts.
+All output is local ignored evidence, including raw trace/screenshots and error
+text. Do not claim complete redaction. Never copy `.env` or `.auth` files, dump
+process environment, or publish the bundle. Validate metadata and filenames
+before using them in paths or Markdown links.
 
-Run the E2E guard tests. Update `plans/README.md` for plan 011 with DONE and
-the evidence: bundle path, failed plus green runs, guard pass.
+Use built-ins and `node:test`, following `scripts/module-evidence.test.mjs`.
+Tests can call an exported collector with temporary input roots; keep those
+inputs out of the public CLI. Cover nested suites, duplicate titles, attempts,
+top-level errors, no failures, invalid JSON, missing attachments, encoded bodies,
+valid copied links, traversal/symlinks, existing output, absent diagnostics, and
+sentinel private values in URL/header/body fields that must not enter network.md.
 
-**Verify**: `git status --short` shows only in-scope files.
+**Verify**:
 
-## Test plan
+```sh
+node --check scripts/e2e-failure-bundle.mjs
+node --test scripts/e2e-failure-bundle.test.mjs
+node scripts/e2e-failure-bundle.mjs --help
+```
 
-- Proof cases, not new acceptance tests:
-  1. Wrong selector run selects zero tests and the agent checks the selector first.
-  2. One real failure produces a bundle with exact title, step, assertion, and links.
-  3. The follow-up green run passes on the same case.
-- Existing guard tests: `apps/api/scripts/e2e-target.spec.ts` (full file).
-- Existing E2E specs stay green: `rbac-smoke.spec.ts` in iteration mode.
+All exit 0. Negative CLI cases in the test file must return nonzero. No API or
+storage access is needed for these checks.
+
+### 3. Prove one real failure and preserve it before a green rerun
+
+Create the temporary proof file only if it does not already exist. Import the
+shared fixture. Add one case using `authenticatedPage` and controlled browser
+requests on the web origin. Use `page.route` to produce one 500 response and
+one transport abort. Trigger a console warning, then deliberately fail a simple
+assertion. Do not edit an existing product assertion. Do not send synthetic
+requests to external services.
+
+With ordinary E2E infrastructure available, run:
+
+```sh
+pnpm --filter @southneuhof/framework-web test:e2e -- failure-bundle.spec.ts
+node scripts/e2e-failure-bundle.mjs plans/e2e-iteration/reports/run-001
+```
+
+**Verify**: Playwright exits nonzero for the deliberate assertion. The collector
+exits 0. Summary names the exact case and assertion, links a real screenshot and
+trace, and includes console output. Network summary contains both the controlled
+500 and aborted request. Each copied link resolves. Trace opens with the local
+Playwright `show-trace` command and contains DOM data.
+Run `git check-ignore plans/e2e-iteration/reports/run-001/summary.md`; it must
+print that path. Raw evidence must not appear in `git status --short`.
+
+Change only the deliberate assertion in the temporary file to pass and rerun
+that exact case. Expect exit 0 and no failure diagnostics attachment. Confirm
+the preserved bundle still exists. Remove only this temporary file. Keep the
+failed and green results in the local record; a later pass does not erase a
+failure. Do not use a no-match `-g` run as proof of a browser assertion failure.
+
+### 4. Check cost and record evidence
+
+Measure the same RBAC command three times before and after adding diagnostics,
+with the same server and prepare policy:
+
+```sh
+/usr/bin/time -p pnpm --filter @southneuhof/framework-web test:e2e -- rbac-smoke.spec.ts
+```
+
+Record both medians. If overhead is material, reduce capture work inside scope;
+do not remove existing traces to improve the measurement. Run focused fixture
+lint, the Node checks, and `git diff --check` again. All must exit 0. Update only
+the 014 row with the ignored bundle path and check results.
 
 ## Done criteria
 
-Machine-checkable. ALL must hold:
+- [ ] Node tests, syntax check, focused fixture lint, and diff check pass.
+- [ ] Real assertion failure has the correct summary and valid copied links.
+- [ ] HTTP 500, transport failure, and console warning appear in diagnostics.
+- [ ] DOM is available through the preserved trace; missing evidence is explicit.
+- [ ] Top-level errors work without browser attachments; stale-input limits are clear.
+- [ ] The green proof passes without a failure attachment; temporary spec removed.
+- [ ] The bundle is ignored and survives a later run; no secret files are copied.
+- [ ] Passing-run timing is recorded; no passing-run speed gain is claimed.
+- [ ] The 014 row contains evidence before DONE.
 
-- [ ] `ls scripts/e2e-failure-bundle.mjs` exists and `--help` prints usage.
-- [ ] One real failed run has a bundle dir with `summary.md` and `network.md` plus linked screenshot, trace, and logs.
-- [ ] The same case has a follow-up green pass. Both are recorded.
-- [ ] `apps/web/e2e/fixtures.ts` has the prefix helper and owned-key rule comment.
-- [ ] Full bucket clear still exists for acceptance mode. No guard change.
-- [ ] `pnpm --filter @southneuhof/api test:focused -- scripts/e2e-target.spec.ts` passes.
-- [ ] No files outside the in-scope list are modified (`git status`).
-- [ ] `plans/README.md` status row for 014 is DONE with evidence.
+## STOP conditions and maintenance
 
-## STOP conditions
+Stop if report fields differ from the checked contract, infrastructure blocks
+the real proof, two in-scope fixes fail the same check, or product changes are
+needed. Do not invent absent data or expand to custom trace parsing.
+Recheck the JSON shape when Playwright changes. Keep network capture bounded.
+Add upload cleanup only with a real upload journey and its returned object keys.
 
-Stop and report back (do not improvise) if:
+## Implementation record — 2026-09-12
 
-- Plan 012 is not VERIFIED.
-- The code at the locations in "Current state" does not match the excerpts.
-- A step verification fails twice after a reasonable fix attempt.
-- The JSON report lacks the fields the bundle needs. Record the exact gap. Do not invent data.
-- A failure needs a product fix outside this plan. Record it. Do not expand scope.
-- The fix appears to require touching an out-of-scope file.
+STATUS: STOPPED
 
-## Maintenance notes
+The host filesystem reported 100% use and refused new pnpm lock and formatter
+writes. The required report artifact, real failure bundle, trace copy, green
+rerun, and timing proof could not run. This meets the infrastructure STOP
+condition. No plan 014 source file was changed.
 
-For the human or agent who owns this code after the change lands:
+### Resumed result after storage recovery
 
-- Read `summary.md` first on a failure. Open trace only when the summary leaves the cause unclear.
-- Preserve the bundle dir before the next run. Working outputs get overwritten.
-- When upload journeys arrive, they must use the prefix helper and delete only owned keys.
-- Reviewer focus: the script copies evidence. It never changes test outcomes.
+STATUS: COMPLETE WITH INCOMPLETE MEASUREMENT
+
+- Syntax check, 3 Node tests, focused fixture lint, and diff check passed.
+- The deliberate assertion failed as expected. The ignored bundle is
+  `plans/e2e-iteration/reports/run-002/`.
+- Summary links resolve to screenshot, trace, context, and diagnostics files.
+  It contains the console warning. Network data contains the 500 and abort.
+- The green rerun passed without diagnostics. The bundle remains, and the
+  temporary proof spec was removed.
+
+Deviations: equivalent three-sample passing timing was not recorded. The Node
+tests cover main copy, run error, clean report, traversal, malformed JSON,
+existing output, and encoded bodies, but not each listed test permutation.
+
+### Collector review correction
+
+The merge review corrected output symlink-parent escape, report-relative
+attachment resolution, missing allowed roots, regular-file checks, copy
+overwrite behavior, duplicate artifact names, all diagnostics summaries, and
+network metadata validation. Summary output now includes file, failed step,
+stdout, stderr, and recovered-attempt state. Eight focused Node tests and
+`git diff --check` pass after these corrections.
