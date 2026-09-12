@@ -180,3 +180,20 @@ public emitter exposes `printNode`; declaration emission through that API was
 not proved. The implementation must establish the sibling-import regression
 and portable consumer proof before completion. No new compiler architecture,
 application configuration, or user generation command is planned.
+
+## E2E iteration speed — 2026-09-12
+
+Design: [008](008-e2e-iteration-design.md), approved 2026-09-12. Goal is a fast
+agent iteration loop. Full reset stays for final acceptance. No skill change.
+Plans 009-011 are a separate backend track and are unaffected.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+| --- | --- | --- | --- | --- | --- |
+| [012](012-e2e-iteration-prepare-once.md) | Iteration mode with prepare-once and warm servers | P1 | M | None | TODO |
+| [013](013-e2e-fast-auth.md) | Fast auth with API login and stored session | P2 | S | 012 | TODO |
+| [014](014-e2e-failure-bundle.md) | Failure bundle with scoped S3 cleanup rule | P2 | S | 012 | TODO |
+
+Execute 012 first. Execute 013 and 014 after 012 is VERIFIED, in either order.
+Plan 012 keeps per-test UI login. Plan 013 keeps the UI login test and moves
+render specs to stored state. Plan 014 adds the bundle script and the S3
+prefix rule. It adds no upload journey.
