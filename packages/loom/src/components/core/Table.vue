@@ -34,6 +34,7 @@ const collectionProps = computed<CollectionProps<TRecord, TQuery>>(() => {
   const value: CollectionProps<TRecord, TQuery> = {
     data: props.data,
     load: props.load,
+    resource: props.resource,
     searchParameters: props.searchParameters,
     namespace: props.namespace,
     pagination: props.pagination,

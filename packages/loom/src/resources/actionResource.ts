@@ -172,6 +172,7 @@ export interface ListResourceActionProps<
 > {
   run: ListRun<TRecord, TQuery>
   fields: FieldsInput<TRecord>
+  resource: string
   namespace: QueryNamespace
   searchParameters: Record<string, unknown>
   query?: TQuery
@@ -194,6 +195,7 @@ export interface DetailResourceActionProps<TRecord extends object, TIdentity ext
   run: (context?: LoadSignalContext) => Promise<TRecord | undefined>
   fields: FieldsInput<TRecord>
   id: TIdentity
+  resource: string
   namespace: QueryNamespace
   searchParameters: Record<string, unknown>
   detailTarget?: RouteLocationRaw
@@ -207,6 +209,7 @@ export interface DetailResourceActionProps<TRecord extends object, TIdentity ext
 export interface CreateResourceActionProps<TRecord extends object, TCreate extends object, TIdentity extends RecordIdentity> {
   run: (input: TCreate) => Promise<TRecord>
   fields: FieldsInput<TCreate, TCreate>
+  resource: string
   schema?: NonNullable<WebResourceSchema['create']>['schema']
   validators?: readonly FormValidatorInput<TCreate>[]
   initialData?: Partial<TCreate>
@@ -221,6 +224,7 @@ export interface UpdateResourceActionProps<TRecord extends object, TUpdate exten
   load?: (context: RecordLoadContext<TIdentity>) => Promise<Partial<TUpdate> | undefined>
   fields: FieldsInput<TUpdate, TUpdate>
   id: TIdentity
+  resource: string
   schema?: NonNullable<WebResourceSchema['update']>['schema']
   validators?: readonly FormValidatorInput<TUpdate>[]
   searchParameters: Record<string, unknown>
@@ -517,6 +521,7 @@ export function defineActionResource<
       return {
         run: async (context) => readCollectionRecords(await declaration.run(context), listFields, runtime()),
         fields: listFields,
+        resource: definition.key,
         namespace,
         searchParameters,
         ...(args?.query === undefined ? {} : { query: args.query }),
@@ -555,6 +560,7 @@ export function defineActionResource<
         run,
         fields: detailFields,
         id: args.id,
+        resource: definition.key,
         namespace: `${definition.key}.detail.${identityToken(args.id)}`,
         searchParameters,
         ...(declaration.backTo ? { backTo: declaration.backTo } : inferredBackTo ? { backTo: inferredBackTo } : {}),
@@ -581,6 +587,7 @@ export function defineActionResource<
       return {
         run,
         fields: createFields,
+        resource: definition.key,
         ...(schema.create?.schema ? { schema: schema.create.schema } : {}),
         ...(schema.create?.validators ? { validators: schema.create.validators } : {}),
         ...(args?.initialData ?? declaration.initialData ? { initialData: args?.initialData ?? declaration.initialData } : {}),
@@ -615,6 +622,7 @@ export function defineActionResource<
         ...(load ? { load } : {}),
         fields: updateFields,
         id: args.id,
+        resource: definition.key,
         ...(schema.update?.schema ? { schema: schema.update.schema } : {}),
         ...(schema.update?.validators ? { validators: schema.update.validators } : {}),
         ...(args.initialData ? { initialData: args.initialData } : {}),

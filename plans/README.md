@@ -181,6 +181,66 @@ not proved. The implementation must establish the sibling-import regression
 and portable consumer proof before completion. No new compiler architecture,
 application configuration, or user generation command is planned.
 
+
+## Backend generation performance — 2026-09-12
+
+Planned with the improve skill at commit `6fa00d4`. The user selected findings
+1, 2, and 4 in that order. This is authorization to write plans, not to execute
+them. Finding 3 requires separate explicit permission before further work.
+Existing plans 001–007 remain complete; plan 008 is a separate approved E2E
+design and is not superseded by these plans.
+
+| Plan | Finding and title | Priority | Effort | Depends on | Status |
+| --- | --- | --- | --- | --- | --- |
+| [009](009-limit-route-declaration-inputs.md) | 1: Limit declaration entry files to route dependencies | P1 | M | None | TODO |
+| [010](010-reuse-route-declarations.md) | 2: Reuse valid declarations on unchanged builds | P1 | M | 009 | TODO |
+| [011](011-build-route-bundle-once.md) | 4: Build each route bundle once | P2 | M | 010 | TODO |
+
+Execute 009 → 010 → 011 only after an execution request. Plan 009 establishes
+declaration roots before reuse is added. Plan 010 must include all type inputs,
+not only runtime dependencies. Plan 011 comes last by user priority and changes
+the same publication path; keep the preceding reuse checks intact. Completed
+prerequisite diffs are expected changes during later plans' drift checks.
+
+### Audit evidence and limits
+
+Scope: route generation in `apps/api`, `packages/sprindle`, and their command
+configuration. The API has 24 routes and 5 scopes. Read-only measurements:
+
+- Route scan: 114 ms first run, 6–9 ms on repeat runs.
+- In-memory esbuild analysis: 325 ms first run, 8–10 ms on repeat runs.
+- Contextual overlay: 123 files, including 14 test files and 12 scripts;
+  preparation took 216 ms first run, 29–34 ms on repeat runs.
+- Contextual diagnostics: 2229 ms, zero diagnostics.
+- Plain API TypeScript check: 1243 ms compiler-reported total, exit 0.
+
+These are separate stage measurements, not a complete generation benchmark.
+The initial measurement command could not resolve `tsx` from the repository
+root; the corrected command used the installed API loader and passed. Full
+builds, tooling test suites, database tests, and browser tests were not run during
+this planning pass. Each plan lists implementation verification gates.
+Source files were not changed. Existing Loom work remains outside scope.
+
+Evidence: `packages/sprindle/src/tooling/manifest.ts:123` promotes all overlay
+TypeScript files to declaration roots; `language.ts:209` collects the project;
+`manifest.ts:70` always emits declarations; `manifest.ts:140` checks the version
+after emission; `manifest.ts:60` and `:68` build the same graph twice.
+
+### Deferred and rejected work
+
+- Finding 3: repeated type checks in `apps/api/package.json:15–16`. DEFERRED
+  until the user gives explicit permission. No plan was written. Plans 009–011
+  must preserve declaration validation, contextual diagnostics, and plain `tsc`.
+- Old startup findings: declaration skipping, single initial compile, and
+  narrower watchers are already implemented by 005–007. Do not plan them again.
+- Runtime-hash-only declaration reuse: rejected because type-only edits can
+  change the consumer contract without changing runtime inputs.
+- Full compiler replacement, persistent compiler service, broad incremental
+  staging, and new cache dependencies: outside the selected scope.
+- Route-scan micro-optimization: lower value at the measured 6–9 ms repeat cost.
+- Database migration generation, request performance, frontend behavior, and a
+  full framework audit were not included. No direction findings were requested.
+
 ## E2E iteration speed — 2026-09-12
 
 Design: [008](008-e2e-iteration-design.md), approved 2026-09-12. Goal is a fast

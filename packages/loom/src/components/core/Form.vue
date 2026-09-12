@@ -21,7 +21,7 @@ import { useFrameworkAdapters } from '../../adapters/projectAdapters'
 import { useRendererRegistry } from '../../renderers/registry'
 import { useInputPropsRegistry } from '../../renderers/inputProps'
 import Button from '../base/Button.vue'
-import { assertSingleDataSource, ownerOf, recordCacheKey } from './useCoreData'
+import { assertSingleDataSource, instanceIdentity, recordCacheKey } from './useCoreData'
 import { getSchemaKind } from '../../fields/schemaMetadata'
 import { useFrameworkUiDefaults } from '../views/uiDefaults'
 
@@ -63,7 +63,8 @@ const fields = computed(() => {
     schema: schema?.source ? inferFieldLayers(schema.source) : undefined,
   })
 })
-const owner = ownerOf(props.namespace, 'form')
+const fallbackOwner = instanceIdentity('form')
+const owner = computed(() => props.resource ?? props.namespace ?? fallbackOwner)
 const formInitialValues: Record<string, unknown> = {}
 for (const field of fields.value) {
   if (field.initialValue) formInitialValues[field.key] = field.initialValue()
@@ -83,8 +84,8 @@ function hydrateValues(value: Record<string, unknown>) {
 }
 
 const loaded = useLoader<RecordLoadContext, Partial<Record<string, unknown>> | undefined>({
-  key: computed(() => recordCacheKey(owner, undefined, props.searchParameters ?? {})),
-  context: computed(() => ({ searchParameters: props.searchParameters ?? {} })),
+  key: computed(() => recordCacheKey(owner.value, props.id, 'form', props.namespace, props.searchParameters ?? {})),
+  context: computed(() => ({ id: props.id, searchParameters: props.searchParameters ?? {} })),
   load: computed(() => (isModelBound ? undefined : props.load)),
 })
 

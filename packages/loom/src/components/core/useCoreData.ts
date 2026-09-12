@@ -21,14 +21,10 @@ export function instanceIdentity(fallback: string): string {
   return instance ? `${fallback}-${instance.uid}` : fallback
 }
 
-export function collectionCacheKey(owner: string, query: QueryValues, searchParameters: QueryValues): QueryKey {
-  return collectionKey({ resource: owner, query, searchParameters })
+export function collectionCacheKey(resource: string, namespace: QueryNamespace | undefined, query: QueryValues, searchParameters: QueryValues): QueryKey {
+  return collectionKey({ resource, namespace, query, searchParameters })
 }
 
-export function recordCacheKey(owner: string, id: RecordIdentity | undefined, searchParameters: QueryValues): QueryKey {
-  return recordKey({ resource: owner, id: id ?? null, searchParameters })
-}
-
-export function ownerOf(namespace: QueryNamespace | undefined, fallback: string): string {
-  return namespace ?? instanceIdentity(fallback)
+export function recordCacheKey(resource: string, id: RecordIdentity | undefined, variant: 'display' | 'form', namespace: QueryNamespace | undefined, searchParameters: QueryValues): QueryKey {
+  return recordKey({ resource, id: id ?? null, variant, namespace, searchParameters })
 }

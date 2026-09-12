@@ -48,6 +48,6 @@ export async function invalidateResourceData(client: QueryClient, { resource, id
   }
   await Promise.all([
     client.invalidateQueries({ queryKey: [...resourceKey(resource), 'list'] }),
-    client.invalidateQueries({ queryKey: recordKey({ resource, id }).slice(0, 4) }),
+    client.invalidateQueries({ queryKey: recordKey({ resource, id, variant: 'display' }).slice(0, 4) }),
   ])
 }

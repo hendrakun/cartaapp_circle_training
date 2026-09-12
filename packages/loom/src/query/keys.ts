@@ -38,6 +38,8 @@ export interface CollectionKeyInput {
 export interface RecordKeyInput {
   resource: string
   id: RecordIdentity | null
+  variant: 'display' | 'form'
+  namespace?: QueryNamespace
   searchParameters?: QueryValues
 }
 
@@ -55,8 +57,8 @@ export function collectionKey({ resource, query, searchParameters, namespace }: 
   ]
 }
 
-export function recordKey({ resource, id, searchParameters }: RecordKeyInput): QueryKey {
-  return [resourceKeyPrefix, resource, 'detail', stableValue(id), stableValue(searchParameters ?? {})]
+export function recordKey({ resource, id, variant, namespace, searchParameters }: RecordKeyInput): QueryKey {
+  return [resourceKeyPrefix, resource, 'detail', stableValue(id), variant, namespace ?? null, stableValue(searchParameters ?? {})]
 }
 
 export function isSameKey(left: QueryKey, right: QueryKey): boolean {

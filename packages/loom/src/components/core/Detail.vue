@@ -10,7 +10,7 @@ import type { DetailProps, RecordLoadContext, RecordResult } from '../../contrac
 import { displayValue, resolveFields, useFrameworkFieldDefaults } from '../../fields'
 import { useLoader } from '../../query'
 import { useRendererRegistry } from '../../renderers/registry'
-import { assertSingleDataSource, ownerOf, recordCacheKey } from './useCoreData'
+import { assertSingleDataSource, instanceIdentity, recordCacheKey } from './useCoreData'
 
 const props = withDefaults(defineProps<DetailProps>(), {
   searchParameters: () => ({}),
@@ -27,10 +27,11 @@ const fields = computed(() => resolveFields({
   defaults: fieldDefaults.detail,
   defaultFields: fieldDefaults.fields,
 }))
-const owner = ownerOf(props.namespace, 'detail')
+const fallbackOwner = instanceIdentity('detail')
+const owner = computed(() => props.resource ?? props.namespace ?? fallbackOwner)
 
 const loaded = useLoader<RecordLoadContext, RecordResult>({
-  key: computed(() => recordCacheKey(owner, props.id, props.searchParameters ?? {})),
+  key: computed(() => recordCacheKey(owner.value, props.id, 'display', props.namespace, props.searchParameters ?? {})),
   context: computed(() => ({ id: props.id, searchParameters: props.searchParameters ?? {} })),
   load: computed(() => props.load),
   data: computed(() => props.data),

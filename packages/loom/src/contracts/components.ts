@@ -26,6 +26,7 @@ export interface CollectionProps<
   data?: TRecord[]
   load?: Load<CollectionLoadContext<TQuery>, CollectionResult<TRecord>>
   searchParameters?: Record<string, unknown>
+  resource?: string
   namespace?: QueryNamespace
   query?: TQuery
   pagination?: 'auto' | 'always' | false
@@ -101,7 +102,8 @@ export interface DetailProps<TRecord extends object = Record<string, unknown>> {
   data?: TRecord
   load?: Load<RecordLoadContext, RecordResult<TRecord>>
   searchParameters?: Record<string, unknown>
-  /** Cache identity shared with other views of the same record. */
+  resource?: string
+  /** View identity below the resource and record cache owner. */
   namespace?: QueryNamespace
 }
 
@@ -122,7 +124,9 @@ export interface FormPropsBase<TInput extends object = Record<string, unknown>, 
   /** Prefilled values; loaded values override these, and user edits override both. */
   initialData?: Partial<TInput>
   load?: Load<RecordLoadContext, Partial<TInput> | undefined>
+  id?: RecordIdentity
   searchParameters?: Record<string, unknown>
+  resource?: string
   /** Validates the visibility-filtered draft before submission. */
   schema?: ValidationSchema<TInput>
   /** Sync or async rules composed after successful schema validation. */
@@ -131,7 +135,7 @@ export interface FormPropsBase<TInput extends object = Record<string, unknown>, 
   context?: FieldContext
   /** Normalizes a rejected submission into field-level issues. */
   normalizeError?: (error: unknown) => SubmitError
-  /** Cache identity for the optional initial-data load. */
+  /** View identity for the optional initial-data load. */
   namespace?: QueryNamespace
   /** Renders every input read-only. */
   disabled?: boolean

@@ -2,7 +2,7 @@
 import { computed, getCurrentInstance, ref, toRef, watch } from 'vue'
 import type { CollectionLoadContext, CollectionProps, CollectionResult, CollectionSlotProps, QueryValues } from '../../contracts'
 import { useLoader, useNamespacedQuery } from '../../query'
-import { assertSingleDataSource, collectionCacheKey, ownerOf } from './useCoreData'
+import { assertSingleDataSource, collectionCacheKey, instanceIdentity } from './useCoreData'
 
 const props = withDefaults(defineProps<CollectionProps<TRecord, TQuery>>(), {
   searchParameters: () => ({}),
@@ -36,7 +36,8 @@ watch(
 
 if (!hasControlledQuery) watch(query.values, (value) => emit('update:query', value), { deep: true })
 
-const owner = ownerOf(props.namespace, 'collection')
+const fallbackOwner = instanceIdentity('collection')
+const owner = computed(() => props.resource ?? props.namespace ?? fallbackOwner)
 const effectiveQuery = computed<QueryValues>(() => {
   const values = query.values.value
   if (!props.reorderable) return values
@@ -44,7 +45,7 @@ const effectiveQuery = computed<QueryValues>(() => {
   return filters
 })
 const loaded = useLoader<CollectionLoadContext<TQuery>, CollectionResult<TRecord>>({
-  key: computed(() => collectionCacheKey(owner, effectiveQuery.value, props.searchParameters ?? {})),
+  key: computed(() => collectionCacheKey(owner.value, props.namespace, effectiveQuery.value, props.searchParameters ?? {})),
   context: computed(() => ({ query: effectiveQuery.value as TQuery, searchParameters: props.searchParameters ?? {} })),
   load: computed(() => props.load),
   data: computed(() => (props.data ? { data: props.data } : undefined)),

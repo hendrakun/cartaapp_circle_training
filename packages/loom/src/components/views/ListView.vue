@@ -72,6 +72,7 @@ type ListTableProps = Omit<TableProps<TRecord, TQuery>, "reorderable" | "rowKey"
 type ListViewRunProps = {
   run: (context: CollectionLoadContext<TQuery>) => MaybePromise<CollectionResult<TRecord>>;
   fields: FieldsInput<TRecord>;
+  resource?: string;
   namespace?: string;
   searchParameters?: Record<string, unknown>;
   schema?: ValidationSchema<TQuery>;
@@ -139,6 +140,7 @@ const surface = computed<ListViewSurface>(() => {
         // the app program only; remove when vue-tsc materializes this. plans/11
         fields: props.fields,
         load: props.run,
+        resource: props.resource,
         namespace: props.namespace,
         searchParameters: props.searchParameters,
         schema: props.schema,

@@ -21,6 +21,7 @@ type DetailViewProps = {
       run: (context?: LoadSignalContext) => MaybePromise<Record<string, unknown> | undefined>
       fields: FieldsInput<Record<string, unknown>>
       id: RecordIdentity
+      resource?: string
       namespace?: string
       searchParameters?: Record<string, unknown>
       detail?: never
@@ -40,6 +41,7 @@ const surface = computed(() => {
         // the app program only; remove when vue-tsc materializes this. plans/11
         fields: props.fields,
         id: props.id,
+        resource: props.resource,
         namespace: props.namespace,
         searchParameters: props.searchParameters,
         load: (context: import('../../contracts').RecordLoadContext) => props.run(context),

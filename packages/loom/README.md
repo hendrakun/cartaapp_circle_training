@@ -159,6 +159,12 @@ Permission metadata controls presentation. The backend remains responsible for a
 
 ## Views and core components
 
+### Resource cache ownership
+
+Resource factories pass a stable resource owner to list, detail, and form views. A successful standard create, update, or delete action invalidates the related resource data. Active reads then run again, and inactive reads become stale until the view uses them again.
+
+The `namespace` prop separates URL query state and duplicate views of one resource. It does not replace the resource owner. Standalone core components can use a namespace as their local cache owner. Detail display reads and edit form reads stay separate because their field conversions can differ.
+
 Loom provides two levels of UI components.
 
 `ListView`, `DetailView`, and `FormView` provide the standard application surfaces used by resources.

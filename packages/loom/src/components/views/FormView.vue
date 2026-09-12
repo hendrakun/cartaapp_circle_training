@@ -24,6 +24,7 @@ type ActionFormProps = {
   run: BivariantMethod<object, MaybePromise<unknown>>
   fields: FieldsInput
   id?: RecordIdentity
+  resource?: string
   initialData?: Partial<Record<string, unknown>>
   load?: BivariantMethod<RecordLoadContext, MaybePromise<Partial<Record<string, unknown>> | undefined>>
   searchParameters?: Record<string, unknown>
@@ -70,6 +71,8 @@ const surface = computed<FormProps>(() => {
     fields: current.fields,
     initialData: current.initialData,
     load: current.load,
+    id: current.id,
+    resource: current.resource,
     searchParameters: current.searchParameters,
     schema: toRaw(current.schema as object) as FormProps['schema'],
     validators: toRaw(current.validators as object) as FormProps['validators'],

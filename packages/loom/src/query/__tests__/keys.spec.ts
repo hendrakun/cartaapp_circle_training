@@ -19,8 +19,8 @@ describe('query identities', () => {
   })
 
   it('separates two record identities', () => {
-    expect(isSameKey(recordKey({ resource: 'roles', id: 1 }), recordKey({ resource: 'roles', id: 2 }))).toBe(false)
-    expect(isSameKey(recordKey({ resource: 'roles', id: '1' }), recordKey({ resource: 'roles', id: 1 }))).toBe(false)
+    expect(isSameKey(recordKey({ resource: 'roles', id: 1, variant: 'display' }), recordKey({ resource: 'roles', id: 2, variant: 'display' }))).toBe(false)
+    expect(isSameKey(recordKey({ resource: 'roles', id: '1', variant: 'display' }), recordKey({ resource: 'roles', id: 1, variant: 'display' }))).toBe(false)
   })
 
   it('separates two explicit table instances of one resource', () => {
@@ -41,7 +41,14 @@ describe('query identities', () => {
     const prefix = resourceKey('roles')
 
     expect(collectionKey({ resource: 'roles' }).slice(0, prefix.length)).toEqual(prefix)
-    expect(recordKey({ resource: 'roles', id: 1 }).slice(0, prefix.length)).toEqual(prefix)
+    expect(recordKey({ resource: 'roles', id: 1, variant: 'display' }).slice(0, prefix.length)).toEqual(prefix)
+  })
+
+  it('separates record variants and namespaces below one record prefix', () => {
+    const display = recordKey({ resource: 'roles', id: 1, variant: 'display', namespace: 'detail' })
+    const form = recordKey({ resource: 'roles', id: 1, variant: 'form', namespace: 'update' })
+    expect(display.slice(0, 4)).toEqual(form.slice(0, 4))
+    expect(display).not.toEqual(form)
   })
 
   it('serializes nested structures deterministically', () => {

@@ -200,12 +200,12 @@ describe('internal loader', () => {
     const { app } = withApp(
       () => ({
         list: useLoader<CollectionLoadContext, CollectionResult<Role>>({
-          key: collectionCacheKey('roles', {}, {}),
+          key: collectionCacheKey('roles', undefined, {}, {}),
           context,
           load: listLoad,
         }),
         detail: useLoader({
-          key: recordCacheKey('roles', 1, {}),
+          key: recordCacheKey('roles', 1, 'display', undefined, {}),
           context: { id: 1, searchParameters: {} },
           load: detailLoad,
         }),
@@ -247,7 +247,7 @@ describe('internal loader', () => {
     const { app } = withApp(
       () => ({
         category: useLoader({
-          key: recordCacheKey(categoryResource, categoryId, { categoryId }),
+          key: recordCacheKey(categoryResource, categoryId, 'display', undefined, { categoryId }),
           context: { id: categoryId, searchParameters: { categoryId } },
           load: categoryLoad,
         }),
@@ -257,7 +257,7 @@ describe('internal loader', () => {
           load: historyLoad,
         }),
         syllabus: useLoader({
-          key: recordCacheKey(syllabusResource, syllabusId, { categoryId, syllabusId }),
+          key: recordCacheKey(syllabusResource, syllabusId, 'display', undefined, { categoryId, syllabusId }),
           context: { id: syllabusId, searchParameters: { categoryId, syllabusId } },
           load: syllabusLoad,
         }),
@@ -267,7 +267,7 @@ describe('internal loader', () => {
           load: materialLoad,
         }),
         privateActionQuery: useLoader({
-          key: recordCacheKey(`${syllabusResource}.detail.${syllabusId}`, syllabusId, { categoryId, syllabusId }),
+          key: recordCacheKey(syllabusResource, syllabusId, 'display', `${syllabusResource}.detail.${syllabusId}`, { categoryId, syllabusId }),
           context: { id: syllabusId, searchParameters: { categoryId, syllabusId } },
           load: actionNamespaceLoad,
         }),
@@ -293,7 +293,7 @@ describe('internal loader', () => {
     expect(historyLoad).toHaveBeenCalledTimes(2)
     expect(syllabusLoad).toHaveBeenCalledTimes(2)
     expect(materialLoad).toHaveBeenCalledTimes(2)
-    expect(actionNamespaceLoad).toHaveBeenCalledTimes(1)
+    expect(actionNamespaceLoad).toHaveBeenCalledTimes(2)
     app.unmount()
   })
 })
