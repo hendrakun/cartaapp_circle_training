@@ -194,12 +194,12 @@ design and is not superseded by these plans.
 | --- | --- | --- | --- | --- | --- |
 | [009](009-limit-route-declaration-inputs.md) | 1: Limit declaration entry files to route dependencies | P1 | M | None | DONE |
 | [010](010-reuse-route-declarations.md) | 2: Reuse valid declarations on unchanged builds | P1 | M | 009 | DONE |
-| [011](011-build-route-bundle-once.md) | 4: Build each route bundle once | P2 | M | 010 | TODO |
+| [011](011-build-route-bundle-once.md) | 4: Build each route bundle once | P2 | M | 010 | DONE (2→1 bundle calls proved by 4 new tests; 53/53 tooling pass; no speedup claimed; approved by the user on 2026-09-12) |
 
 Plan 011 was refined on 2026-09-12 against `a80bfc5` plus the uncommitted
 009/010 source. It now gives source fingerprints, two exact helper algorithms,
 four named tests, fixed edit points, and repeatable measurement commands. This
-refinement does not resume execution; the pause after plan 010 remains active.
+ refinement does not resume execution; the pause after plan 010 remains active.
 
 
 The user authorized delegated execution of 009 → 010 → 011 on 2026-09-12. Plan

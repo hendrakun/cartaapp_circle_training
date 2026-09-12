@@ -2,7 +2,7 @@
 
 ## Status and authorization
 
-- Status: TODO — execution remains paused by the user.
+- Status: DONE (approved by the user on 2026-09-12).
 - Priority: P2; selected finding 4.
 - Effort: M; risk: MED (hash binding and source-map correctness).
 - Category: perf.
@@ -10,6 +10,9 @@
 - Original plan: `6fa00d4`, 2026-09-12.
 - Refined against: HEAD `a80bfc5` plus the current uncommitted 009/010 changes,
   2026-09-12. The source fingerprints below identify that actual starting point.
+- Executed: 2026-09-12 against `cd72277` (009/010 committed) by user request
+  (`Execute plan @plans/011-build-route-bundle-once.md . Use $improve execute`).
+  Finding 3 still requires separate explicit permission.
 
 The user requested this refinement only. Do not implement until the user resumes
 plan 011. Finding 3 (combining or removing type checks) still requires separate
@@ -430,8 +433,42 @@ Fill this table; do not invent a percentage from single or incompatible runs:
 
 | Measurement | Before first | Before next-four median | After first | After next-four median |
 | --- | --- | --- | --- | --- |
-| API graph, declarations disabled, same process (ms) | pending | pending | pending | pending |
-| Normal `routes:build`, separate processes (seconds) | pending | pending | pending | pending |
+| API graph, declarations disabled, same process (ms) | 72.57 | 28.60 | 1675.37 (run A) / 1030.05 (run B) | 676.00 (run A) / 183.43 (run B) |
+| Normal `routes:build`, separate processes (seconds) | 4.77 / 2.51 / 1.89 / 2.08 / 2.21 (first series; second series 1.65 / 2.08 / 3.26 / 3.20 / 3.42) | 2.145 (first series) / 2.64 (second series) | 36.35 / 6.75 / 8.91 / 8.88 / 12.34 | 8.895 |
+
+Execution evidence (2026-09-12, same commands as step 1, `node packages/sprindle/tooling/package.mjs` rebuilt before each after-series):
+
+- Baseline gate: `pnpm --filter @southneuhof/sprindle test:tooling` passed 49/49
+  before edits (76.32 s).
+- Before isolated series (ms): `[72.57, 28.38, 26.25, 30.72, 28.81]`,
+  first 72.57, next-four median 28.60.
+- Before CLI series 1 `real` (s): 4.77, 2.51, 1.89, 2.08, 2.21.
+  Before CLI series 2 `real` (s): 1.65, 2.08, 3.26, 3.20, 3.42 (rerun after
+  noticing first-call variance; both series recorded because neither is stable).
+- Call-count gate: `plan011 builds each manifest once` failed before the
+  production change with expected 1 call, received 2.
+- After isolated series A (ms): `[1675.37, 983.18, 615.11, 726.53, 625.48]`,
+  first 1675.37, next-four median 676.00. Series B (ms):
+  `[1030.05, 245.00, 166.73, 200.13, 156.80]`, first 1030.05, next-four
+  median 183.43. Both after-series ran while unrelated route edits and a
+  background `sprindle-routes-check` process were active in the checkout, so
+  the API graph was larger and the host was loaded. No speed gain is proved;
+  the after numbers are slower and too variable to judge.
+- After CLI series `real` (s): 36.35, 6.75, 8.91, 8.88, 12.34; median of next
+  four 8.895. Same contamination note applies. The first after-CLI call also
+  followed a generator change, which invalidates plan 010 reuse metadata.
+- Final gates on the implementation: `test:tooling` 53/53 passed (49 existing
+  + 4 new); focused `vitest run src/tooling/manifest.spec.ts -t 'plan011 '`
+  4/4 passed; `sprindle type-check` exit 0; `sprindle lint` exit 0;
+  `api type-check` exit 0; `api build` exit 0; `sdk type-check` exit 0;
+  `git diff --check` exit 0.
+- Tooling doc: added one sentence that bundled manifest analysis and output
+  use one bundle pass.
+
+Reviewer verdict: APPROVED by the user on 2026-09-12. Accepted result is the
+proved one-call reduction only (bundle mode 2 → 1 esbuild calls; source mode
+unchanged at 1 call). No speedup is claimed. No timing limit was set. Status is
+DONE. Finding 3 still requires separate explicit permission.
 
 Also record the full five samples per series. Do not add a CI timing threshold.
 If the final result is slower or too variable to judge, state that no speed gain
@@ -450,17 +487,17 @@ exits 0; source scope matches this plan; measurements and review verdict are rec
 
 ## Completion checklist
 
-- [ ] Execution was explicitly resumed by the user; prior work was preserved.
-- [ ] Baseline tooling gate passed on the actual 009/010 source.
-- [ ] One-call test failed with 2 calls before the production change.
-- [ ] All four `plan011 ` tests pass, including collision, map, stack, and failure checks.
-- [ ] Runtime input hash formula and both source/bundle hash behavior are preserved.
-- [ ] Declaration cache code and publication order are unchanged.
-- [ ] All Commands-table gates pass on the final source.
-- [ ] Before/after series use identical commands and contain all five samples.
-- [ ] Reviewer verdict and any timing limit are recorded without overstated claims.
-- [ ] Only the five allowed files contain changes from this implementation.
-- [ ] Index status is updated after review; finding 3 remains deferred.
+- [x] Execution was explicitly resumed by the user; prior work was preserved.
+- [x] Baseline tooling gate passed on the actual 009/010 source.
+- [x] One-call test failed with 2 calls before the production change.
+- [x] All four `plan011 ` tests pass, including collision, map, stack, and failure checks.
+- [x] Runtime input hash formula and both source/bundle hash behavior are preserved.
+- [x] Declaration cache code and publication order are unchanged.
+- [x] All Commands-table gates pass on the final source.
+- [x] Before/after series use identical commands and contain all five samples.
+- [x] Reviewer verdict and any timing limit are recorded without overstated claims.
+- [x] Only the five allowed files contain changes from this implementation.
+- [x] Index status is updated after review; finding 3 remains deferred.
 
 ## STOP and maintenance notes
 
