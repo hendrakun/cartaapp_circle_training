@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 1,
+  "scope": "command",
+  "status": "FAIL",
+  "environment": "jsdom",
+  "before": {
+    "schemaVersion": 1,
+    "scope": "snapshot",
+    "root": "/Users/gamer/Documents/projects/carta",
+    "inputs": [
+      "apps/web/src/routes/(authenticated)/settings/roles"
+    ],
+    "fingerprint": "4e14dde9e680996601c4ebba6f72f197f8c472d15cdd6e74fde4cd9dace85283",
+    "entries": {
+      "apps/web/src/routes/(authenticated)/settings/roles": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail.route.spec.ts": {
+        "kind": "file",
+        "sha256": "c6867fb4482bfb5ed8d58321b5049e8f388f89faf11f3bc7e04779fec8baa2b3",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail.route.vue": {
+        "kind": "file",
+        "sha256": "8d4ae9177e694beff8a2ec5b856f794ebac18997da541e05da94969134f70339",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/index.route.vue": {
+        "kind": "file",
+        "sha256": "eec93c0c09effe081d92fe34e2631febf368d79ee6e0bd927fca03ff4fdd2e6e",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.actions.ts": {
+        "kind": "file",
+        "sha256": "800a5e40fce11c7683749529857f58ce7e6e985881c795e192a24a94f2c47100",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.resource.ts": {
+        "kind": "file",
+        "sha256": "48a1dcd77d90a6cb6b9a17a1435f0d9759073c1965812eb65c3ed06483a3333c",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts": {
+        "kind": "file",
+        "sha256": "5cffe4fc0bdf81f2c23df28f6cbe423200ed300fe150d318bef3f8d7570a722b",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.schema.ts": {
+        "kind": "file",
+        "sha256": "f7fdb6e846649725df4c0b94ef460d9807b1e80c189c713e5a2169ef165787af",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/edit.route.vue": {
+        "kind": "file",
+        "sha256": "7cd0b9b66a14bf5abb735ebf37b3bb3b5962871ee7e967023c5c78fc9792d706",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/create.route.vue": {
+        "kind": "file",
+        "sha256": "337ab4ebb1c22bed2c0719b30a46ed690f282e60a0a79cb06a5bca696e0b6072",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/index.route.vue": {
+        "kind": "file",
+        "sha256": "e1f73fb9496c500853b5f232bd94ef245ee2c4ea725dca54f819877849fc35eb",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.actions.spec.ts": {
+        "kind": "file",
+        "sha256": "2f4553602f646a3a67720a4953da42e42ef6820267109adfc55f24d3e283ed37",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.actions.ts": {
+        "kind": "file",
+        "sha256": "e4c663a4cd57d5a0768913b6a6b288a14e8e228396cd7e32f28e2c26beec2862",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.resource.spec.ts": {
+        "kind": "file",
+        "sha256": "5bbb046d453c0bf1c9d85845655b553161387475838678c7a26ca9ebbe06a11b",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.resource.ts": {
+        "kind": "file",
+        "sha256": "86a34007ef769eb148bebb5d1833976ad1af00a285389143081d2ea73427b0bf",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.schema.ts": {
+        "kind": "file",
+        "sha256": "2de3b7ff46a6ebc6e69b48378162cbb96e98cfa2d2699912926735cc42246544",
+        "executable": false
+      }
+    }
+  },
+  "after": {
+    "schemaVersion": 1,
+    "scope": "snapshot",
+    "root": "/Users/gamer/Documents/projects/carta",
+    "inputs": [
+      "apps/web/src/routes/(authenticated)/settings/roles"
+    ],
+    "fingerprint": "4e14dde9e680996601c4ebba6f72f197f8c472d15cdd6e74fde4cd9dace85283",
+    "entries": {
+      "apps/web/src/routes/(authenticated)/settings/roles": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail.route.spec.ts": {
+        "kind": "file",
+        "sha256": "c6867fb4482bfb5ed8d58321b5049e8f388f89faf11f3bc7e04779fec8baa2b3",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail.route.vue": {
+        "kind": "file",
+        "sha256": "8d4ae9177e694beff8a2ec5b856f794ebac18997da541e05da94969134f70339",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/index.route.vue": {
+        "kind": "file",
+        "sha256": "eec93c0c09effe081d92fe34e2631febf368d79ee6e0bd927fca03ff4fdd2e6e",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.actions.ts": {
+        "kind": "file",
+        "sha256": "800a5e40fce11c7683749529857f58ce7e6e985881c795e192a24a94f2c47100",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.resource.ts": {
+        "kind": "file",
+        "sha256": "48a1dcd77d90a6cb6b9a17a1435f0d9759073c1965812eb65c3ed06483a3333c",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts": {
+        "kind": "file",
+        "sha256": "5cffe4fc0bdf81f2c23df28f6cbe423200ed300fe150d318bef3f8d7570a722b",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.schema.ts": {
+        "kind": "file",
+        "sha256": "f7fdb6e846649725df4c0b94ef460d9807b1e80c189c713e5a2169ef165787af",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/edit.route.vue": {
+        "kind": "file",
+        "sha256": "7cd0b9b66a14bf5abb735ebf37b3bb3b5962871ee7e967023c5c78fc9792d706",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/create.route.vue": {
+        "kind": "file",
+        "sha256": "337ab4ebb1c22bed2c0719b30a46ed690f282e60a0a79cb06a5bca696e0b6072",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/index.route.vue": {
+        "kind": "file",
+        "sha256": "e1f73fb9496c500853b5f232bd94ef245ee2c4ea725dca54f819877849fc35eb",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.actions.spec.ts": {
+        "kind": "file",
+        "sha256": "2f4553602f646a3a67720a4953da42e42ef6820267109adfc55f24d3e283ed37",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.actions.ts": {
+        "kind": "file",
+        "sha256": "e4c663a4cd57d5a0768913b6a6b288a14e8e228396cd7e32f28e2c26beec2862",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.resource.spec.ts": {
+        "kind": "file",
+        "sha256": "5bbb046d453c0bf1c9d85845655b553161387475838678c7a26ca9ebbe06a11b",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.resource.ts": {
+        "kind": "file",
+        "sha256": "86a34007ef769eb148bebb5d1833976ad1af00a285389143081d2ea73427b0bf",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.schema.ts": {
+        "kind": "file",
+        "sha256": "2de3b7ff46a6ebc6e69b48378162cbb96e98cfa2d2699912926735cc42246544",
+        "executable": false
+      }
+    }
+  },
+  "snapshotError": null,
+  "result": {
+    "command": "pnpm --filter @southneuhof/framework-web test:focused -- routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts",
+    "argv": [
+      "pnpm",
+      "--filter",
+      "@southneuhof/framework-web",
+      "test:focused",
+      "--",
+      "routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts"
+    ],
+    "cwd": "/Users/gamer/Documents/projects/carta",
+    "startedAt": "2026-09-12T08:09:56.139Z",
+    "durationMs": 37543,
+    "status": "FAIL",
+    "exitCode": 1,
+    "timeoutMs": 180000,
+    "timedOut": false,
+    "signal": null,
+    "error": null,
+    "stdout": "\n RUN  v4.1.10 /Users/gamer/Documents/projects/carta/apps/web/src\n\n ❯ routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts (6 tests | 2 failed) 1208ms\n     × shows the new state and disables the switch while the request is pending 154ms\n     × restores the previous state when a pending toggle fails 81ms\n\n Test Files  1 failed (1)\n      Tests  2 failed | 4 passed (6)\n   Start at  15:10:05\n   Duration  27.90s (transform 10.16s, setup 0ms, import 17.10s, tests 1.21s, environment 3.88s)\n\n",
+    "stderr": "$ sh -c 'shift; NODE_ENV=test exec vitest run --environment jsdom --root src/ \"$@\"' -- -- 'routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts'\nBoth esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsxFactory: 'h', jsxFragment: 'Fragment' }`\n DEPRECATED  `test.poolOptions` was removed in Vitest 4. All previous `poolOptions` are now top-level options. Please, refer to the migration guide: https://vitest.dev/guide/migration#pool-rework\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts > role permission editor > shows the new state and disables the switch while the request is pending\nAssertionError: expected 'false' to be 'true' // Object.is equality\n\nExpected: \"true\"\nReceived: \"false\"\n\n ❯ routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts:179:46\n    177|     add.querySelector<HTMLButtonElement>('button')!.click()\n    178|     await nextTick()\n    179|     expect(add.getAttribute('aria-checked')).toBe('true')\n       |                                              ^\n    180|     expect(add.querySelector<HTMLButtonElement>('button')?.disabled).t…\n    181|     expect(view.host.querySelector<HTMLButtonElement>('[data-permissio…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts > role permission editor > restores the previous state when a pending toggle fails\nAssertionError: expected 'false' to be 'true' // Object.is equality\n\nExpected: \"true\"\nReceived: \"false\"\n\n ❯ routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts:207:46\n    205|     add.querySelector<HTMLButtonElement>('button')!.click()\n    206|     await nextTick()\n    207|     expect(add.getAttribute('aria-checked')).toBe('true')\n       |                                              ^\n    208|     resolvePut?.()\n    209|     await flush()\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n[ELIFECYCLE] Command failed with exit code 1.\nError: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL\n\n  × \"pnpm recursive run\" failed in /Users/gamer/Documents/projects/carta/apps/\n  │ web\n\n",
+    "output": "\n RUN  v4.1.10 /Users/gamer/Documents/projects/carta/apps/web/src\n\n ❯ routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts (6 tests | 2 failed) 1208ms\n     × shows the new state and disables the switch while the request is pending 154ms\n     × restores the previous state when a pending toggle fails 81ms\n\n Test Files  1 failed (1)\n      Tests  2 failed | 4 passed (6)\n   Start at  15:10:05\n   Duration  27.90s (transform 10.16s, setup 0ms, import 17.10s, tests 1.21s, environment 3.88s)\n\n$ sh -c 'shift; NODE_ENV=test exec vitest run --environment jsdom --root src/ \"$@\"' -- -- 'routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts'\nBoth esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsxFactory: 'h', jsxFragment: 'Fragment' }`\n DEPRECATED  `test.poolOptions` was removed in Vitest 4. All previous `poolOptions` are now top-level options. Please, refer to the migration guide: https://vitest.dev/guide/migration#pool-rework\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts > role permission editor > shows the new state and disables the switch while the request is pending\nAssertionError: expected 'false' to be 'true' // Object.is equality\n\nExpected: \"true\"\nReceived: \"false\"\n\n ❯ routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts:179:46\n    177|     add.querySelector<HTMLButtonElement>('button')!.click()\n    178|     await nextTick()\n    179|     expect(add.getAttribute('aria-checked')).toBe('true')\n       |                                              ^\n    180|     expect(add.querySelector<HTMLButtonElement>('button')?.disabled).t…\n    181|     expect(view.host.querySelector<HTMLButtonElement>('[data-permissio…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts > role permission editor > restores the previous state when a pending toggle fails\nAssertionError: expected 'false' to be 'true' // Object.is equality\n\nExpected: \"true\"\nReceived: \"false\"\n\n ❯ routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts:207:46\n    205|     add.querySelector<HTMLButtonElement>('button')!.click()\n    206|     await nextTick()\n    207|     expect(add.getAttribute('aria-checked')).toBe('true')\n       |                                              ^\n    208|     resolvePut?.()\n    209|     await flush()\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n[ELIFECYCLE] Command failed with exit code 1.\nError: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL\n\n  × \"pnpm recursive run\" failed in /Users/gamer/Documents/projects/carta/apps/\n  │ web\n\n"
+  },
+  "artifacts": {
+    "stdout": "/Users/gamer/Documents/projects/carta/plans/standard-role-permissions/reports/web-red.json.stdout.log",
+    "stderr": "/Users/gamer/Documents/projects/carta/plans/standard-role-permissions/reports/web-red.json.stderr.log"
+  }
+}

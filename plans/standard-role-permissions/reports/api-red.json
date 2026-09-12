@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "scope": "command",
+  "status": "FAIL",
+  "environment": "carta_api_test",
+  "before": {
+    "schemaVersion": 1,
+    "scope": "snapshot",
+    "root": "/Users/gamer/Documents/projects/carta",
+    "inputs": [
+      "apps/api/package.json",
+      "apps/api/src/routes/(authenticated)/roles",
+      "apps/api/src/testing/session.ts",
+      "plans/standard-role-permissions/design.md"
+    ],
+    "fingerprint": "66657722f1cf79ee35c4bbc2393f7ef8aa256f47878676feb5cb00e16f3a981b",
+    "entries": {
+      "apps/api/package.json": {
+        "kind": "file",
+        "sha256": "8fa850b0a94915c1e31c9d0a60ebe5ba61246da3a23b37f546ba4e947d2e80c4",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions/[permissionId]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions/[permissionId]/+server.ts": {
+        "kind": "file",
+        "sha256": "9ceef0a6c92ee27113309d75f352fa72f6ff9d6dd70b48ae12024c1f8f315329",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions/+server.ts": {
+        "kind": "file",
+        "sha256": "73a75e950802bc9c64835b9ac5d7df24fe0ed6353f02ebd8128e7969c31c011d",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/+scope.ts": {
+        "kind": "file",
+        "sha256": "968192dba5dfdff18369eb460a61116583a8d99d6cda20ee2216127dc937b092",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/create": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/create/+server.ts": {
+        "kind": "file",
+        "sha256": "eadf21a974a40534c53929eb7783535ea54a7f97b75ecdf45994def6e6d536e2",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/delete": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/delete/[id]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/delete/[id]/+server.ts": {
+        "kind": "file",
+        "sha256": "3cfb6724b3261ac8fb960ec749e7c345ca4d5115ba60c2c005838c7c45d182cd",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/detail": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/detail/[id]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/detail/[id]/+server.ts": {
+        "kind": "file",
+        "sha256": "fddc94639d4048738c6f540a252947e1066777035b0035c58d85f3aae4952c3b",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/list": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/list/+server.ts": {
+        "kind": "file",
+        "sha256": "0b65bd220e1f88c7536ac1bb8fa529a960eb1f990aa7f2224ab8fea556b63f75",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/role-mapping.routes.spec.ts": {
+        "kind": "file",
+        "sha256": "cc78ed3318c25dfab5da1f41f8bc2d4310d753c4b2df6f6db8292ce4f9a3dd1e",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/roles.entity.ts": {
+        "kind": "file",
+        "sha256": "e4b5ab70331540e000b3caa3c79941e9a646071402dbfde643033f1191f96294",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/roles.ts": {
+        "kind": "file",
+        "sha256": "38c80d9fe64781e539465101c6b394954016e6452cd9949299436928768c7310",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/update": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/update/[id]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/update/[id]/+server.ts": {
+        "kind": "file",
+        "sha256": "ac6ffae9d6cc57217059fe0cef410f759c2ad62e29a53e73646a35cae474388d",
+        "executable": false
+      },
+      "apps/api/src/testing/session.ts": {
+        "kind": "file",
+        "sha256": "1c91d841cee3a77d1af84f9c3c9012df4af4d34343380b5e2700abfaa1fe9a40",
+        "executable": false
+      },
+      "plans/standard-role-permissions/design.md": {
+        "kind": "file",
+        "sha256": "20582ac1fd36dcdead67d940f9a55fc13b5a44e5f794de36d142e54b7d5e4a40",
+        "executable": false
+      }
+    }
+  },
+  "after": {
+    "schemaVersion": 1,
+    "scope": "snapshot",
+    "root": "/Users/gamer/Documents/projects/carta",
+    "inputs": [
+      "apps/api/package.json",
+      "apps/api/src/routes/(authenticated)/roles",
+      "apps/api/src/testing/session.ts",
+      "plans/standard-role-permissions/design.md"
+    ],
+    "fingerprint": "66657722f1cf79ee35c4bbc2393f7ef8aa256f47878676feb5cb00e16f3a981b",
+    "entries": {
+      "apps/api/package.json": {
+        "kind": "file",
+        "sha256": "8fa850b0a94915c1e31c9d0a60ebe5ba61246da3a23b37f546ba4e947d2e80c4",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions/[permissionId]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions/[permissionId]/+server.ts": {
+        "kind": "file",
+        "sha256": "9ceef0a6c92ee27113309d75f352fa72f6ff9d6dd70b48ae12024c1f8f315329",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions/+server.ts": {
+        "kind": "file",
+        "sha256": "73a75e950802bc9c64835b9ac5d7df24fe0ed6353f02ebd8128e7969c31c011d",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/+scope.ts": {
+        "kind": "file",
+        "sha256": "968192dba5dfdff18369eb460a61116583a8d99d6cda20ee2216127dc937b092",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/create": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/create/+server.ts": {
+        "kind": "file",
+        "sha256": "eadf21a974a40534c53929eb7783535ea54a7f97b75ecdf45994def6e6d536e2",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/delete": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/delete/[id]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/delete/[id]/+server.ts": {
+        "kind": "file",
+        "sha256": "3cfb6724b3261ac8fb960ec749e7c345ca4d5115ba60c2c005838c7c45d182cd",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/detail": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/detail/[id]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/detail/[id]/+server.ts": {
+        "kind": "file",
+        "sha256": "fddc94639d4048738c6f540a252947e1066777035b0035c58d85f3aae4952c3b",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/list": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/list/+server.ts": {
+        "kind": "file",
+        "sha256": "0b65bd220e1f88c7536ac1bb8fa529a960eb1f990aa7f2224ab8fea556b63f75",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/role-mapping.routes.spec.ts": {
+        "kind": "file",
+        "sha256": "cc78ed3318c25dfab5da1f41f8bc2d4310d753c4b2df6f6db8292ce4f9a3dd1e",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/roles.entity.ts": {
+        "kind": "file",
+        "sha256": "e4b5ab70331540e000b3caa3c79941e9a646071402dbfde643033f1191f96294",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/roles.ts": {
+        "kind": "file",
+        "sha256": "38c80d9fe64781e539465101c6b394954016e6452cd9949299436928768c7310",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/update": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/update/[id]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/update/[id]/+server.ts": {
+        "kind": "file",
+        "sha256": "ac6ffae9d6cc57217059fe0cef410f759c2ad62e29a53e73646a35cae474388d",
+        "executable": false
+      },
+      "apps/api/src/testing/session.ts": {
+        "kind": "file",
+        "sha256": "1c91d841cee3a77d1af84f9c3c9012df4af4d34343380b5e2700abfaa1fe9a40",
+        "executable": false
+      },
+      "plans/standard-role-permissions/design.md": {
+        "kind": "file",
+        "sha256": "20582ac1fd36dcdead67d940f9a55fc13b5a44e5f794de36d142e54b7d5e4a40",
+        "executable": false
+      }
+    }
+  },
+  "snapshotError": null,
+  "result": {
+    "command": "pnpm --filter @southneuhof/api test:focused -- src/routes/(authenticated)/roles/role-mapping.routes.spec.ts",
+    "argv": [
+      "pnpm",
+      "--filter",
+      "@southneuhof/api",
+      "test:focused",
+      "--",
+      "src/routes/(authenticated)/roles/role-mapping.routes.spec.ts"
+    ],
+    "cwd": "/Users/gamer/Documents/projects/carta",
+    "startedAt": "2026-09-12T08:10:34.388Z",
+    "durationMs": 53383,
+    "status": "FAIL",
+    "exitCode": 1,
+    "timeoutMs": 180000,
+    "timedOut": false,
+    "signal": null,
+    "error": null,
+    "stdout": "/Users/gamer/Documents/projects/carta/apps/api/.sprindle-test/routes.mjs\n{\"status\":\"VALID\",\"scope\":\"test-configuration\",\"purpose\":\"test\",\"hostname\":\"10.8.69.67\",\"port\":\"54432\",\"database\":\"carta_test\"}\nNo config path provided, using default 'drizzle.config.ts'\nReading config file '/Users/gamer/Documents/projects/carta/apps/api/drizzle.config.ts'\nUsing 'pg' driver for database querying\n[⣷] applying migrations...\u001b[2K\u001b[1G[⣯] applying migrations...\u001b[2K\u001b[1G[⣟] applying migrations...\u001b[2K\u001b[1G[✓] migrations applied successfully!\n RUN  v2.1.9 /Users/gamer/Documents/projects/carta/apps/api\n\n ❯ src/routes/(authenticated)/roles/role-mapping.routes.spec.ts (1 test | 1 failed) 2790ms\n   × paginates active permissions and protects mapping writes 2783ms\n     → expected { Object (data, total) } to match object { total: 11, data: [ { …(2) }, …(9) ] }\n\n Test Files  1 failed (1)\n      Tests  1 failed (1)\n   Start at  15:11:07\n   Duration  20.11s (transform 2.77s, setup 0ms, collect 14.88s, tests 2.79s, environment 0ms, prepare 856ms)\n\n",
+    "stderr": "$ pnpm run routes:compile && pnpm run db:migrate:test && sh -c 'if [ \"$1\" = \"--\" ]; then shift; fi; exec node --env-file-if-exists=.env --env-file=.env.test ./node_modules/vitest/vitest.mjs run \"$@\"' -- -- 'src/routes/(authenticated)/roles/role-mapping.routes.spec.ts'\n$ pnpm run tooling:ensure && tsx scripts/compile-routes.ts\n$ node scripts/ensure-tooling.mjs\n$ node --env-file-if-exists=.env --env-file=.env.test scripts/test-target.mjs && node --env-file-if-exists=.env --env-file=.env.test ./node_modules/drizzle-kit/bin.cjs migrate\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  src/routes/(authenticated)/roles/role-mapping.routes.spec.ts > paginates active permissions and protects mapping writes\nAssertionError: expected { Object (data, total) } to match object { total: 11, data: [ { …(2) }, …(9) ] }\n\n- Expected\n+ Received\n\n  Object {\n    \"data\": Array [\n      Object {\n        \"assigned\": false,\n+       \"description\": \"Assign a role to a user.\",\n+       \"id\": \"permission-create-role-assignments\",\n+       \"name\": \"Assign Role\",\n+       \"permissionCode\": \"create-role-assignments\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Grant a permission to a role.\",\n+       \"id\": \"permission-create-role-permissions\",\n+       \"name\": \"Grant Role Permission\",\n+       \"permissionCode\": \"create-role-permissions\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Create roles.\",\n+       \"id\": \"permission-create-roles\",\n+       \"name\": \"Create Roles\",\n+       \"permissionCode\": \"create-roles\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Create user accounts.\",\n+       \"id\": \"permission-create-users\",\n+       \"name\": \"Create Users\",\n+       \"permissionCode\": \"create-users\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Remove a role from a user.\",\n+       \"id\": \"permission-delete-role-assignments\",\n+       \"name\": \"Unassign Role\",\n+       \"permissionCode\": \"delete-role-assignments\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Revoke a permission from a role.\",\n+       \"id\": \"permission-delete-role-permissions\",\n+       \"name\": \"Revoke Role Permission\",\n+       \"permissionCode\": \"delete-role-permissions\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Delete roles.\",\n+       \"id\": \"permission-delete-roles\",\n+       \"name\": \"Delete Roles\",\n+       \"permissionCode\": \"delete-roles\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"View a permission.\",\n+       \"id\": \"permission-detail-permissions\",\n+       \"name\": \"Detail Permissions\",\n+       \"permissionCode\": \"detail-permissions\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"View a role.\",\n+       \"id\": \"permission-detail-roles\",\n+       \"name\": \"Detail Roles\",\n+       \"permissionCode\": \"detail-roles\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"View a user account.\",\n+       \"id\": \"permission-detail-users\",\n+       \"name\": \"Detail Users\",\n+       \"permissionCode\": \"detail-users\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"List permissions.\",\n+       \"id\": \"permission-list-permissions\",\n+       \"name\": \"List Permissions\",\n+       \"permissionCode\": \"list-permissions\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"List a user's roles.\",\n+       \"id\": \"permission-list-role-assignments\",\n+       \"name\": \"List Role Assignments\",\n+       \"permissionCode\": \"list-role-assignments\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"List a role's permissions.\",\n+       \"id\": \"permission-list-role-permissions\",\n+       \"name\": \"List Role Permissions\",\n+       \"permissionCode\": \"list-role-permissions\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"List roles.\",\n+       \"id\": \"permission-list-roles\",\n+       \"name\": \"List Roles\",\n+       \"permissionCode\": \"list-roles\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"List user accounts.\",\n+       \"id\": \"permission-list-users\",\n+       \"name\": \"List Users\",\n+       \"permissionCode\": \"list-users\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-00\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-00\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-01\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-01\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-02\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-02\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-03\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-03\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-04\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-04\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-05\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-05\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-06\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-06\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-07\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-07\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-08\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-08\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-09\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-09\",\n      },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n+       \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-10\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-10\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Update roles.\",\n+       \"id\": \"permission-update-roles\",\n+       \"name\": \"Update Roles\",\n+       \"permissionCode\": \"update-roles\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Update user accounts.\",\n+       \"id\": \"permission-update-users\",\n+       \"name\": \"Update Users\",\n+       \"permissionCode\": \"update-users\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"View permissions.\",\n+       \"id\": \"permission-view-permissions\",\n+       \"name\": \"View Permissions\",\n+       \"permissionCode\": \"view-permissions\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"View roles.\",\n+       \"id\": \"permission-view-roles\",\n+       \"name\": \"View Roles\",\n+       \"permissionCode\": \"view-roles\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"View user accounts.\",\n+       \"id\": \"permission-view-users\",\n+       \"name\": \"View Users\",\n+       \"permissionCode\": \"view-users\",\n+     },\n    ],\n-   \"total\": 11,\n+   \"total\": 31,\n  }\n\n ❯ src/routes/(authenticated)/roles/role-mapping.routes.spec.ts:32:32\n     30|     const first = await request(`?search=${prefix}`)\n     31|     expect(first.status).toBe(200)\n     32|     expect(await first.json()).toMatchObject({ total: 11, data: fixtur…\n       |                                ^\n     33|     const second = await (await request(`?search=${prefix}&page=2&limi…\n     34|     expect(second.total).toBe(11)\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n[ELIFECYCLE] Command failed with exit code 1.\nError: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL\n\n  × \"pnpm recursive run\" failed in /Users/gamer/Documents/projects/carta/apps/\n  │ api\n\n",
+    "output": "/Users/gamer/Documents/projects/carta/apps/api/.sprindle-test/routes.mjs\n{\"status\":\"VALID\",\"scope\":\"test-configuration\",\"purpose\":\"test\",\"hostname\":\"10.8.69.67\",\"port\":\"54432\",\"database\":\"carta_test\"}\nNo config path provided, using default 'drizzle.config.ts'\nReading config file '/Users/gamer/Documents/projects/carta/apps/api/drizzle.config.ts'\nUsing 'pg' driver for database querying\n[⣷] applying migrations...\u001b[2K\u001b[1G[⣯] applying migrations...\u001b[2K\u001b[1G[⣟] applying migrations...\u001b[2K\u001b[1G[✓] migrations applied successfully!\n RUN  v2.1.9 /Users/gamer/Documents/projects/carta/apps/api\n\n ❯ src/routes/(authenticated)/roles/role-mapping.routes.spec.ts (1 test | 1 failed) 2790ms\n   × paginates active permissions and protects mapping writes 2783ms\n     → expected { Object (data, total) } to match object { total: 11, data: [ { …(2) }, …(9) ] }\n\n Test Files  1 failed (1)\n      Tests  1 failed (1)\n   Start at  15:11:07\n   Duration  20.11s (transform 2.77s, setup 0ms, collect 14.88s, tests 2.79s, environment 0ms, prepare 856ms)\n\n$ pnpm run routes:compile && pnpm run db:migrate:test && sh -c 'if [ \"$1\" = \"--\" ]; then shift; fi; exec node --env-file-if-exists=.env --env-file=.env.test ./node_modules/vitest/vitest.mjs run \"$@\"' -- -- 'src/routes/(authenticated)/roles/role-mapping.routes.spec.ts'\n$ pnpm run tooling:ensure && tsx scripts/compile-routes.ts\n$ node scripts/ensure-tooling.mjs\n$ node --env-file-if-exists=.env --env-file=.env.test scripts/test-target.mjs && node --env-file-if-exists=.env --env-file=.env.test ./node_modules/drizzle-kit/bin.cjs migrate\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  src/routes/(authenticated)/roles/role-mapping.routes.spec.ts > paginates active permissions and protects mapping writes\nAssertionError: expected { Object (data, total) } to match object { total: 11, data: [ { …(2) }, …(9) ] }\n\n- Expected\n+ Received\n\n  Object {\n    \"data\": Array [\n      Object {\n        \"assigned\": false,\n+       \"description\": \"Assign a role to a user.\",\n+       \"id\": \"permission-create-role-assignments\",\n+       \"name\": \"Assign Role\",\n+       \"permissionCode\": \"create-role-assignments\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Grant a permission to a role.\",\n+       \"id\": \"permission-create-role-permissions\",\n+       \"name\": \"Grant Role Permission\",\n+       \"permissionCode\": \"create-role-permissions\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Create roles.\",\n+       \"id\": \"permission-create-roles\",\n+       \"name\": \"Create Roles\",\n+       \"permissionCode\": \"create-roles\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Create user accounts.\",\n+       \"id\": \"permission-create-users\",\n+       \"name\": \"Create Users\",\n+       \"permissionCode\": \"create-users\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Remove a role from a user.\",\n+       \"id\": \"permission-delete-role-assignments\",\n+       \"name\": \"Unassign Role\",\n+       \"permissionCode\": \"delete-role-assignments\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Revoke a permission from a role.\",\n+       \"id\": \"permission-delete-role-permissions\",\n+       \"name\": \"Revoke Role Permission\",\n+       \"permissionCode\": \"delete-role-permissions\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Delete roles.\",\n+       \"id\": \"permission-delete-roles\",\n+       \"name\": \"Delete Roles\",\n+       \"permissionCode\": \"delete-roles\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"View a permission.\",\n+       \"id\": \"permission-detail-permissions\",\n+       \"name\": \"Detail Permissions\",\n+       \"permissionCode\": \"detail-permissions\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"View a role.\",\n+       \"id\": \"permission-detail-roles\",\n+       \"name\": \"Detail Roles\",\n+       \"permissionCode\": \"detail-roles\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"View a user account.\",\n+       \"id\": \"permission-detail-users\",\n+       \"name\": \"Detail Users\",\n+       \"permissionCode\": \"detail-users\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"List permissions.\",\n+       \"id\": \"permission-list-permissions\",\n+       \"name\": \"List Permissions\",\n+       \"permissionCode\": \"list-permissions\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"List a user's roles.\",\n+       \"id\": \"permission-list-role-assignments\",\n+       \"name\": \"List Role Assignments\",\n+       \"permissionCode\": \"list-role-assignments\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"List a role's permissions.\",\n+       \"id\": \"permission-list-role-permissions\",\n+       \"name\": \"List Role Permissions\",\n+       \"permissionCode\": \"list-role-permissions\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"List roles.\",\n+       \"id\": \"permission-list-roles\",\n+       \"name\": \"List Roles\",\n+       \"permissionCode\": \"list-roles\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"List user accounts.\",\n+       \"id\": \"permission-list-users\",\n+       \"name\": \"List Users\",\n+       \"permissionCode\": \"list-users\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-00\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-00\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-01\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-01\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-02\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-02\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-03\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-03\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-04\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-04\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-05\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-05\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-06\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-06\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-07\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-07\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-08\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-08\",\n      },\n      Object {\n        \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n        \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-09\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-09\",\n      },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3 description\",\n+       \"id\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-10\",\n+       \"name\": \"Same name\",\n+       \"permissionCode\": \"mapping-permission-866eb676-badb-4c4a-a864-42ca06ec80b3-10\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Update roles.\",\n+       \"id\": \"permission-update-roles\",\n+       \"name\": \"Update Roles\",\n+       \"permissionCode\": \"update-roles\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"Update user accounts.\",\n+       \"id\": \"permission-update-users\",\n+       \"name\": \"Update Users\",\n+       \"permissionCode\": \"update-users\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"View permissions.\",\n+       \"id\": \"permission-view-permissions\",\n+       \"name\": \"View Permissions\",\n+       \"permissionCode\": \"view-permissions\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"View roles.\",\n+       \"id\": \"permission-view-roles\",\n+       \"name\": \"View Roles\",\n+       \"permissionCode\": \"view-roles\",\n+     },\n+     Object {\n+       \"assigned\": false,\n+       \"description\": \"View user accounts.\",\n+       \"id\": \"permission-view-users\",\n+       \"name\": \"View Users\",\n+       \"permissionCode\": \"view-users\",\n+     },\n    ],\n-   \"total\": 11,\n+   \"total\": 31,\n  }\n\n ❯ src/routes/(authenticated)/roles/role-mapping.routes.spec.ts:32:32\n     30|     const first = await request(`?search=${prefix}`)\n     31|     expect(first.status).toBe(200)\n     32|     expect(await first.json()).toMatchObject({ total: 11, data: fixtur…\n       |                                ^\n     33|     const second = await (await request(`?search=${prefix}&page=2&limi…\n     34|     expect(second.total).toBe(11)\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n[ELIFECYCLE] Command failed with exit code 1.\nError: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL\n\n  × \"pnpm recursive run\" failed in /Users/gamer/Documents/projects/carta/apps/\n  │ api\n\n"
+  },
+  "artifacts": {
+    "stdout": "/Users/gamer/Documents/projects/carta/plans/standard-role-permissions/reports/api-red.json.stdout.log",
+    "stderr": "/Users/gamer/Documents/projects/carta/plans/standard-role-permissions/reports/api-red.json.stderr.log"
+  }
+}

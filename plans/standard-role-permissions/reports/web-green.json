@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "scope": "command",
+  "status": "FAIL",
+  "environment": "jsdom",
+  "before": {
+    "schemaVersion": 1,
+    "scope": "snapshot",
+    "root": "/Users/gamer/Documents/projects/carta",
+    "inputs": [
+      "apps/web/src/router/__tests__/detail-parents.spec.ts",
+      "apps/web/src/routes/(authenticated)/settings/roles"
+    ],
+    "fingerprint": "fd0dc82854aa07e8f0a7fdcc06c10aeb41af1fbd5997f0f57603e04e4de38a4b",
+    "entries": {
+      "apps/web/src/router/__tests__/detail-parents.spec.ts": {
+        "kind": "file",
+        "sha256": "e1d2f0ddbda656523ec4bb83d8feb17aee83448602d2235ee06f3427c553e7d7",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail.route.spec.ts": {
+        "kind": "file",
+        "sha256": "92d289b9883ae70a043b1536e6a9359ba1de0f623837cd6bc7237a2dd84db52f",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail.route.vue": {
+        "kind": "file",
+        "sha256": "cc7a8666b767437ceaad7236ad293976d0cd821bf7b9707fcf71a32f88bbd3de",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/index.route.vue": {
+        "kind": "file",
+        "sha256": "79e9f4b8581ef0b8d88d3f7c3bfe87e2e08155cc160b027606966d4bd0e173c1",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.actions.ts": {
+        "kind": "file",
+        "sha256": "c3393f360d5ccd6c0e07630632dd8ecf2fcbde7bef080b853de08be3a01570fb",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.resource.ts": {
+        "kind": "file",
+        "sha256": "43093fd255995100f3a192ace77ebb20b76488036b5e6e1ae2680a650475b586",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts": {
+        "kind": "file",
+        "sha256": "202af871307dda743b53bd19228db840798dcaee5329ba0e233f28aab4e1b802",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.schema.ts": {
+        "kind": "file",
+        "sha256": "f7fdb6e846649725df4c0b94ef460d9807b1e80c189c713e5a2169ef165787af",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/edit.route.vue": {
+        "kind": "file",
+        "sha256": "7cd0b9b66a14bf5abb735ebf37b3bb3b5962871ee7e967023c5c78fc9792d706",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/create.route.vue": {
+        "kind": "file",
+        "sha256": "337ab4ebb1c22bed2c0719b30a46ed690f282e60a0a79cb06a5bca696e0b6072",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/index.route.vue": {
+        "kind": "file",
+        "sha256": "e1f73fb9496c500853b5f232bd94ef245ee2c4ea725dca54f819877849fc35eb",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.actions.spec.ts": {
+        "kind": "file",
+        "sha256": "2f4553602f646a3a67720a4953da42e42ef6820267109adfc55f24d3e283ed37",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.actions.ts": {
+        "kind": "file",
+        "sha256": "e4c663a4cd57d5a0768913b6a6b288a14e8e228396cd7e32f28e2c26beec2862",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.resource.spec.ts": {
+        "kind": "file",
+        "sha256": "5bbb046d453c0bf1c9d85845655b553161387475838678c7a26ca9ebbe06a11b",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.resource.ts": {
+        "kind": "file",
+        "sha256": "86a34007ef769eb148bebb5d1833976ad1af00a285389143081d2ea73427b0bf",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.schema.ts": {
+        "kind": "file",
+        "sha256": "2de3b7ff46a6ebc6e69b48378162cbb96e98cfa2d2699912926735cc42246544",
+        "executable": false
+      }
+    }
+  },
+  "after": {
+    "schemaVersion": 1,
+    "scope": "snapshot",
+    "root": "/Users/gamer/Documents/projects/carta",
+    "inputs": [
+      "apps/web/src/router/__tests__/detail-parents.spec.ts",
+      "apps/web/src/routes/(authenticated)/settings/roles"
+    ],
+    "fingerprint": "fd0dc82854aa07e8f0a7fdcc06c10aeb41af1fbd5997f0f57603e04e4de38a4b",
+    "entries": {
+      "apps/web/src/router/__tests__/detail-parents.spec.ts": {
+        "kind": "file",
+        "sha256": "e1d2f0ddbda656523ec4bb83d8feb17aee83448602d2235ee06f3427c553e7d7",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail.route.spec.ts": {
+        "kind": "file",
+        "sha256": "92d289b9883ae70a043b1536e6a9359ba1de0f623837cd6bc7237a2dd84db52f",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail.route.vue": {
+        "kind": "file",
+        "sha256": "cc7a8666b767437ceaad7236ad293976d0cd821bf7b9707fcf71a32f88bbd3de",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions": {
+        "kind": "directory"
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/index.route.vue": {
+        "kind": "file",
+        "sha256": "79e9f4b8581ef0b8d88d3f7c3bfe87e2e08155cc160b027606966d4bd0e173c1",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.actions.ts": {
+        "kind": "file",
+        "sha256": "c3393f360d5ccd6c0e07630632dd8ecf2fcbde7bef080b853de08be3a01570fb",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.resource.ts": {
+        "kind": "file",
+        "sha256": "43093fd255995100f3a192ace77ebb20b76488036b5e6e1ae2680a650475b586",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.route.spec.ts": {
+        "kind": "file",
+        "sha256": "202af871307dda743b53bd19228db840798dcaee5329ba0e233f28aab4e1b802",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.schema.ts": {
+        "kind": "file",
+        "sha256": "f7fdb6e846649725df4c0b94ef460d9807b1e80c189c713e5a2169ef165787af",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/edit.route.vue": {
+        "kind": "file",
+        "sha256": "7cd0b9b66a14bf5abb735ebf37b3bb3b5962871ee7e967023c5c78fc9792d706",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/create.route.vue": {
+        "kind": "file",
+        "sha256": "337ab4ebb1c22bed2c0719b30a46ed690f282e60a0a79cb06a5bca696e0b6072",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/index.route.vue": {
+        "kind": "file",
+        "sha256": "e1f73fb9496c500853b5f232bd94ef245ee2c4ea725dca54f819877849fc35eb",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.actions.spec.ts": {
+        "kind": "file",
+        "sha256": "2f4553602f646a3a67720a4953da42e42ef6820267109adfc55f24d3e283ed37",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.actions.ts": {
+        "kind": "file",
+        "sha256": "e4c663a4cd57d5a0768913b6a6b288a14e8e228396cd7e32f28e2c26beec2862",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.resource.spec.ts": {
+        "kind": "file",
+        "sha256": "5bbb046d453c0bf1c9d85845655b553161387475838678c7a26ca9ebbe06a11b",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.resource.ts": {
+        "kind": "file",
+        "sha256": "86a34007ef769eb148bebb5d1833976ad1af00a285389143081d2ea73427b0bf",
+        "executable": false
+      },
+      "apps/web/src/routes/(authenticated)/settings/roles/roles.schema.ts": {
+        "kind": "file",
+        "sha256": "2de3b7ff46a6ebc6e69b48378162cbb96e98cfa2d2699912926735cc42246544",
+        "executable": false
+      }
+    }
+  },
+  "snapshotError": null,
+  "result": {
+    "command": "pnpm --filter @southneuhof/framework-web test:focused -- routes/(authenticated)/settings/roles router/__tests__/detail-parents.spec.ts",
+    "argv": [
+      "pnpm",
+      "--filter",
+      "@southneuhof/framework-web",
+      "test:focused",
+      "--",
+      "routes/(authenticated)/settings/roles",
+      "router/__tests__/detail-parents.spec.ts"
+    ],
+    "cwd": "/Users/gamer/Documents/projects/carta",
+    "startedAt": "2026-09-12T08:12:36.259Z",
+    "durationMs": 87674,
+    "status": "FAIL",
+    "exitCode": 1,
+    "timeoutMs": 180000,
+    "timedOut": false,
+    "signal": null,
+    "error": null,
+    "stdout": "\n RUN  v4.1.10 /Users/gamer/Documents/projects/carta/apps/web/src\n\n ❯ routes/(authenticated)/settings/roles/[roleId]/detail.route.spec.ts (0 test)\n ❯ router/__tests__/detail-parents.spec.ts (0 test)\n\n Test Files  2 failed | 3 passed (5)\n      Tests  9 passed (9)\n   Start at  15:12:43\n   Duration  79.41s (transform 113.85s, setup 0ms, import 187.13s, tests 7.83s, environment 12.35s)\n\n",
+    "stderr": "$ sh -c 'shift; NODE_ENV=test exec vitest run --environment jsdom --root src/ \"$@\"' -- -- 'routes/(authenticated)/settings/roles' router/__tests__/detail-parents.spec.ts\nBoth esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsxFactory: 'h', jsxFragment: 'Fragment' }`\n DEPRECATED  `test.poolOptions` was removed in Vitest 4. All previous `poolOptions` are now top-level options. Please, refer to the migration guide: https://vitest.dev/guide/migration#pool-rework\n\n⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  router/__tests__/detail-parents.spec.ts [ router/__tests__/detail-parents.spec.ts ]\n FAIL  routes/(authenticated)/settings/roles/[roleId]/detail.route.spec.ts [ routes/(authenticated)/settings/roles/[roleId]/detail.route.spec.ts ]\nError: [vitest] No \"defineSchema\" export is defined on the \"@southneuhof/loom\" mock. Did you forget to return it from \"vi.mock\"?\nIf you need to partially mock a module, you can use \"importOriginal\" helper inside:\n\nvi.mock(import(\"@southneuhof/loom\"), async (importOriginal) => {\n  const actual = await importOriginal()\n  return {\n    ...actual,\n    // your mocked methods\n  }\n})\n\n ❯ routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.schema.ts:13:38\n     11| export type RolePermissionSchema = WebResourceSchema<RolePermission, R…\n     12|\n     13| export const rolePermissionsSchema = defineSchema<RolePermissionSchema…\n       |                                      ^\n     14|\n ❯ routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.resource.ts:3:1\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n[ELIFECYCLE] Command failed with exit code 1.\nError: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL\n\n  × \"pnpm recursive run\" failed in /Users/gamer/Documents/projects/carta/apps/\n  │ web\n\n",
+    "output": "\n RUN  v4.1.10 /Users/gamer/Documents/projects/carta/apps/web/src\n\n ❯ routes/(authenticated)/settings/roles/[roleId]/detail.route.spec.ts (0 test)\n ❯ router/__tests__/detail-parents.spec.ts (0 test)\n\n Test Files  2 failed | 3 passed (5)\n      Tests  9 passed (9)\n   Start at  15:12:43\n   Duration  79.41s (transform 113.85s, setup 0ms, import 187.13s, tests 7.83s, environment 12.35s)\n\n$ sh -c 'shift; NODE_ENV=test exec vitest run --environment jsdom --root src/ \"$@\"' -- -- 'routes/(authenticated)/settings/roles' router/__tests__/detail-parents.spec.ts\nBoth esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsxFactory: 'h', jsxFragment: 'Fragment' }`\n DEPRECATED  `test.poolOptions` was removed in Vitest 4. All previous `poolOptions` are now top-level options. Please, refer to the migration guide: https://vitest.dev/guide/migration#pool-rework\n\n⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  router/__tests__/detail-parents.spec.ts [ router/__tests__/detail-parents.spec.ts ]\n FAIL  routes/(authenticated)/settings/roles/[roleId]/detail.route.spec.ts [ routes/(authenticated)/settings/roles/[roleId]/detail.route.spec.ts ]\nError: [vitest] No \"defineSchema\" export is defined on the \"@southneuhof/loom\" mock. Did you forget to return it from \"vi.mock\"?\nIf you need to partially mock a module, you can use \"importOriginal\" helper inside:\n\nvi.mock(import(\"@southneuhof/loom\"), async (importOriginal) => {\n  const actual = await importOriginal()\n  return {\n    ...actual,\n    // your mocked methods\n  }\n})\n\n ❯ routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.schema.ts:13:38\n     11| export type RolePermissionSchema = WebResourceSchema<RolePermission, R…\n     12|\n     13| export const rolePermissionsSchema = defineSchema<RolePermissionSchema…\n       |                                      ^\n     14|\n ❯ routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.resource.ts:3:1\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n[ELIFECYCLE] Command failed with exit code 1.\nError: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL\n\n  × \"pnpm recursive run\" failed in /Users/gamer/Documents/projects/carta/apps/\n  │ web\n\n"
+  },
+  "artifacts": {
+    "stdout": "/Users/gamer/Documents/projects/carta/plans/standard-role-permissions/reports/web-green.json.stdout.log",
+    "stderr": "/Users/gamer/Documents/projects/carta/plans/standard-role-permissions/reports/web-green.json.stderr.log"
+  }
+}

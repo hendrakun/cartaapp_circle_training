@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 1,
+  "scope": "command",
+  "status": "PASS",
+  "environment": "local",
+  "before": {
+    "schemaVersion": 1,
+    "scope": "snapshot",
+    "root": "/Users/gamer/Documents/projects/carta",
+    "inputs": [
+      "apps/api/package.json",
+      "apps/api/src/routes/(authenticated)/roles",
+      "plans/standard-role-permissions/design.md"
+    ],
+    "fingerprint": "32b21eddaa19e56d6cbcc13cab05b6c1d8c8987230744c8e461ab27979387529",
+    "entries": {
+      "apps/api/package.json": {
+        "kind": "file",
+        "sha256": "8fa850b0a94915c1e31c9d0a60ebe5ba61246da3a23b37f546ba4e947d2e80c4",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions/[permissionId]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions/[permissionId]/+server.ts": {
+        "kind": "file",
+        "sha256": "9ceef0a6c92ee27113309d75f352fa72f6ff9d6dd70b48ae12024c1f8f315329",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions/+server.ts": {
+        "kind": "file",
+        "sha256": "1a1cb359e34b4bc1a665dce720519c95bb5ef676da3ee666fd037f7ec93c8be0",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/+scope.ts": {
+        "kind": "file",
+        "sha256": "968192dba5dfdff18369eb460a61116583a8d99d6cda20ee2216127dc937b092",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/create": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/create/+server.ts": {
+        "kind": "file",
+        "sha256": "eadf21a974a40534c53929eb7783535ea54a7f97b75ecdf45994def6e6d536e2",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/delete": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/delete/[id]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/delete/[id]/+server.ts": {
+        "kind": "file",
+        "sha256": "3cfb6724b3261ac8fb960ec749e7c345ca4d5115ba60c2c005838c7c45d182cd",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/detail": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/detail/[id]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/detail/[id]/+server.ts": {
+        "kind": "file",
+        "sha256": "fddc94639d4048738c6f540a252947e1066777035b0035c58d85f3aae4952c3b",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/list": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/list/+server.ts": {
+        "kind": "file",
+        "sha256": "0b65bd220e1f88c7536ac1bb8fa529a960eb1f990aa7f2224ab8fea556b63f75",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/role-mapping.routes.spec.ts": {
+        "kind": "file",
+        "sha256": "cc78ed3318c25dfab5da1f41f8bc2d4310d753c4b2df6f6db8292ce4f9a3dd1e",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/roles.entity.ts": {
+        "kind": "file",
+        "sha256": "e4b5ab70331540e000b3caa3c79941e9a646071402dbfde643033f1191f96294",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/roles.ts": {
+        "kind": "file",
+        "sha256": "38c80d9fe64781e539465101c6b394954016e6452cd9949299436928768c7310",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/update": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/update/[id]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/update/[id]/+server.ts": {
+        "kind": "file",
+        "sha256": "ac6ffae9d6cc57217059fe0cef410f759c2ad62e29a53e73646a35cae474388d",
+        "executable": false
+      },
+      "plans/standard-role-permissions/design.md": {
+        "kind": "file",
+        "sha256": "20582ac1fd36dcdead67d940f9a55fc13b5a44e5f794de36d142e54b7d5e4a40",
+        "executable": false
+      }
+    }
+  },
+  "after": {
+    "schemaVersion": 1,
+    "scope": "snapshot",
+    "root": "/Users/gamer/Documents/projects/carta",
+    "inputs": [
+      "apps/api/package.json",
+      "apps/api/src/routes/(authenticated)/roles",
+      "plans/standard-role-permissions/design.md"
+    ],
+    "fingerprint": "32b21eddaa19e56d6cbcc13cab05b6c1d8c8987230744c8e461ab27979387529",
+    "entries": {
+      "apps/api/package.json": {
+        "kind": "file",
+        "sha256": "8fa850b0a94915c1e31c9d0a60ebe5ba61246da3a23b37f546ba4e947d2e80c4",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions/[permissionId]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions/[permissionId]/+server.ts": {
+        "kind": "file",
+        "sha256": "9ceef0a6c92ee27113309d75f352fa72f6ff9d6dd70b48ae12024c1f8f315329",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/[roleId]/permissions/+server.ts": {
+        "kind": "file",
+        "sha256": "1a1cb359e34b4bc1a665dce720519c95bb5ef676da3ee666fd037f7ec93c8be0",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/+scope.ts": {
+        "kind": "file",
+        "sha256": "968192dba5dfdff18369eb460a61116583a8d99d6cda20ee2216127dc937b092",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/create": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/create/+server.ts": {
+        "kind": "file",
+        "sha256": "eadf21a974a40534c53929eb7783535ea54a7f97b75ecdf45994def6e6d536e2",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/delete": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/delete/[id]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/delete/[id]/+server.ts": {
+        "kind": "file",
+        "sha256": "3cfb6724b3261ac8fb960ec749e7c345ca4d5115ba60c2c005838c7c45d182cd",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/detail": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/detail/[id]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/detail/[id]/+server.ts": {
+        "kind": "file",
+        "sha256": "fddc94639d4048738c6f540a252947e1066777035b0035c58d85f3aae4952c3b",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/list": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/list/+server.ts": {
+        "kind": "file",
+        "sha256": "0b65bd220e1f88c7536ac1bb8fa529a960eb1f990aa7f2224ab8fea556b63f75",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/role-mapping.routes.spec.ts": {
+        "kind": "file",
+        "sha256": "cc78ed3318c25dfab5da1f41f8bc2d4310d753c4b2df6f6db8292ce4f9a3dd1e",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/roles.entity.ts": {
+        "kind": "file",
+        "sha256": "e4b5ab70331540e000b3caa3c79941e9a646071402dbfde643033f1191f96294",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/roles.ts": {
+        "kind": "file",
+        "sha256": "38c80d9fe64781e539465101c6b394954016e6452cd9949299436928768c7310",
+        "executable": false
+      },
+      "apps/api/src/routes/(authenticated)/roles/update": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/update/[id]": {
+        "kind": "directory"
+      },
+      "apps/api/src/routes/(authenticated)/roles/update/[id]/+server.ts": {
+        "kind": "file",
+        "sha256": "ac6ffae9d6cc57217059fe0cef410f759c2ad62e29a53e73646a35cae474388d",
+        "executable": false
+      },
+      "plans/standard-role-permissions/design.md": {
+        "kind": "file",
+        "sha256": "20582ac1fd36dcdead67d940f9a55fc13b5a44e5f794de36d142e54b7d5e4a40",
+        "executable": false
+      }
+    }
+  },
+  "snapshotError": null,
+  "result": {
+    "command": "pnpm --filter @southneuhof/api lint",
+    "argv": [
+      "pnpm",
+      "--filter",
+      "@southneuhof/api",
+      "lint"
+    ],
+    "cwd": "/Users/gamer/Documents/projects/carta",
+    "startedAt": "2026-09-12T08:13:52.071Z",
+    "durationMs": 6975,
+    "status": "PASS",
+    "exitCode": 0,
+    "timeoutMs": 180000,
+    "timedOut": false,
+    "signal": null,
+    "error": null,
+    "stdout": "",
+    "stderr": "$ oxlint src scripts\n",
+    "output": "$ oxlint src scripts\n"
+  },
+  "artifacts": {
+    "stdout": "/Users/gamer/Documents/projects/carta/plans/standard-role-permissions/reports/api-lint.json.stdout.log",
+    "stderr": "/Users/gamer/Documents/projects/carta/plans/standard-role-permissions/reports/api-lint.json.stderr.log"
+  }
+}
