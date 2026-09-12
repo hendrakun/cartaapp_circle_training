@@ -82,6 +82,7 @@ function handleBlur() {
       v-model="internalValue"
       :format="displayFormatter"
       time-picker
+      auto-apply
       :dark="useFrameworkUi().colorPreference().value === 'dark'"
       :teleport="teleport"
       :config="datepickerPopupConfig"

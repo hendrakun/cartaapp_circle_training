@@ -21,6 +21,7 @@ vi.mock('@vuepic/vue-datepicker', async () => {
         modelValue: null,
         teleport: null,
         config: null,
+        autoApply: Boolean,
         inline: Boolean,
         timePicker: Boolean,
         range: Boolean,
@@ -124,6 +125,13 @@ describe('datepicker popup safety', () => {
     picker.triggerBlur?.()
     expect(touch).toHaveBeenCalledOnce()
 
+    view.unmount()
+  })
+
+  it('Time commits the picked value before the blur validation', async () => {
+    const view = await mountInput(TimeInput, {}, { 'onValidation:touch': () => {} })
+    expect(picker.latest.timePicker).toBe(true)
+    expect(picker.latest.autoApply).toBe(true)
     view.unmount()
   })
 
