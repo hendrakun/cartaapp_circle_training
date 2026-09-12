@@ -15,7 +15,7 @@ export const rolePermissions = defineResource(rolePermissionsSchema, {
     list: {
       run: rolePermissionsActions.list,
       fields: [fields.permissionCode, fields.name, fields.description, fields.assigned],
-      permission: 'view-role-permissions',
+      permission: 'list-role-permissions',
       route: { name: 'settings-roles-detail-permissions' },
     },
     set: { run: rolePermissionsActions.set },

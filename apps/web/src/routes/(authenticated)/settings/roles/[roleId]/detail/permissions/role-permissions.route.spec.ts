@@ -143,21 +143,21 @@ describe('role permission editor', () => {
     const switches = view.host.querySelectorAll<HTMLElement>('[data-permission]')
     expect(switches).toHaveLength(3)
     for (const control of switches) {
-      expect(control.getAttribute('role')).toBe('switch')
-      expect(control.getAttribute('aria-checked')).toMatch(/^(true|false)$/)
-      expect(control.getAttribute('aria-label')).toMatch(/^Permission /)
+      expect(control.querySelector('button')!.getAttribute('role')).toBe('switch')
+      expect(control.querySelector('button')!.getAttribute('aria-checked')).toMatch(/^(true|false)$/)
+      expect(control.querySelector('button')!.getAttribute('aria-label')).toMatch(/^Permission /)
     }
-    expect(view.host.querySelector('[data-permission="p1"]')?.getAttribute('aria-label')).toBe('Permission View users')
+    expect(view.host.querySelector('[data-permission="p1"]')?.querySelector('button')?.getAttribute('aria-label')).toBe('Permission View users')
     view.unmount()
   })
 
-  it('uses PUT and DELETE and updates a row only after success', async () => {
+  it('uses PUT and DELETE and keeps the saved state', async () => {
     const view = await mountScreen()
     const add = view.host.querySelector<HTMLElement>('[data-permission="p1"]')!
     add.querySelector<HTMLButtonElement>('button')!.click()
     await flush()
     expect(calls).toEqual([{ method: 'put', permissionId: 'p1' }])
-    expect(view.host.querySelector<HTMLElement>('[data-permission="p1"]')?.getAttribute('aria-checked')).toBe('true')
+    expect(view.host.querySelector<HTMLElement>('[data-permission="p1"]')?.querySelector('button')?.getAttribute('aria-checked')).toBe('true')
 
     const remove = view.host.querySelector<HTMLElement>('[data-permission="p2"]')!
     remove.querySelector<HTMLButtonElement>('button')!.click()
@@ -166,23 +166,23 @@ describe('role permission editor', () => {
       { method: 'put', permissionId: 'p1' },
       { method: 'delete', permissionId: 'p2' },
     ])
-    expect(view.host.querySelector<HTMLElement>('[data-permission="p2"]')?.getAttribute('aria-checked')).toBe('false')
+    expect(view.host.querySelector<HTMLElement>('[data-permission="p2"]')?.querySelector('button')?.getAttribute('aria-checked')).toBe('false')
     view.unmount()
   })
 
-  it('keeps the prior state and disables the switch while the request is pending', async () => {
+  it('shows the new state and disables the switch while the request is pending', async () => {
     deferPut = true
     const view = await mountScreen()
     const add = view.host.querySelector<HTMLElement>('[data-permission="p1"]')!
     add.querySelector<HTMLButtonElement>('button')!.click()
     await nextTick()
-    expect(add.getAttribute('aria-checked')).toBe('false')
+    expect(add.querySelector('button')!.getAttribute('aria-checked')).toBe('true')
     expect(add.querySelector<HTMLButtonElement>('button')?.disabled).toBe(true)
     expect(view.host.querySelector<HTMLButtonElement>('[data-permission="p2"] button')?.disabled).toBe(false)
 
     resolvePut?.()
     await flush()
-    expect(view.host.querySelector<HTMLElement>('[data-permission="p1"]')?.getAttribute('aria-checked')).toBe('true')
+    expect(view.host.querySelector<HTMLElement>('[data-permission="p1"]')?.querySelector('button')?.getAttribute('aria-checked')).toBe('true')
     view.unmount()
   })
 
@@ -192,8 +192,30 @@ describe('role permission editor', () => {
     const add = view.host.querySelector<HTMLElement>('[data-permission="p1"]')!
     add.querySelector<HTMLButtonElement>('button')!.click()
     await flush()
-    expect(view.host.querySelector<HTMLElement>('[data-permission="p1"]')?.getAttribute('aria-checked')).toBe('false')
+    expect(view.host.querySelector<HTMLElement>('[data-permission="p1"]')?.querySelector('button')?.getAttribute('aria-checked')).toBe('false')
     expect(vi.mocked(toast.error)).toHaveBeenCalledWith('Denied')
+    view.unmount()
+  })
+
+  it('restores the previous state when a pending toggle fails', async () => {
+    deferPut = true
+    failure = true
+    const view = await mountScreen()
+    const add = view.host.querySelector<HTMLElement>('[data-permission="p1"]')!
+    add.querySelector<HTMLButtonElement>('button')!.click()
+    await nextTick()
+    expect(add.querySelector('button')!.getAttribute('aria-checked')).toBe('true')
+    resolvePut?.()
+    await flush()
+    expect(add.querySelector('button')!.getAttribute('aria-checked')).toBe('false')
+    expect(vi.mocked(toast.error)).toHaveBeenCalledWith('Denied')
+    view.unmount()
+  })
+
+  it('shows pagination under the role detail', async () => {
+    const view = await mountScreen()
+    expect(view.host.querySelector('nav[aria-label="Pagination"]')).not.toBeNull()
+    expect(view.host.textContent).toContain('Showing data 1–3 out of 3')
     view.unmount()
   })
 

@@ -3,12 +3,16 @@ import { createApp, defineComponent, h, nextTick } from 'vue'
 import { createPinia } from 'pinia'
 import { createMemoryHistory, createRouter, RouterView } from 'vue-router'
 
-vi.mock('@southneuhof/loom', () => ({
-  DetailView: defineComponent({
-    props: { id: { type: String, required: true } },
-    setup: (props) => () => h('div', { 'data-detail': props.id }, 'Detail'),
-  }),
-}))
+vi.mock('@southneuhof/loom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@southneuhof/loom')>()
+  return {
+    ...actual,
+    DetailView: defineComponent({
+      props: { id: { type: String, required: true } },
+      setup: (props) => () => h('div', { 'data-detail': props.id }, 'Detail'),
+    }),
+  }
+})
 vi.mock('@/components/routing/Tabs.vue', () => ({
   default: defineComponent({
     props: { items: { type: Array, default: () => [] } },
@@ -26,9 +30,10 @@ vi.mock('@/routes/(authenticated)/settings/roles/roles.resource', () => ({
     list: () => ({ updateRoute: () => ({ name: 'settings-roles-edit', params: { roleId: '7' } }) }),
   },
 }))
-vi.mock('@/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/role-permissions.resource', () => ({
-  rolePermissions: { actions: { list: { key: 'list', permission: 'view-role-permissions', routeName: 'settings-roles-detail-permissions', to: { name: 'settings-roles-detail-permissions' } } } },
+vi.mock('@/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/index.route.vue', () => ({
+  default: defineComponent({ template: '<div data-permission-list>Permissions</div>' }),
 }))
+vi.mock('@/framework/access', () => ({ resourceCan: () => () => true }))
 vi.mock('@/routes/(authenticated)/settings/users/users.resource', () => ({
   users: {
     detail: ({ id }: { id: string }) => ({ id }),
@@ -75,16 +80,17 @@ async function mountParent(kind: 'roles' | 'users', child: boolean) {
 }
 
 describe('marked detail parents', () => {
-  it.each(['roles', 'users'] as const)('renders tabs plus detail at bare %s URL', async (kind) => {
+  it.each(['roles', 'users'] as const)('renders the mapping below detail at bare %s URL', async (kind) => {
     const host = await mountParent(kind, false)
-    expect(host.querySelector('[data-tabs]')).not.toBeNull()
+    expect(host.querySelector('[data-tabs]') !== null).toBe(kind === 'users')
     expect(host.querySelector('[data-detail="7"]')).not.toBeNull()
+    if (kind === 'roles') expect(host.querySelector('[data-permission-list]')).not.toBeNull()
     if (kind === 'users') expect([...host.querySelectorAll('[data-tab-label]')].map((tab) => tab.textContent)).toEqual(['Role Assignments'])
   })
 
   it.each(['roles', 'users'] as const)('renders detail-under child at %s child URL', async (kind) => {
     const host = await mountParent(kind, true)
-    expect(host.querySelector('[data-tabs]')).not.toBeNull()
+    expect(host.querySelector('[data-tabs]') !== null).toBe(kind === 'users')
     expect(host.querySelector('[data-child]')).not.toBeNull()
     expect(host.querySelector('[data-detail="7"]')).not.toBeNull()
   })

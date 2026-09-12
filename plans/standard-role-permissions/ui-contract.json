@@ -1,0 +1,18 @@
+{
+  "surfaces": [
+    {
+      "file": "apps/web/src/routes/(authenticated)/settings/roles/[roleId]/detail/permissions/index.route.vue",
+      "kind": "list",
+      "components": [
+        {
+          "name": "ListView",
+          "from": "@southneuhof/loom"
+        },
+        {
+          "name": "default",
+          "from": "@southneuhof/loom/components/inputs/Switch.vue"
+        }
+      ]
+    }
+  ]
+}

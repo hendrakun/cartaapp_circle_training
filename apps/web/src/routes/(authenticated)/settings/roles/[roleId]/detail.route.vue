@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import ConfirmationDialog from '@southneuhof/loom/components/composites/ConfirmationDialog.vue'
 import { DetailView } from '@southneuhof/loom'
 import AppRouterView from '@/components/routing/AppRouterView.vue'
-import Tabs from '@/components/routing/Tabs.vue'
+import PermissionList from './detail/permissions/index.route.vue'
+import { resourceCan } from '@/framework/access'
+import { rolePermissions } from './detail/permissions/role-permissions.resource'
 import { errorMessage } from '@/framework/adapters/data/normalize'
 import { roles } from '../roles.resource'
-import type { RouteTab } from '@/router/tabs'
 
 const route = useRoute('settings-roles-detail')
 const router = useRouter()
@@ -18,9 +19,7 @@ const canDelete = detail.can?.('delete') ?? false
 const deleting = ref(false)
 const updateTarget = roles.list().updateRoute?.({ id: roleId } as never)
 
-const tabs = [
-  { action: { permission: 'view-role-permissions', to: { name: 'settings-roles-detail-permissions', params: { roleId: String(roleId) } } }, label: 'Permissions' },
-] as const satisfies readonly RouteTab[]
+const canListPermissions = computed(() => resourceCan(rolePermissions)('list'))
 
 async function remove() {
   if (deleting.value) return
@@ -49,7 +48,7 @@ async function remove() {
         </ConfirmationDialog>
       </template>
     </DetailView>
-    <Tabs label="Role" :items="tabs" />
+    <PermissionList v-if="route.name === 'settings-roles-detail' && canListPermissions" />
     <AppRouterView />
   </div>
 </template>

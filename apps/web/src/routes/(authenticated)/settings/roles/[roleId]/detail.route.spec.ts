@@ -12,13 +12,17 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ replace: mocks.replace }),
 }))
 vi.mock('vue-sonner', () => ({ toast: mocks.toast }))
-vi.mock('@southneuhof/loom', () => ({
-  DetailView: {
-    setup(_props: unknown, context: { slots: { controls?: () => unknown } }) {
-      return () => context.slots.controls?.()
+vi.mock('@southneuhof/loom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@southneuhof/loom')>()
+  return {
+    ...actual,
+    DetailView: {
+      setup(_props: unknown, context: { slots: { controls?: () => unknown } }) {
+        return () => context.slots.controls?.()
+      },
     },
-  },
-}))
+  }
+})
 vi.mock('@southneuhof/loom/components/composites/ConfirmationDialog.vue', () => ({
   default: {
     props: { title: String, message: String, onConfirm: Function },
@@ -26,7 +30,8 @@ vi.mock('@southneuhof/loom/components/composites/ConfirmationDialog.vue', () => 
   },
 }))
 vi.mock('@/components/routing/AppRouterView.vue', () => ({ default: { template: '<div />' } }))
-vi.mock('@/components/routing/Tabs.vue', () => ({ default: { template: '<div />' } }))
+vi.mock('./detail/permissions/index.route.vue', () => ({ default: { template: '<div data-permission-list />' } }))
+vi.mock('@/framework/access', () => ({ resourceCan: () => () => true }))
 vi.mock('../roles.resource', () => ({
   roles: {
     detail: vi.fn(() => ({ run: vi.fn(), fields: [], id: 'role-1', can: () => true })),
