@@ -20,6 +20,11 @@
 - Category: migration, skills, evaluation, DX
 - Planned at: commit `7eb093d`, 2026-09-12
 - Status: BLOCKED — 2026-09-13, isolated controlled runtime unavailable
+- Status note 2026-09-13: controlled trials ran in disposable worktrees
+  (baseline `7eb093d`, candidate `2d66df8`); browser proof incomplete on both
+  candidate trials, so no speed claim is valid. Independent verdicts:
+  baseline Trial B `PASS`, candidate Trial A `REWORK`, candidate Trial B
+  `REWORK`. See `evals/carta-module-workflow/plan-019-result.md`.
 
 ## Implementation record — 2026-09-13
 
