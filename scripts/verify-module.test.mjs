@@ -17,25 +17,31 @@ function config() {
     table: 'test_catalog',
     symbol: 'TestCatalog',
     title: 'Test Catalog',
-    identity: { key: 'id', type: 'text', primary: true, generated: 'uuid' },
-    fields: [{ key: 'label', type: 'text', label: 'Label', required: true, renderer: 'text' }],
-    labels: {
-      listTitle: 'Test Catalog',
-      detailTitle: 'Detail Test Catalog',
-      createTitle: 'Add Test Catalog',
-      editTitle: 'Edit Test Catalog',
-      submitLabel: 'Submit',
+    singular: 'Test Catalog',
+    fields: [
+      { key: 'label', type: 'text', label: 'Label', required: true },
+      { key: 'enabled', type: 'boolean', label: 'Enabled', default: true },
+    ],
+    actions: {
+      list: { fields: ['label', 'enabled'], permission: 'list-test-catalog' },
+      detail: { fields: ['label', 'enabled'], permission: 'detail-test-catalog' },
+      create: { fields: ['label', 'enabled'], permission: 'create-test-catalog' },
+      update: { fields: ['label', 'enabled'], permission: 'update-test-catalog' },
+      delete: { permission: 'delete-test-catalog' },
     },
-    permissions: {
-      moduleName: 'Test Catalog',
-      realm: 'system',
-      entries: Object.fromEntries(['list', 'detail', 'create', 'update', 'delete'].map((action) => [action, {
-        name: `${action} test catalog`,
-        description: `${action} test catalog records.`,
-      }])),
+    permissions: Object.fromEntries(['list', 'detail', 'create', 'update', 'delete'].map((action) => [`${action}-test-catalog`, {
+      name: `${action} test catalog`,
+      description: `${action} test catalog records.`,
+    }])),
+    navigation: { group: 'settings', after: 'settings-roles', title: 'Test Catalog', icon: 'folder' },
+    seed: {
+      records: [{ id: 'test-catalog-1', label: 'One', enabled: true }],
+      updateFields: ['label', 'enabled'],
     },
-    navigation: { group: 'settings', after: 'settings-roles', title: 'Test Catalog', icon: 'folder', separator: 'Test' },
-    seed: { records: [{ id: 'test-catalog-1', label: 'One' }], updateFields: ['label'] },
+    test: {
+      record: { label: 'One', enabled: true },
+      update: { label: 'Two' },
+    },
   }
 }
 
@@ -97,7 +103,7 @@ test('check-only verifies the generated module without changing files', () => {
 
 test('fails when a generated file is missing', () => {
   const setup = fixture()
-  const missing = expectedGeneratedPaths(setup.value, { root: setup.root }).find((path) => path.endsWith('.resource.spec.ts'))
+  const missing = expectedGeneratedPaths(setup.value, { root: setup.root }).find((path) => path.endsWith('.integration.spec.ts'))
   rmSync(missing)
   const result = verify(setup.value, { root: setup.root })
   assert.equal(result.status, 'FAIL')
@@ -123,6 +129,29 @@ test('prepares the test database before seeded verification', () => {
   assert.equal(commands[0], 'pnpm --filter @southneuhof/api db:seed:test')
   assert.equal(commands.filter((command) => command === 'pnpm --filter @southneuhof/api db:seed:test').length, 1)
   assert.equal(commands.some((command) => command === 'pnpm --filter @southneuhof/api db:migrate'), false)
+})
+
+test('verification commands include the generated API and browser proof specs', () => {
+  const specs = verificationCommands(config(), { withSeed: false }).map(([command, args]) => [command, ...args].join(' '))
+  assert.ok(specs.some((command) => command === 'pnpm --filter @southneuhof/api test:focused -- src/routes/(authenticated)/test-catalog/test-catalog.routes.spec.ts'), specs.join('\n'))
+  assert.ok(specs.some((command) => command === 'pnpm --filter @southneuhof/framework-web test:e2e -- test-catalog.spec.ts'), specs.join('\n'))
+  const apiLint = specs.find((command) => command.startsWith('pnpm --filter @southneuhof/api lint:focused'))
+  assert.ok(apiLint.includes('src/routes/(authenticated)/test-catalog/test-catalog.routes.spec.ts'), apiLint)
+  const webLint = specs.find((command) => command.startsWith('pnpm --filter @southneuhof/framework-web lint:focused'))
+  assert.ok(webLint.includes('src/routes/(authenticated)/settings/test-catalog/test-catalog.integration.spec.ts'), webLint)
+})
+
+test('verification e2e command is absent when no browser file is generated', () => {
+  const full = config()
+  const value = {
+    ...full,
+    actions: { delete: full.actions.delete },
+    permissions: { 'delete-test-catalog': full.permissions['delete-test-catalog'] },
+    test: { record: full.test.record },
+  }
+  delete value.navigation
+  const specs = verificationCommands(value, { withSeed: false }).map(([command, args]) => [command, ...args].join(' '))
+  assert.equal(specs.some((command) => command.startsWith('pnpm --filter @southneuhof/framework-web test:e2e')), false)
 })
 
 test('reports command duration and timeout state', () => {

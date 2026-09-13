@@ -67,12 +67,21 @@ npx --yes create-carta-app@latest my-app \
 
 ### Configure the environment
 
-Copy the example environment files:
+Prepare the four local environment files from tracked templates:
 
 ```sh
-cp apps/api/.env.example apps/api/.env
-cp apps/web/.env.example apps/web/.env
+pnpm setup:local
+# edit the four local files and provision the named services
+pnpm module:preflight -- --needs api,web,test,browser,storage
 ```
+
+Each file has one purpose: `apps/api/.env` holds development settings,
+`apps/web/.env` holds web settings, `apps/api/.env.test` holds the isolated
+Vitest target, and `apps/api/.env.e2e` holds the E2E database and bucket
+overrides. `setup:local` creates only missing files and never overwrites an
+existing file. `module:preflight` is read-only; every `FAIL` names its purpose
+and the exact correction command. Run `node scripts/local-environment.mjs --help`
+for the check list.
 
 The API configuration includes:
 
@@ -99,12 +108,15 @@ VITE_API_URL
 WEB_PORT
 ```
 
-The default development addresses are:
+The sample addresses in the example files are templates, not defaults:
 
 ```text
 API: http://localhost:5180
 Web: http://localhost:5181
 ```
+
+Change `API_PORT` and the related API URLs only in `apps/api/.env`. Change
+`WEB_PORT` and `VITE_API_URL` only in `apps/web/.env`.
 
 ### Prepare the database
 
@@ -130,7 +142,7 @@ Start both applications:
 pnpm dev
 ```
 
-The API runs on port `5180` and the web application runs on port `5181` by default.
+The API runs on the port in `apps/api/.env` and the web application runs on the port in `apps/web/.env`.
 
 ### Useful commands
 
@@ -147,13 +159,17 @@ pnpm lint
 pnpm build
 ```
 
-Database commands are available through the API package:
+Database commands are available through the API package. Run them only after
+the matching preflight target passes:
 
 ```sh
 pnpm --filter @southneuhof/api db:generate
 pnpm --filter @southneuhof/api db:migrate
 pnpm --filter @southneuhof/api db:seed
 pnpm --filter @southneuhof/api db:refresh
+pnpm --filter @southneuhof/api db:migrate:test
+pnpm --filter @southneuhof/api e2e:migrate
+pnpm --filter @southneuhof/api e2e:seed
 ```
 
 Run web browser tests with:
@@ -363,6 +379,8 @@ The main Carta skills include:
 * `$carta-audit` for auditing the Sprindle and Loom framework
 
 Designs and implementation plans normally live under `plans/<feature>/`. This gives later agent sessions a persistent record of what was agreed and what remains to be done.
+
+Generate an approved bounded module with the node CLI: `pnpm scaffold:bounded-module -- --manifest plans/<feature>/module.json --check`, then `--apply`. Read `.agents/skills/carta-module-development/references/bounded.md` for the manifest contract.
 
 Repository-wide instructions are in [AGENTS.md](AGENTS.md).
 

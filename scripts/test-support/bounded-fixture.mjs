@@ -18,12 +18,27 @@ export function copyCurrentOwners(root) {
 }
 export function boundedConfig() {
   return {
-    kind: 'bounded-module', slug: 'test-catalog', table: 'test_catalog', symbol: 'TestCatalog', title: 'Test Catalog',
-    identity: { key: 'id', type: 'text', primary: true, generated: 'uuid' },
-    fields: [{ key: 'label', type: 'text', label: 'Label', required: true, renderer: 'text' }],
-    labels: { listTitle: 'Test Catalog', detailTitle: 'Test Catalog Item', createTitle: 'Add Test Catalog', editTitle: 'Edit Test Catalog', submitLabel: 'Save' },
-    permissions: { moduleName: 'Test Catalog', realm: 'system', entries: Object.fromEntries(['list', 'detail', 'create', 'update', 'delete'].map(action => [action, { name: `${action} catalog`, description: `${action} catalog entries.` }])) },
+    kind: 'bounded-module', slug: 'test-catalog', table: 'test_catalog', symbol: 'TestCatalog', title: 'Test Catalog', singular: 'Test Catalog',
+    fields: [
+      { key: 'label', type: 'text', label: 'Label', required: true },
+      { key: 'enabled', type: 'boolean', label: 'Enabled', default: true },
+    ],
+    actions: {
+      list: { fields: ['label', 'enabled'], permission: 'list-test-catalog' },
+      detail: { fields: ['label', 'enabled'], permission: 'detail-test-catalog' },
+      create: { fields: ['label', 'enabled'], permission: 'create-test-catalog' },
+      update: { fields: ['label', 'enabled'], permission: 'update-test-catalog' },
+      delete: { permission: 'delete-test-catalog' },
+    },
+    permissions: Object.fromEntries(['list', 'detail', 'create', 'update', 'delete'].map(action => [`${action}-test-catalog`, { name: `${action} test catalog`, description: `${action} test catalog records.` }])),
     navigation: { group: 'settings', after: 'settings-roles', title: 'Test Catalog', icon: 'folder' },
-    seed: { records: [{ id: 'catalog-one', label: 'One' }], updateFields: ['label'] },
+    seed: {
+      records: [{ id: 'test-catalog-1', label: 'One', enabled: true }],
+      updateFields: ['label', 'enabled'],
+    },
+    test: {
+      record: { label: 'One', enabled: true },
+      update: { label: 'Two' },
+    },
   }
 }

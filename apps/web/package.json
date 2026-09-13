@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "run-s type-check build-only",
-    "preview": "vite preview --port 3100",
+    "preview": "vite preview",
     "test": "NODE_ENV=test vitest run --environment jsdom --root src/",
     "test:unit": "NODE_ENV=test vitest run --environment jsdom --root src/",
     "test:focused": "sh -c 'shift; NODE_ENV=test exec vitest run --environment jsdom --root src/ \"$@\"' --",

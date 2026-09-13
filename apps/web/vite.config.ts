@@ -9,12 +9,22 @@ import { staticRouteName } from './src/router/file-routing/names'
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const port = Number(process.env.WEB_PORT ?? env.WEB_PORT)
-  if (command === 'serve' && !process.env.VITEST && !port) throw new Error('WEB_PORT is not set.')
+  const rawPort = env.WEB_PORT
+  const port = rawPort === undefined || rawPort === '' ? Number.NaN : Number(rawPort)
+  if (command === 'serve' && !process.env.VITEST) {
+    if (!Number.isInteger(port) || port < 1 || port > 65535) {
+      throw new Error('WEB_PORT is missing or invalid in apps/web/.env. Set WEB_PORT to a port 1-65535.')
+    }
+  }
+  const validPort = Number.isInteger(port) && port >= 1 && port <= 65535 ? port : undefined
   return {
     envPrefix: ['VITE_'],
     server: {
-      port: port || 5181,
+      port: validPort,
+      strictPort: true,
+    },
+    preview: {
+      port: validPort,
       strictPort: true,
     },
     plugins: [

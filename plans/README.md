@@ -359,9 +359,9 @@ migration, run a seed, or start a service.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 | --- | --- | --- | --- | --- | --- |
-| [016](016-centralize-app-port-settings.md) | Read application ports only from each app environment | P1 | S | None | TODO — plan only |
-| [017](017-prepare-local-module-environment.md) | Prepare and check the local module environment | P1 | M | 016 | TODO — plan only |
-| [018](018-expand-bounded-module-generator.md) | Generate selected standard module actions and their proof | P1 | L | 016, 017 | TODO — plan only |
+| [016](016-centralize-app-port-settings.md) | Read application ports only from each app environment | P1 | S | None | IMPLEMENTED — review APPROVE 2026-09-12; E2E-case run deferred to 017 |
+| [017](017-prepare-local-module-environment.md) | Prepare and check the local module environment | P1 | M | 016 | IMPLEMENTED — 2026-09-12, tool tests pass; live DB/S3/E2E integration blocked by missing local services |
+| [018](018-expand-bounded-module-generator.md) | Generate selected standard module actions and their proof | P1 | L | 016, 017 | IMPLEMENTED — 2026-09-13, tooling 84+2 pass, both type-checks pass; live migration/seed/API/browser runs blocked by missing local services |
 | [019](019-align-module-workflow-and-measure-time.md) | Use the new module path and measure its effect | P1 | M | 016, 017, 018 | TODO — plan only |
 
 The generator stays in the current command. It creates only selected standard

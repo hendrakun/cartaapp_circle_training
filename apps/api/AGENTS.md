@@ -97,5 +97,6 @@ around it by loosening the schema.
   in parallel, one file drops the tables another is using. Nothing else may touch that database
   while the suite runs.
 - `GET /openapi.json` is generated from the installed models — no hand-maintained spec.
+- Generate an approved bounded module with `pnpm scaffold:bounded-module -- --manifest plans/<feature>/module.json --check`, then `--apply`.
 - CI: `.github/workflows/backend-validation.yml` runs lint, type-check, migrate and tests for this app
   and for `packages/sprindle`.

@@ -48,10 +48,11 @@ test('retired discovery skills and calls are absent from the active module workf
 
 test('root module command aliases resolve to actual local helper scripts', () => {
   const scripts = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).scripts
-  for (const name of ['scaffold:bounded-module', 'integrate:bounded-module', 'verify:module', 'module:evidence']) {
+  for (const name of ['scaffold:bounded-module', 'verify:module', 'module:evidence']) {
     assert.match(scripts[name], /^node scripts\/[\w-]+\.mjs$/)
     assert.ok(existsSync(join(root, scripts[name].slice(5))), name)
   }
+  assert.ok(!Object.hasOwn(scripts, 'integrate:bounded-module'), 'integrate:bounded-module alias is removed')
 })
 
 test('API test entrypoints require the explicit test environment and migrations run the preflight first', () => {

@@ -5,7 +5,7 @@ import { resolve } from 'node:path'
 import { parseEnv } from 'node:util'
 import { fileURLToPath } from 'node:url'
 
-function databaseIdentity(value) {
+export function databaseIdentity(value) {
   let url
   try { url = new URL(value) } catch { throw new Error('DATABASE_URL must be a PostgreSQL URL.') }
   if (!['postgres:', 'postgresql:'].includes(url.protocol) || !url.hostname) throw new Error('DATABASE_URL must be a PostgreSQL URL.')

@@ -2,22 +2,23 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { parse } from 'dotenv'
 import { test as base, expect, type Page, type APIRequestContext, type TestInfo } from '@playwright/test'
-import { isE2eIteration, prepareForTest } from './state'
+import { isE2eIteration, prepareForTest, requiredE2eValue } from './state'
 
 const apiRoot = resolve(__dirname, '../../api')
 const knownSecrets = new Set<string>()
 
-function localEnv() {
-  const env = {
-    ...parse(readFileSync(resolve(apiRoot, '.env'))),
-    ...parse(readFileSync(resolve(apiRoot, '.env.e2e'))),
-  }
-  for (const value of [env.CARTA_ADMIN_EMAIL, env.CARTA_ADMIN_PASSWORD]) if (value) knownSecrets.add(value)
-  return env
+function localCredentials() {
+  const env = parse(readFileSync(resolve(apiRoot, '.env')))
+  const email = env.CARTA_ADMIN_EMAIL
+  const password = env.CARTA_ADMIN_PASSWORD
+  if (!email || !password) throw new Error('The local administrator credentials are missing in apps/api/.env.')
+  knownSecrets.add(email)
+  knownSecrets.add(password)
+  return { email, password }
 }
 
 async function waitForApi(page: Page) {
-  const apiUrl = process.env.E2E_API_URL ?? 'http://127.0.0.1:5180'
+  const apiUrl = requiredE2eValue('E2E_API_URL')
   await expect
     .poll(async () => (await page.request.get(`${apiUrl}/health`)).ok(), {
       timeout: 30_000,
@@ -27,10 +28,7 @@ async function waitForApi(page: Page) {
 }
 
 async function login(page: Page) {
-  const env = localEnv()
-  const email = env.CARTA_ADMIN_EMAIL
-  const password = env.CARTA_ADMIN_PASSWORD
-  if (!email || !password) throw new Error('The local administrator credentials are missing.')
+  const { email, password } = localCredentials()
 
   await page.goto('/auth/login')
   await page.getByRole('textbox').first().fill(email)
@@ -100,12 +98,9 @@ export const test = base.extend<{ authenticatedPage: Page; e2eState: void; fastA
       return
     }
     if (!fastAuthState) {
-      const env = localEnv()
-      const email = env.CARTA_ADMIN_EMAIL
-      const password = env.CARTA_ADMIN_PASSWORD
-      if (!email || !password) throw new Error('The local administrator credentials are missing.')
-      const apiUrl = process.env.E2E_API_URL ?? 'http://127.0.0.1:5180'
-      const webUrl = process.env.E2E_WEB_URL ?? 'http://127.0.0.1:5181'
+      const { email, password } = localCredentials()
+      const apiUrl = requiredE2eValue('E2E_API_URL')
+      const webUrl = requiredE2eValue('E2E_WEB_URL')
       const request = await playwright.request.newContext({ baseURL: apiUrl })
       try {
         const signIn = await request.post('/api/auth/sign-in/email', {

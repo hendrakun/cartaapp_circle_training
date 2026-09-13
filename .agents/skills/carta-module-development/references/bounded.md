@@ -5,12 +5,14 @@ scaffold command or manifest; use normal file edits for later route changes.
 
 ## Complete module operation
 
-Use `kind: "bounded-module"` only for a new single resource whose approved design includes all five
-standard actions (list, detail, create, update, delete), a generated text UUID
-identity, primitive fields and system-wide permissions. The current generator
-supports that shape, not arbitrary module contracts.
+Use `kind: "bounded-module"` only for a new single resource with a supported
+subset of the standard actions (list, detail, create, update, delete), a
+generated text UUID identity, primitive fields and system-wide permissions. The
+current generator supports that shape, not arbitrary module contracts.
 
-Action subsets, record-scoped/project permissions, relations, owned children,
+Action subsets are supported: omitted actions emit no page, public API action,
+resource action, navigation link, or permission. Record-scoped/project
+permissions, relations, owned children,
 workflows, custom writes/surfaces and risky existing-data migrations use normal
 implementation plans. Keep the approved scope; never add actions to fit the
 generator. Generator eligibility is independent of business uncertainty or risk.
@@ -19,8 +21,11 @@ Unknown manifest extensions are rejected rather than silently ignored.
 ## Manifest
 
 Write `plans/<feature>/module.json` after the design gate. The generic token is
-`kind: "bounded-module"`. `navigation.group` selects any existing authenticated
-route and navigation group; the generator does not assign a business group.
+`kind: "bounded-module"`. Identity and labels derive from `title` and
+`singular`; do not send `identity` or `labels` keys. `navigation.group` selects
+any existing authenticated route and navigation group; the generator does not
+assign a business group. `redirect` is required on create/update only when
+neither Detail nor List exists.
 
 ```json
 {
@@ -29,40 +34,39 @@ route and navigation group; the generator does not assign a business group.
   "table": "service_levels",
   "symbol": "ServiceLevel",
   "title": "Service Levels",
-  "identity": { "key": "id", "type": "text", "primary": true, "generated": "uuid" },
+  "singular": "Service Level",
   "fields": [
-    { "key": "name", "type": "text", "label": "Name", "required": true, "renderer": "text" },
-    { "key": "active", "type": "boolean", "label": "Active", "required": true, "renderer": "checkbox", "default": true }
+    { "key": "name", "type": "text", "label": "Name", "required": true },
+    { "key": "active", "type": "boolean", "label": "Active", "required": true, "default": true }
   ],
-  "labels": {
-    "listTitle": "Service Levels",
-    "detailTitle": "Service Level",
-    "createTitle": "Create Service Level",
-    "editTitle": "Edit Service Level",
-    "submitLabel": "Save"
+  "actions": {
+    "list": { "fields": ["name", "active"], "permission": "list-service-levels" },
+    "detail": { "fields": ["name", "active"], "permission": "detail-service-levels" },
+    "create": { "fields": ["name", "active"], "permission": "create-service-levels" },
+    "update": { "fields": ["name", "active"], "permission": "update-service-levels" },
+    "delete": { "permission": "delete-service-levels" }
   },
   "permissions": {
-    "moduleName": "Service Levels",
-    "realm": "system",
-    "entries": {
-      "list": { "name": "List service levels", "description": "List service levels." },
-      "detail": { "name": "View service level", "description": "View a service level." },
-      "create": { "name": "Create service level", "description": "Create a service level." },
-      "update": { "name": "Update service level", "description": "Update a service level." },
-      "delete": { "name": "Delete service level", "description": "Delete a service level." }
-    }
+    "list-service-levels": { "name": "List service levels", "description": "List service levels." },
+    "detail-service-levels": { "name": "View service level", "description": "View a service level." },
+    "create-service-levels": { "name": "Create service level", "description": "Create a service level." },
+    "update-service-levels": { "name": "Update service level", "description": "Update a service level." },
+    "delete-service-levels": { "name": "Delete service level", "description": "Delete a service level." }
   },
   "navigation": {
     "group": "settings",
     "after": "settings-roles",
     "title": "Service Levels",
-    "icon": "folder",
-    "separator": "Configuration"
+    "icon": "folder"
+  },
+  "test": {
+    "record": { "name": "Standard", "active": true },
+    "update": { "name": "Priority" }
   }
 }
 ```
 
-Use `actionFields` when list, detail, create, and update have different field
+Use per-action `fields` when list, detail, create, and update have different field
 sets. Add `seed` only when the design requires stable initial records.
 
 ## Check and generate
@@ -70,29 +74,32 @@ sets. Add `seed` only when the design requires stable initial records.
 Inspect `--help` for the actual helper interface. Validate without writing source:
 
 ```sh
-python3 .agents/skills/carta-module-development/scripts/scaffold_bounded.py --manifest plans/<feature>/module.json --check --json
+pnpm scaffold:bounded-module -- --manifest plans/<feature>/module.json --check --json
 ```
 
-After implementation is authorized, generate and integrate source explicitly:
+After implementation is authorized, generate with the transactional apply:
 
 ```sh
-python3 .agents/skills/carta-module-development/scripts/scaffold_bounded.py --manifest plans/<feature>/module.json --apply --json
+pnpm scaffold:bounded-module -- --manifest plans/<feature>/module.json --apply --json
 ```
 
-The wrapper checks eligibility and integration anchors before source generation.
-It never runs a database migration, seed, application test or external write.
+The node command validates the manifest, gates migration scope, and integrates
+owners. `--check` writes nothing. `--apply` writes source and one migration,
+integrates owners, and never runs a migration, seed, test, or external write.
 It refuses existing generated files. On partial failure, inspect the reported
 changed files rather than blindly restarting or overwriting them.
 
 Review the generated schema and SQL migration, add the contract-specific tests,
-and use the plan's isolated test environment. The generated tests are smoke
-checks, not proof of accepted/denied CRUD, field validation or consumer behavior.
+and use the plan's isolated test environment. The generated API spec proves
+permission, validation, persistence, and unchanged rejected writes for the
+selected standard actions; the generated browser journey covers only the stable
+standard path. Custom behavior needs its own tests.
 When optional seed records are present, integration registers the module's seed
 in the current `seedDatabase` owner; the plan still decides which environment
 may execute it.
 
-The root `scaffold:bounded-module`, `integrate:bounded-module` and `verify:module`
-commands expose the individual tools. `verify:module --check-only` performs
+The root `scaffold:bounded-module`, `verify:module`, and `module:evidence`
+commands expose the public tools. `verify:module --check-only` performs
 static checks; `--run` runs its listed non-browser commands and stops at the
 first failure. `--reports <unique-directory>` preserves summary and command
 outputs. Read [verification-strategy.md](verification-strategy.md) for status
@@ -102,8 +109,7 @@ scope, additional business tests, evidence freshness and semantic acceptance.
 
 Use `kind: "routes"` to create selected API or web route files in a new or existing
 module. The complete module limits above do not apply to this operation.
-Call `scripts/scaffold-bounded-module.mjs` directly; the bounded Python wrapper
-owns complete module integration only. Read the command's `--help` for options.
+Call `scripts/scaffold-bounded-module.mjs` directly. Read the command's `--help` for options.
 
 Select paths after checking inherited API scopes or rendered web parents. Supply
 the route code, imports, and required access checks. The generator creates source;

@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { test, afterEach } from 'node:test'
-import { scaffold, validateConfig } from './scaffold-bounded-module.mjs'
+import { execute as scaffoldExecute, scaffold, validateConfig } from './scaffold-bounded-module.mjs'
 import { integrate } from './integrate-bounded-module.mjs'
 import { verify, execute, runCommand } from './verify-module.mjs'
 import { boundedConfig, copyCurrentOwners, sourceRoot, ownerPaths } from './test-support/bounded-fixture.mjs'
@@ -44,10 +44,20 @@ test('current checkout owners integrate with typed permission definitions and se
   assert.equal(verify(value, { root }).status, 'PASS')
 })
 
-test('generator refuses unsupported scoped permissions and action subsets instead of expanding them', () => {
+test('generator supports action subsets but refuses unknown actions and unused permissions', () => {
   const value = boundedConfig()
-  assert.throws(() => validateConfig({ ...value, actions: ['list', 'detail'] }), /full CRUD|action subset|unsupported/i)
-  assert.throws(() => validateConfig({ ...value, permissions: { ...value.permissions, realm: 'project' } }), /system|scope/i)
+  const used = new Set([value.actions.list.permission])
+  const subset = {
+    ...value,
+    actions: { list: value.actions.list },
+    permissions: Object.fromEntries(Object.entries(value.permissions).filter(([code]) => used.has(code))),
+    navigation: value.navigation,
+    seed: value.seed,
+  }
+  delete subset.test
+  assert.doesNotThrow(() => validateConfig(subset))
+  assert.throws(() => validateConfig({ ...value, actions: { ...value.actions, archive: { permission: 'archive-test-catalog' } } }), /unsupported/)
+  assert.throws(() => validateConfig({ ...value, permissions: { ...value.permissions, 'extra-test-catalog': { name: 'Extra', description: 'Extra.' } } }), /unused/)
 })
 
 test('static verification explicitly distinguishes unrun runtime and unreviewed acceptance', () => {
@@ -74,18 +84,16 @@ test('command evidence retains full output and its working directory', () => {
   assert.equal(result.cwd, root)
 })
 
-test('bounded wrapper has a read-only check and rejects invalid JSON without any source writes', () => {
+test('node CLI --manifest --check writes nothing and rejects invalid manifests without writes', () => {
   const root = workspace(), manifest = join(root, 'module.json')
   writeFileSync(manifest, JSON.stringify(boundedConfig()))
-  const wrapper = join(sourceRoot, '.agents/skills/carta-module-development/scripts/scaffold_bounded.py')
   const before = readdirSync(root)
-  const check = spawnSync('python3', [wrapper, '--manifest', manifest, '--root', root, '--check', '--json'], { encoding: 'utf8' })
-  assert.equal(check.status, 0, check.stderr)
-  assert.equal(JSON.parse(check.stdout).status, 'VALID')
+  const preview = JSON.parse(scaffoldExecute(['--manifest', manifest, '--root', root, '--check', '--json'], { cwd: root, root }))
+  assert.equal(preview.status, 'VALID')
+  assert.deepEqual(preview.writes, [])
   assert.deepEqual(readdirSync(root), before)
   writeFileSync(manifest, '{')
-  const invalid = spawnSync('python3', [wrapper, '--manifest', manifest, '--root', root, '--check', '--json'], { encoding: 'utf8' })
-  assert.notEqual(invalid.status, 0)
+  assert.throws(() => scaffoldExecute(['--manifest', manifest, '--root', root, '--check', '--json'], { cwd: root, root }))
   assert.equal(existsSync(join(root, 'apps')), false)
 })
 
@@ -111,14 +119,14 @@ test('integration rejects mutually exclusive check/apply flags without touching 
   }
 })
 
-test('nested unsupported manifest behavior is rejected rather than silently ignored', () => {
+test('unknown manifest keys are rejected rather than silently ignored', () => {
   const value = boundedConfig()
   for (const candidate of [
     { ...value, fields: [{ ...value.fields[0], relation: 'customers' }] },
-    { ...value, permissions: { ...value.permissions, scope: 'department' } },
-    { ...value, identity: { ...value.identity, mutable: true } },
-    { ...value, serverFields: [{ key: 'ownerId', type: 'text', required: true }] },
-  ]) assert.throws(() => validateConfig(candidate), /unsupported|default|normal module plan/)
+    { ...value, permissions: { ...value.permissions, 'extra-test-catalog': { name: 'Extra', description: 'Extra.' } } },
+    { ...value, identity: { key: 'id', type: 'text', primary: true, generated: 'uuid' } },
+    { ...value, labels: { listTitle: 'Test Catalog' } },
+  ]) assert.throws(() => validateConfig(candidate), /unsupported|unused|normal module plan/)
 })
 
 test('durable static reports are scoped, fresh, non-overwriting and detect same-file edits', async () => {
@@ -137,19 +145,22 @@ test('durable static reports are scoped, fresh, non-overwriting and detect same-
   assert.equal(checkFreshness(saved).fresh, false)
 })
 
-test('wrapper apply only generates/integrates source and preflights incompatible owners', () => {
-  const wrapper = join(sourceRoot, '.agents/skills/carta-module-development/scripts/scaffold_bounded.py')
-  for (const broken of [false, true]) {
-    const root = workspace(); copyCurrentOwners(root)
-    if (broken) writeFileSync(join(root, ownerPaths[1]), 'incompatible catalog')
-    const manifest = join(root, 'manifest.json'); writeFileSync(manifest, JSON.stringify(boundedConfig()))
-    const result = spawnSync('python3', [wrapper, '--manifest', manifest, '--root', root, '--apply', '--json'], { encoding: 'utf8' })
-    const response = JSON.parse(result.stdout)
-    assert.equal(response.databaseWrites, false)
-    assert.equal(existsSync(join(root, 'apps/api/src/routes/(authenticated)/test-catalog/test-catalog.entity.ts')), !broken)
-    assert.equal(result.status, broken ? 1 : 0, result.stderr)
-    assert.ok(response.commands.every(command => !command.argv.some(arg => arg === 'pnpm' || arg.includes('db:migrate') || arg.includes('db:seed'))))
+test('node CLI --manifest/--config mismatch throws without writes', () => {
+  const root = workspace()
+  const first = join(root, 'first.json'), second = join(root, 'second.json')
+  writeFileSync(first, JSON.stringify(boundedConfig()))
+  writeFileSync(second, JSON.stringify(boundedConfig()))
+  assert.throws(() => scaffoldExecute(['--manifest', first, '--config', second, '--root', root, '--check'], { cwd: root, root }), /must match/)
+  assert.equal(existsSync(join(root, 'apps')), false)
+})
+
+test('node CLI rejects --check with --apply together without writes', () => {
+  const root = workspace(), manifest = join(root, 'module.json')
+  writeFileSync(manifest, JSON.stringify(boundedConfig()))
+  for (const modes of [['--check', '--apply'], ['--apply', '--check']]) {
+    assert.throws(() => scaffoldExecute(['--manifest', manifest, '--root', root, ...modes], { cwd: root, root }), /mutually exclusive/)
   }
+  assert.equal(existsSync(join(root, 'apps')), false)
 })
 
 test('worksheet initialization uses the canonical asset, preserves existing work and rejects traversal', () => {

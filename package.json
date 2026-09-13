@@ -23,10 +23,11 @@
     "skills:add": "sh -c 'npx skills@latest add southneuhof/skills --skill \"$1\"' --",
     "skills:update": "npx skills update",
     "scaffold:bounded-module": "node scripts/scaffold-bounded-module.mjs",
-    "integrate:bounded-module": "node scripts/integrate-bounded-module.mjs",
     "verify:module": "node scripts/verify-module.mjs",
     "module:evidence": "node scripts/module-evidence.mjs",
     "test:module-tooling": "node --test scripts/*.test.mjs && python3 -B -m unittest discover -s .agents/skills/carta-module-development/scripts",
+    "setup:local": "node scripts/local-environment.mjs setup",
+    "module:preflight": "node scripts/local-environment.mjs preflight",
     "setup:editor": "pnpm --filter @southneuhof/sprindle editor:install"
   },
   "devDependencies": {
