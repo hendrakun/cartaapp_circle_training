@@ -13,6 +13,10 @@ The worksheet alone maps acceptance and journeys to tests and results.
 - Source: <commit and relevant dirty/untracked input snapshot>
 - Scope: <permitted edits, test target and side effects>
 
+| Needs: api,web,test,browser,storage | Preflight result/evidence | Owner |
+|---|---|---|
+| <selected capabilities and purpose> | `pnpm module:preflight -- --needs <selected>`: <result or PENDING> | <owner> |
+
 ## Owners and interfaces
 
 | File / symbol | Existing or new | Required change | Consumers |

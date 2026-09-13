@@ -1,0 +1,4 @@
+Command: pnpm module:preflight -- --needs api,web,test,browser
+Result: FAIL browser — Chromium executable is missing.
+Correction: install the configured Playwright Chromium binary, then rerun browser preflight.
+Result: PASS api, web, test.

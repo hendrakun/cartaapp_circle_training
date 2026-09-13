@@ -5,27 +5,32 @@ scaffold command or manifest; use normal file edits for later route changes.
 
 ## Complete module operation
 
-Use `kind: "bounded-module"` only for a new single resource with a supported
-subset of the standard actions (list, detail, create, update, delete), a
-generated text UUID identity, primitive fields and system-wide permissions. The
-current generator supports that shape, not arbitrary module contracts.
+Use `kind: "bounded-module"` for a new one-table resource with a generated text
+UUID `id`, system permissions and any supported subset of List, Detail, Create,
+Update and Delete. It generates compatible standard actions beside custom work.
+An omitted action creates no surface, public action or permission. Update without
+Detail creates only the technical API read needed to hydrate the edit form. It
+uses the Update permission and creates no Detail surface or permission.
 
-Action subsets are supported: omitted actions emit no page, public API action,
-resource action, navigation link, or permission. Record-scoped/project
-permissions, relations, owned children,
-workflows, custom writes/surfaces and risky existing-data migrations use normal
-implementation plans. Keep the approved scope; never add actions to fit the
-generator. Generator eligibility is independent of business uncertainty or risk.
-Unknown manifest extensions are rejected rather than silently ignored.
+Fields support `text`, `boolean` and `number` with the current standard Loom
+renderers. They can set `required`, a scalar `default`, or a supported explicit
+`renderer`. List, Detail, Create and Update list only their fields. Delete has no
+fields. Actions can share a permission code. Every used code must exist once in
+`permissions`; unused definitions fail. Navigation is optional and needs List.
+
+Relations, dependent input, child resources, scoped access, workflow,
+concurrency, existing-data migration, custom query, report and custom surfaces
+stay manual. Keep independent standard actions in the manifest. An unsupported
+explicit renderer makes its UI and browser proof manual. Unknown actions,
+extensions and manifest keys fail.
 
 ## Manifest
 
-Write `plans/<feature>/module.json` after the design gate. The generic token is
-`kind: "bounded-module"`. Identity and labels derive from `title` and
-`singular`; do not send `identity` or `labels` keys. `navigation.group` selects
-any existing authenticated route and navigation group; the generator does not
-assign a business group. `redirect` is required on create/update only when
-neither Detail nor List exists.
+Write `plans/<feature>/module.json` after design approval. Identity, route names,
+labels, standard renderers and normal redirects are derived. This partial example
+generates List, Create and Update while Detail stays custom. `navigation.group`
+selects an existing authenticated route and navigation group. A Create or Update
+action needs `redirect` only when neither Detail nor List exists.
 
 ```json
 {
@@ -41,17 +46,13 @@ neither Detail nor List exists.
   ],
   "actions": {
     "list": { "fields": ["name", "active"], "permission": "list-service-levels" },
-    "detail": { "fields": ["name", "active"], "permission": "detail-service-levels" },
     "create": { "fields": ["name", "active"], "permission": "create-service-levels" },
-    "update": { "fields": ["name", "active"], "permission": "update-service-levels" },
-    "delete": { "permission": "delete-service-levels" }
+    "update": { "fields": ["name", "active"], "permission": "update-service-levels" }
   },
   "permissions": {
     "list-service-levels": { "name": "List service levels", "description": "List service levels." },
-    "detail-service-levels": { "name": "View service level", "description": "View a service level." },
     "create-service-levels": { "name": "Create service level", "description": "Create a service level." },
-    "update-service-levels": { "name": "Update service level", "description": "Update a service level." },
-    "delete-service-levels": { "name": "Delete service level", "description": "Delete a service level." }
+    "update-service-levels": { "name": "Update service level", "description": "Update a service level." }
   },
   "navigation": {
     "group": "settings",
@@ -66,50 +67,61 @@ neither Detail nor List exists.
 }
 ```
 
-Use per-action `fields` when list, detail, create, and update have different field
-sets. Add `seed` only when the design requires stable initial records.
+`test.record` is required for a selected mutation. `test.update` is required for
+Update and must change one Update field. The API test uses these values exactly.
+For a read-only List or Detail module, add an exact seed when the design requires
+stable initial records:
 
-## Check and generate
-
-Inspect `--help` for the actual helper interface. Validate without writing source:
-
-```sh
-pnpm scaffold:bounded-module -- --manifest plans/<feature>/module.json --check --json
+```json
+"seed": {
+  "records": [{ "id": "service-level-standard", "name": "Standard", "active": true }],
+  "updateFields": ["name", "active"]
+}
 ```
 
-After implementation is authorized, generate with the transactional apply:
+The generator does not invent or run seed records. Without a read-only seed,
+generation succeeds and reports the browser fixture as manual.
+
+## Check and apply once
+
+The two public complete-module commands are:
 
 ```sh
-pnpm scaffold:bounded-module -- --manifest plans/<feature>/module.json --apply --json
+pnpm scaffold:bounded-module -- --manifest plans/<feature>/module.json --check
+pnpm scaffold:bounded-module -- --manifest plans/<feature>/module.json --apply
 ```
 
-The node command validates the manifest, gates migration scope, and integrates
-owners. `--check` writes nothing. `--apply` writes source and one migration,
-integrates owners, and never runs a migration, seed, test, or external write.
-It refuses existing generated files. On partial failure, inspect the reported
-changed files rather than blindly restarting or overwriting them.
+Read `--help` for optional flags. `--check` writes nothing and reports selected
+actions, Update hydration, paths, owner edits, migration intent, seed choice,
+generated tests and manual work. Inspect each result.
 
-Review the generated schema and SQL migration, add the contract-specific tests,
-and use the plan's isolated test environment. The generated API spec proves
-permission, validation, persistence, and unchanged rejected writes for the
-selected standard actions; the generated browser journey covers only the stable
-standard path. Custom behavior needs its own tests.
-When optional seed records are present, integration registers the module's seed
-in the current `seedDatabase` owner; the plan still decides which environment
-may execute it.
+After implementation authority exists, run `--apply` once. It refuses existing
+generated destinations. It writes new source and uses installed Drizzle Kit to
+generate one migration. It rejects unrelated schema operations, reports the SQL,
+and never applies the migration. It registers an exact seed when present and
+never runs it. It never runs generated tests or external writes. Review the SQL
+and source, then edit generated source normally. Do not regenerate over edited
+source. On partial failure, inspect the reported paths before any retry.
 
-The root `scaffold:bounded-module`, `verify:module`, and `module:evidence`
-commands expose the public tools. `verify:module --check-only` performs
-static checks; `--run` runs its listed non-browser commands and stops at the
-first failure. `--reports <unique-directory>` preserves summary and command
-outputs. Read [verification-strategy.md](verification-strategy.md) for status
-scope, additional business tests, evidence freshness and semantic acceptance.
+The generated API spec covers only selected standard actions. Its assertions
+cover permitted and denied requests, validation, persistence and unchanged
+rejected writes where applicable. The browser file is conditional: standard
+renderers and a stable created or seeded record produce one connected journey;
+custom UI or a missing read-only seed gives a manual reason. After Create or
+Update, it waits for the response and asserts the framework redirect to Detail,
+else List. It does not navigate between submit and this assertion. Custom behavior
+needs direct proof.
+
+Read [verification-strategy.md](verification-strategy.md) for evidence scope and
+acceptance. The root `verify:module` and `module:evidence` commands are
+verification tools, not generators.
 
 ## Route-only operation
 
 Use `kind: "routes"` to create selected API or web route files in a new or existing
 module. The complete module limits above do not apply to this operation.
-Call `scripts/scaffold-bounded-module.mjs` directly. Read the command's `--help` for options.
+This is a low-level operation in `scripts/scaffold-bounded-module.mjs`, not the
+normal module path. Call the script directly and read its `--help` for options.
 
 Select paths after checking inherited API scopes or rendered web parents. Supply
 the route code, imports, and required access checks. The generator creates source;

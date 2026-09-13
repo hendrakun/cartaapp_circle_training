@@ -99,8 +99,12 @@ snapshots of component internals. Existing weak tests are not templates.
 ## Commands and environment
 
 Resolve package scripts, filters, config and test patterns from this checkout.
-Confirm that focused selectors select the intended tests; zero tests, skipped
-requirements and generated scaffold smoke tests do not establish acceptance.
+Confirm that focused selectors select the intended tests. Zero tests and skipped
+requirements do not establish acceptance. Generated API evidence proves only
+the permitted/denied, validation, persistence and unchanged-rejection assertions
+that it contains. A generated browser journey proves only the standard path that
+it performs. Custom acceptance rows need direct evidence; an omitted manual check
+stays unverified.
 The root `test` command does not run the separate application Playwright suite.
 Loom's browser tests and application E2E are different surfaces. Respect serial
 API specifications sharing a database and serialize memory-heavy type checks.
@@ -184,6 +188,10 @@ The bounded static checker reports `scope: static`, `runtime: NOT_RUN` and
 Playwright or semantic acceptance. Use `--reports` for a durable summary and
 command logs; its helper snapshot must be supplemented with contract/dependency
 inputs when they are not in the generated-module set.
+
+For generated work, rerun the current manifest `--check` and inspect current
+source and behavior. Generated files become normal editable source after their
+one creation. Template comparison cannot verify an edited file.
 
 ## Verdicts
 

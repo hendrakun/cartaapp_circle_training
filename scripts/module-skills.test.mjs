@@ -18,6 +18,9 @@ function prose(text) {
     return fence === null
   }).join('\n')
 }
+function activeProse() {
+  return active.flatMap(name => markdownFiles(join(skillsRoot, name))).map(file => prose(readFileSync(file, 'utf8'))).join('\n')
+}
 
 test('active module skills have unique discoverable identities and real local reference targets', () => {
   const failures = []
@@ -53,6 +56,34 @@ test('root module command aliases resolve to actual local helper scripts', () =>
     assert.ok(existsSync(join(root, scripts[name].slice(5))), name)
   }
   assert.ok(!Object.hasOwn(scripts, 'integrate:bounded-module'), 'integrate:bounded-module alias is removed')
+  assert.deepEqual(Object.keys(scripts).filter(name => scripts[name].includes('scaffold-bounded-module.mjs')), ['scaffold:bounded-module'])
+})
+
+test('module workflow selects preflight and compatible standard actions before implementation', () => {
+  const router = readFileSync(join(skillsRoot, 'carta-module-development/SKILL.md'), 'utf8')
+  const preflight = router.indexOf('pnpm module:preflight')
+  assert.ok(preflight > router.indexOf('Before substantial implementation'))
+  assert.ok(preflight < router.indexOf('pnpm scaffold:bounded-module'))
+  assert.match(router, /all compatible standard actions/)
+  assert.match(router, /Custom Detail work does not remove compatible List, Create or Update/)
+})
+
+test('active module guidance uses the one public generator and its write guards', () => {
+  const text = activeProse()
+  assert.doesNotMatch(text, /scaffold_bounded\.py|integrate:bounded-module|integrate-bounded-module\.mjs/)
+  const bounded = readFileSync(join(skillsRoot, 'carta-module-development/references/bounded.md'), 'utf8')
+  assert.match(bounded, /never applies the migration/)
+  assert.match(bounded, /never runs it/)
+  assert.match(bounded, /refuses existing\s+generated destinations/)
+})
+
+test('generated evidence remains limited to its direct standard assertions', () => {
+  const strategy = readFileSync(join(skillsRoot, 'carta-module-development/references/verification-strategy.md'), 'utf8')
+  const verifier = readFileSync(join(skillsRoot, 'verify-carta-module/SKILL.md'), 'utf8')
+  for (const text of [strategy, verifier]) {
+    assert.match(text, /generated browser journey proves only the standard path/i)
+    assert.match(text, /Custom acceptance rows need direct evidence/i)
+  }
 })
 
 test('API test entrypoints require the explicit test environment and migrations run the preflight first', () => {

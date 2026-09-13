@@ -21,6 +21,14 @@
 - Planned at: commit `7eb093d`, 2026-09-12
 - Status: TODO — plan only
 
+## Implementation record — 2026-09-13
+
+Required skill inputs read before the first skill edit:
+
+- `/Users/gamer/.codex/skills/.system/skill-creator/SKILL.md`
+- `/Users/gamer/.agents/skills/writing-for-agents/SKILL.md`
+- `/Users/gamer/.agents/skills/writing-for-agents/SKILL-MECHANICS.md`
+
 The user selected this migration and required `$skill-creator` and
 `$writing-for-agents`. Execute it after the commands in plans 016-018 exist and
 pass. Keep the skill router short. Put command details in the current bounded

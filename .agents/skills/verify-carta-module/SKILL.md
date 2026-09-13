@@ -85,11 +85,14 @@ Broaden checks when shared changes expose dependent consumers. Fingerprints
 prove selected file freshness, not that the selected dependencies or test
 assertions were adequate.
 
-For a generated module, validate the manifest with the wrapper's read-only
-`--check`, inspect generated/integrated code, and read actual helper reports.
-The helper's static/runtime status explicitly excludes semantic acceptance and
-browser evidence. Generated authentication/shape smoke tests do not prove full
-CRUD behavior, scoped authorization or business invariants.
+For a generated module, run the current manifest command with read-only `--check`,
+inspect current generated and integrated source, and read actual helper reports.
+Do not compare edited source with generator templates. The helper's static/runtime
+status excludes semantic acceptance and browser evidence. Generated API evidence
+proves only its permitted/denied, validation, persistence and unchanged-rejection
+assertions. A generated browser journey proves only the standard path that it
+performs. Custom acceptance rows need direct evidence; a manual omission is not
+a pass.
 
 When UI obligations apply, read [UI automation](../carta-module-development/references/ui-automation.md)
 and map the required outcomes to passing Playwright cases/steps. Inspect source

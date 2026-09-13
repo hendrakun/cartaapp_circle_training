@@ -56,9 +56,9 @@ called a complete application workflow.
 
 ## Organize the work
 
-Put test environment preparation first: isolated database, browser, storage and
-ports needed by the selected checks. Use existing setup within task authority.
-Name any blocked check and its missing prerequisite.
+Put environment preparation first. Record selected capabilities and the
+`module:preflight` result in the plan's environment row. Use existing setup within
+task authority. Name any blocked check and its missing prerequisite.
 
 Make the first implementation result a complete path through the most uncertain
 integration. Include API, UI and persistence where the approved path uses them.

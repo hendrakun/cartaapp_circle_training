@@ -35,13 +35,40 @@
       ]
     },
     {
-      "id": "read-only-generator-pressure",
-      "stage": "plan",
-      "request": "Plan this approved read-only catalogue. The bounded generator seems convenient; use it only if it preserves the contract exactly.",
-      "inputs": [
-        "fixtures/approved/design.md",
-        "fixtures/owners/categories.ts"
-      ]
+      "id": "partial-standard-module",
+      "stage": "execute",
+      "request": "Plan the implementation path for this approved mixed module. State what the bounded generator creates and what stays manual. Do not apply changes.",
+      "inputs": ["fixtures/workflow/partial-standard-module.md"]
+    },
+    {
+      "id": "update-without-detail",
+      "stage": "execute",
+      "request": "Plan the implementation path for this approved Update module with no Detail action. State the generated dependency and browser redirect. Do not apply changes.",
+      "inputs": ["fixtures/workflow/update-without-detail.md"]
+    },
+    {
+      "id": "read-only-seeded-module",
+      "stage": "execute",
+      "request": "Plan the generated outputs and proof for this approved read-only seeded module. Do not apply a migration or run a seed.",
+      "inputs": ["fixtures/workflow/read-only-seeded-module.md"]
+    },
+    {
+      "id": "custom-relations",
+      "stage": "execute",
+      "request": "Separate the compatible generated work from the manual work in this approved relation module. Do not change a framework package.",
+      "inputs": ["fixtures/workflow/custom-relations.md"]
+    },
+    {
+      "id": "environment-failure",
+      "stage": "execute",
+      "request": "Start this approved module workflow from the supplied preflight result. Report the blocked and independent work. Do not apply changes.",
+      "inputs": ["fixtures/workflow/partial-standard-module.md", "fixtures/workflow/preflight-failure.txt"]
+    },
+    {
+      "id": "migration-contamination",
+      "stage": "execute",
+      "request": "Review this bounded generation attempt and state the safe next result. Do not change product source.",
+      "inputs": ["fixtures/workflow/read-only-seeded-module.md", "fixtures/workflow/migration-contamination.txt"]
     },
     {
       "id": "resume-implemented-plan",

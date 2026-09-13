@@ -50,9 +50,25 @@ Assess uncertainty, dependency impact, risk and generator eligibility separately
 A known relation does not require a heavier interview, and a small resource can
 still have an unresolved business rule. For selected route files at any supported application route depth, use the
 [route-only operation](references/bounded.md#route-only-operation).
-For a new full-CRUD resource with no
-special behavior, check [bounded.md](references/bounded.md) for generator limits;
-generator ineligibility does not change the approved scope.
+
+Before substantial implementation:
+
+1. Select the required environment capabilities from the approved design and plan.
+2. Run `pnpm module:preflight -- --needs <capabilities>`.
+3. Build one manifest for all compatible standard actions, including standard
+   actions beside custom work.
+4. Run `pnpm scaffold:bounded-module -- --manifest <path> --check`. Inspect the
+   selected files, technical dependencies, migration intent, seed choice,
+   generated tests and manual remainder.
+5. After implementation authority exists, run the same command with `--apply`
+   once.
+6. Review the migration and generated source, then implement the custom remainder.
+
+Custom Detail work does not remove compatible List, Create or Update work from
+the generator. Treat generated source as normal editable source after `--apply`;
+do not regenerate over it. Read the [bounded generation
+contract](references/bounded.md) for manifest rules, outputs and manual cases.
+Generator ineligibility does not change the approved scope.
 
 Delegate implementation by default under the
 [assignment and recovery rules](references/execution.md#assignment).

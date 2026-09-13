@@ -35,10 +35,13 @@ focused results; full plan acceptance need not block independent work.
 ## Prepare and build
 
 Use the selected evidence surfaces; add one only for an uncovered outcome.
-Run the worksheet checker once before execution. Check the guarded test target,
-required services, browser and storage setup before substantial code work.
-Prepare local prerequisites within authority. Report blocked checks by acceptance
-ID and continue work that does not depend on them.
+Run the worksheet checker once before execution. Select `api`, `web`, `test`,
+`browser` and `storage` only when the approved plan needs them, then run
+`pnpm module:preflight -- --needs <comma-separated-capabilities>` before
+substantial code work. A failed capability blocks only dependent work. Report
+the exact failure by acceptance ID, correct it within authority, and continue
+design, manifest work and independent code. A required setup fault must be known
+before the final browser run.
 
 Confirm the planned UI components against current exports before using them.
 Build the first integration path, including changed value conversion, edit

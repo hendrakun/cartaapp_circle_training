@@ -51,6 +51,8 @@ obligations covered/missed, invented business rules, source-grounded and irrelev
 questions, reference requests, unnecessary reapprovals, actual commands/retries,
 seeded defects found/missed, and final verdict. Record elapsed time/token cost only
 when measured. Use PASS / FAIL / BLOCKED / NOT_RUN with an explanatory finding.
+For module-workflow cases, also record the preflight command/result, generator
+command/result, unsafe writes attempted, and the reviewer decision.
 
 Blind the reviewer to variant labels when practical. Read every graded artifact;
 keyword counts and template headings cannot establish semantic completeness.
