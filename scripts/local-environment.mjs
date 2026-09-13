@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // One owner for local setup plus read-only preflight. Setup creates missing
-// local environment files; preflight only reads configuration and probes
+// local environment files; preflight only reads configuration and checks
 // selected capabilities. It performs no install, migration, seed, reset,
-// upload, list, or delete, and never prints a secret value.
+// upload, list, or delete, never probes a dev server port, and never prints
+// a secret value.
 import {
   existsSync,
   mkdirSync,
@@ -10,7 +11,6 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs'
-import { createConnection } from 'node:net'
 import { randomBytes } from 'node:crypto'
 import { dirname, isAbsolute, resolve } from 'node:path'
 import { createRequire } from 'node:module'
@@ -218,55 +218,11 @@ function createProbeTracker(probes) {
   return { opened, closed, track, noteClosed, probes }
 }
 
-async function probeTcp({ host, port, timeoutMs, openSocket, onClose }) {
-  if (openSocket) {
-    try {
-      const socket = await openSocket({ host, port, timeoutMs })
-      await onClose?.(socket)
-      return true
-    } catch {
-      await onClose?.(null).catch(() => {})
-      return false
-    }
-  }
-  return new Promise((accept) => {
-    const socket = createConnection({ host, port, timeout: timeoutMs })
-    const done = (open) => {
-      socket.destroy()
-      accept(open)
-    }
-    socket.on('connect', () => done(true))
-    socket.on('timeout', () => done(false))
-    socket.on('error', () => done(false))
-  })
-}
-
-async function probeHttpJson({ url, timeoutMs, fetchJson }) {
-  if (fetchJson) return fetchJson(url, timeoutMs)
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), timeoutMs)
-  try {
-    const response = await fetch(url, { signal: controller.signal })
-    if (!response.ok) return null
-    return await response.json().catch(() => null)
-  } catch {
-    return null
-  } finally {
-    clearTimeout(timer)
-  }
-}
-
-function parsePortHost(url) {
-  const parsed = new URL(url)
-  return { host: parsed.hostname, port: Number(parsed.port) }
-}
-
 export async function preflight(needs, { root = scriptRoot(), env = process.env, probes = {} } = {}) {
   const tracker = createProbeTracker(probes)
   const results = []
   const apiRoot = resolve(root, 'apps/api')
   const webRoot = resolve(root, 'apps/web')
-  let apiPorts = null
   let e2eConfiguration = null
 
   const coreCheck = async (need) => {
@@ -293,41 +249,12 @@ export async function preflight(needs, { root = scriptRoot(), env = process.env,
       let webConfiguration
       try {
         webConfiguration = readEnvFile(resolve(webRoot, '.env'), 'apps/web/.env')
-        apiPorts = checkPortAndUrls(resolve(apiRoot, '.env'), apiConfiguration, resolve(webRoot, '.env'), webConfiguration)
+        checkPortAndUrls(resolve(apiRoot, '.env'), apiConfiguration, resolve(webRoot, '.env'), webConfiguration)
       } catch (error) {
         results.push(fail('api', 'port and URL rules', redactSecrets(error.message)))
         return
       }
       results.push(pass('api', 'dependencies and configuration'))
-      const { host, port } = parsePortHost(apiPorts.betterAuthUrl)
-      const open = await probeTcp({
-        host,
-        port,
-        timeoutMs: probes.timeoutMs ?? PROBE_TIMEOUT_MS,
-        openSocket: probes.openSocket
-          ? (target) => probes.openSocket({ ...target, tracker, kind: 'socket-api' })
-          : undefined,
-        onClose: async (socket) => {
-          tracker.noteClosed('socket-api')
-          try { socket?.destroy?.() } catch { /* probe socket already closed */ }
-        },
-      })
-      if (!open) {
-        results.push(fail('api', `api port ${port}`, `start the API with pnpm dev:api (port ${port} is closed)`))
-        return
-      }
-      const health = await probeHttpJson({
-        url: `${apiPorts.betterAuthUrl.replace(/\/$/, '')}/health`,
-        timeoutMs: probes.timeoutMs ?? PROBE_TIMEOUT_MS,
-        fetchJson: probes.fetchJson
-          ? (url, timeoutMs) => probes.fetchJson(url, timeoutMs, { tracker, kind: 'http-api' })
-          : undefined,
-      }).finally(() => tracker.noteClosed('http-api'))
-      if (health && typeof health === 'object' && 'ok' in health) {
-        results.push(pass('api', `api /health on port ${port}`))
-      } else {
-        results.push(fail('api', `api /health on port ${port}`, `stop the process that owns port ${port}; it is not the API`))
-      }
     }
 
     if (need === 'web') {
@@ -339,45 +266,14 @@ export async function preflight(needs, { root = scriptRoot(), env = process.env,
         results.push(fail('web', 'web configuration detail', redactSecrets(error.message)))
         return
       }
-      let ports
       try {
         const apiConfiguration = readEnvFile(resolve(apiRoot, '.env'), 'apps/api/.env')
-        ports = checkPortAndUrls(resolve(apiRoot, '.env'), apiConfiguration, resolve(webRoot, '.env'), webConfiguration)
-        apiPorts ??= ports
+        checkPortAndUrls(resolve(apiRoot, '.env'), apiConfiguration, resolve(webRoot, '.env'), webConfiguration)
       } catch (error) {
         results.push(fail('web', 'port and URL rules', redactSecrets(error.message)))
         return
       }
       results.push(pass('web', 'web configuration'))
-      const { host, port } = parsePortHost(ports.appOrigin)
-      const open = await probeTcp({
-        host,
-        port,
-        timeoutMs: probes.timeoutMs ?? PROBE_TIMEOUT_MS,
-        openSocket: probes.openSocket
-          ? (target) => probes.openSocket({ ...target, tracker, kind: 'socket-web' })
-          : undefined,
-        onClose: async (socket) => {
-          tracker.noteClosed('socket-web')
-          try { socket?.destroy?.() } catch { /* probe socket already closed */ }
-        },
-      })
-      if (!open) {
-        results.push(fail('web', `web port ${port}`, `start the web app with pnpm dev:web (port ${port} is closed)`))
-        return
-      }
-      const page = await probeHttpJson({
-        url: ports.appOrigin,
-        timeoutMs: probes.timeoutMs ?? PROBE_TIMEOUT_MS,
-        fetchJson: probes.fetchJson
-          ? (url, timeoutMs) => probes.fetchJson(url, timeoutMs, { tracker, kind: 'http-web' })
-          : undefined,
-      }).finally(() => tracker.noteClosed('http-web'))
-      if (page !== null) {
-        results.push(pass('web', `web server on port ${port}`))
-      } else {
-        results.push(fail('web', `web server on port ${port}`, `stop the process that owns port ${port}; it is not the web app`))
-      }
     }
 
     if (need === 'test') {
@@ -639,7 +535,7 @@ export function helpText() {
     '',
     'preflight is read-only. Default scope is api,web. Each line has the form',
     'STATUS PURPOSE CHECK CORRECTION. Checks: api (deps, API env, plan-016 port',
-    'and URL rules, API /health); web (web env, plan-016 rules, web response);',
+    'and URL rules); web (web env, plan-016 rules);',
     'test (guarded .env.test target plus select current_database()); browser (E2E',
     'guard, Chromium executable exists, E2E select current_database()); storage',
     '(E2E bucket guard plus one read-only bucket head). Database results print',

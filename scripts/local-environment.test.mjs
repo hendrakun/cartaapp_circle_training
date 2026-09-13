@@ -81,26 +81,26 @@ test('test and E2E identity cannot equal the development identity', () => {
 test('missing, unreachable and mismatched targets give safe corrections without secrets', async () => {
   const root = fixtureRoot()
   setupLocal({ root, createSecret: () => 'x'.repeat(64) })
+  mkdirSync(join(root, 'apps/api/node_modules'), { recursive: true })
   const secretUrl = 'postgresql://admin:s3cret-value@localhost:5432/carta_api_test'
   writeFileSync(join(root, 'apps/api/.env.test'), `DATABASE_URL=${secretUrl}\nCARTA_DATABASE_PURPOSE=test\nCARTA_TEST_DATABASE_NAME=carta_api_test\n`)
-  const closedSocket = async ({ tracker, kind }) => {
-    tracker.track(kind, { destroy() {} })
-    return null
-  }
-  const { results } = await preflight(['api', 'test'], {
+  const { results } = await preflight(['api', 'web', 'test'], {
     root,
     env: {},
     probes: {
-      openSocket: closedSocket,
       queryDatabase: async () => {
         throw new Error(secretUrl)
       },
     },
   })
-  const { text, failed } = formatResults({ needs: ['api', 'test'], results })
+  const { text, failed } = formatResults({ needs: ['api', 'web', 'test'], results })
   assert.ok(failed > 0)
   assert.ok(!text.includes('s3cret-value'))
   assert.equal(redactSecrets(`DATABASE_URL=${secretUrl}`).includes('s3cret-value'), false)
+  const apiResult = results.find((result) => result.purpose === 'api')
+  assert.equal(apiResult.status, 'PASS')
+  const webResult = results.find((result) => result.purpose === 'web')
+  assert.equal(webResult.status, 'PASS')
   const correction = results.find((result) => result.purpose === 'test' && result.status === 'FAIL')
   assert.match(correction.correction, /db:migrate:test/)
 
@@ -111,6 +111,17 @@ test('missing, unreachable and mismatched targets give safe corrections without 
   })
   assert.equal(mismatched.results.at(-1).status, 'FAIL')
   assert.match(mismatched.results.at(-1).correction, /point apps\/api\/.env\.test/)
+})
+
+test('api and web checks pass without a running dev server', async () => {
+  const root = fixtureRoot()
+  setupLocal({ root, createSecret: () => 'x'.repeat(64) })
+  mkdirSync(join(root, 'apps/api/node_modules'), { recursive: true })
+  const { results } = await preflight(['api', 'web'], { root, env: {} })
+  assert.deepEqual(
+    results.map((result) => `${result.status} ${result.purpose} ${result.check}`),
+    ['PASS api dependencies and configuration', 'PASS web web configuration'],
+  )
 })
 
 test('matching test database probe passes and receives the configured connection', async () => {
@@ -134,24 +145,15 @@ test('matching test database probe passes and receives the configured connection
   assert.equal(received?.database, 'carta_api_test')
 })
 
-test('every injected socket and client is closed', async () => {
+test('every injected client is closed', async () => {
   const root = fixtureRoot()
   setupLocal({ root, createSecret: () => 'x'.repeat(64) })
+  mkdirSync(join(root, 'apps/api/node_modules'), { recursive: true })
   writeFileSync(join(root, 'apps/api/.env'), `${readFileSync(join(root, 'apps/api/.env'), 'utf8')}S3_ENDPOINT=http://localhost:9000\nS3_ACCESS_KEY=key\nS3_SECRET_KEY=secret\n`)
-  const seen = []
-  const fakeSocket = { destroy() { seen.push('socket') } }
   const { opened, closed } = await preflight(['api', 'web', 'test', 'browser', 'storage'], {
     root,
     env: {},
     probes: {
-      openSocket: async ({ tracker, kind }) => {
-        tracker.track(kind, fakeSocket)
-        return fakeSocket
-      },
-      fetchJson: async (url, _timeout, { tracker, kind }) => {
-        tracker.track(kind, {})
-        return url.includes('/health') ? { ok: true } : {}
-      },
       queryDatabase: async ({ tracker, kind }) => {
         tracker.track(kind, {})
         return 'carta_api_test'
@@ -173,5 +175,4 @@ test('every injected socket and client is closed', async () => {
   })
   for (const kind of opened) assert.ok(closed.includes(kind), `unclosed probe: ${kind}`)
   assert.ok(opened.length > 0)
-  assert.ok(seen.length > 0)
 })
