@@ -162,3 +162,20 @@ specs are a worktree overlay until regenerated from the now-committed fix;
 assertion needs a technical repair plus run; (3) `CommandPalette.spec.ts`
 hard-coded nav list needs the same; (4) full web `vue-tsc` unrun on the
 candidate. No blocker.
+
+## Release repairs — 2026-09-13
+
+Commit `2edd6bc` closes the review remainder in the main checkout:
+
+- `CommandPalette.spec.ts` asserts membership of the shipped Settings
+  entries instead of an exact list. Full web unit suite: 48 files, 234
+  tests, all pass. Web `type-check` (`vue-tsc`): pass.
+- Generator `renderIntegrationTest` documents that absence checks describe
+  generated routes only; a later manual route can add a name the generated
+  check does not know.
+- `pnpm test:module-tooling`: 92 Node pass. `git diff --check`: pass.
+- Candidate worktree proof (specs regenerated from the committed fix,
+  disposable targets): 3 browser specs pass, exit 0
+  (`.local/browser-final.md/.json`); both integration specs recorded
+  (trial-products pass; trial-services fails only on the known stale
+  absence line, now documented in the generator comment above).
