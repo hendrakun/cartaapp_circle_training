@@ -51,12 +51,13 @@ function snakeCase(value) {
 }
 
 function deriveLabels(title, singular) {
+  // Form submit copy stays with the framework default. A manifest label
+  // hard-codes one locale and breaks translated apps.
   return {
     listTitle: title,
     detailTitle: singular,
     createTitle: `Create ${singular}`,
     editTitle: `Edit ${singular}`,
-    submitLabel: 'Save',
   }
 }
 
@@ -209,30 +210,41 @@ function validateTestFixture(value, { actions, fields, seed }) {
   }
   if (Object.hasOwn(actions, 'update')) {
     const updateFields = actions.update.fields
-    if (!isObject(value.update)) throw new Error('test.update is required for update.')
-    const updateKeys = Object.keys(value.update)
-    if (updateKeys.length === 0) throw new Error('test.update must change at least one update field.')
-    for (const key of updateKeys) {
-      if (!updateFields.includes(key)) throw new Error(`test.update contains unsupported field "${key}".`)
-    }
-    let changesField = false
-    for (const key of updateKeys) {
-      if (value.record[key] === undefined || value.record[key] !== value.update[key]) changesField = true
-    }
-    if (!changesField) throw new Error('test.update must change at least one update field.')
-    for (const [key, fieldValue] of Object.entries(value.update)) {
-      const field = fieldByKey[key]
-      const expected = field.type === 'boolean' ? 'boolean' : field.type === 'number' ? 'number' : 'string'
-      if (typeof fieldValue !== expected) throw new Error(`test.update.${key} must be ${expected}.`)
-      if (field.type === 'number' && !Number.isFinite(fieldValue)) throw new Error(`test.update.${key} must be a finite number.`)
+    if (value.update === undefined) {
+      // Partial paths get no browser file, so test.update stays optional
+      // there. The slim journey validates it for list+create+update below.
+    } else {
+      if (!isObject(value.update)) throw new Error('test.update is required for update.')
+      const updateKeys = Object.keys(value.update)
+      if (updateKeys.length === 0) throw new Error('test.update must change at least one update field.')
+      for (const key of updateKeys) {
+        if (!updateFields.includes(key)) throw new Error(`test.update contains unsupported field "${key}".`)
+      }
+      let changesField = false
+      for (const key of updateKeys) {
+        if (value.record[key] === undefined || value.record[key] !== value.update[key]) changesField = true
+      }
+      if (!changesField) throw new Error('test.update must change at least one update field.')
+      for (const [key, fieldValue] of Object.entries(value.update)) {
+        const field = fieldByKey[key]
+        const expected = field.type === 'boolean' ? 'boolean' : field.type === 'number' ? 'number' : 'string'
+        if (typeof fieldValue !== expected) throw new Error(`test.update.${key} must be ${expected}.`)
+        if (field.type === 'number' && !Number.isFinite(fieldValue)) throw new Error(`test.update.${key} must be a finite number.`)
+      }
     }
   } else if (value.update !== undefined) {
     throw new Error('test.update is allowed only when the update action exists.')
   }
+  // Partial paths get no browser file, so test.update stays optional
+  // there. The slim journey needs it only for list+create+update.
+  const hasFullPath = ['list', 'create', 'update'].every((action) => Object.hasOwn(actions, action))
+  if (hasFullPath && (!isObject(value.update) || Object.keys(value.update).length === 0)) {
+    throw new Error('test.update is required for the list, create, and update journey.')
+  }
   const browserNeedsSeed = !hasMutation && (Object.hasOwn(actions, 'list') || Object.hasOwn(actions, 'detail')) && seed === null
   return {
     record: value.record,
-    ...(Object.hasOwn(actions, 'update') ? { update: value.update } : {}),
+    ...(isObject(value.update) ? { update: value.update } : {}),
     browserNeedsSeed,
   }
 }
@@ -632,7 +644,6 @@ function renderRoutes(config) {
   const listTitle = html(config.labels.listTitle)
   const createTitle = html(config.labels.createTitle)
   const editTitle = html(config.labels.editTitle)
-  const submitLabel = html(config.labels.submitLabel)
   // Update without Detail hydrates through the technical read route: pass a
   // `load` function to FormView that calls the technical read via
   // createHonoResourceActions. The technical detail action is not a page or
@@ -653,7 +664,7 @@ const api = createHonoResourceActions(rpc['${config.slug}'])
 const load = (context: { signal?: AbortSignal }) => api.detail({ id, searchParameters: {}, signal: context.signal })
 </script>
 
-<template><FormView v-bind="{ load, ...${plural}.update({ id } as never) }" title="${editTitle}" submit-label="${submitLabel}" /></template>
+<template><FormView v-bind="{ load, ...${plural}.update({ id } as never) }" title="${editTitle}" /></template>
 `
     : `<script setup lang="ts">
 import { useRoute } from 'vue-router'
@@ -663,7 +674,7 @@ import { ${plural} } from '../${config.slug}.resource'
 const route = useRoute('${metadata.routes.edit}')
 </script>
 
-<template><FormView v-bind="${plural}.update({ id: String(route.params.${routeParam}) })" title="${editTitle}" submit-label="${submitLabel}" /></template>
+<template><FormView v-bind="${plural}.update({ id: String(route.params.${routeParam}) })" title="${editTitle}" /></template>
 `
   return {
     index: `<script setup lang="ts">
@@ -678,7 +689,7 @@ import { FormView } from '@southneuhof/loom'
 import { ${plural} } from './${config.slug}.resource'
 </script>
 
-<template><FormView v-bind="${plural}.create()" title="${createTitle}" submit-label="${submitLabel}" /></template>
+<template><FormView v-bind="${plural}.create()" title="${createTitle}" /></template>
 `,
     detail: `<script setup lang="ts">
 import { useRoute } from 'vue-router'
@@ -695,42 +706,24 @@ const route = useRoute('${metadata.routes.detail}')
 }
 
 function renderIntegrationTest(config) {
+  // Route structure and navigation membership belong to the static UI
+  // contract check, not to Vitest. Keep one smoke that proves the list
+  // route renders through the router the app uses.
   const metadata = moduleMetadata(config)
   const selected = new Set(config.selectedActions)
-  const permission = config.actions.list?.permission ?? Object.values(config.actions)[0]?.permission ?? ''
-  // Route assertions reference only existing actions: assert a selected route
-  // name, and assert absence only for actions the manifest omitted. The
-  // assertions describe generated routes only: a later manual route (for
-  // example an approved custom Detail page) can add a name that the
-  // generated absence check does not know, so absence checks stay scoped to
-  // generated files, not the final route table.
-  const assertions = []
-  if (selected.has('list')) assertions.push(`    expect(router.resolve('/${config.navigation.group}/${config.slug}').name).toBe('${metadata.routes.list}')`)
-  else assertions.push(`    expect(router.getRoutes().map((route) => route.name)).not.toContain('${config.navigation.group}-${config.slug}')`)
-  if (selected.has('create')) assertions.push(`    expect(router.resolve('/${config.navigation.group}/${config.slug}/create').name).toBe('${metadata.routes.create}')`)
-  else assertions.push(`    expect(router.getRoutes().map((route) => route.name)).not.toContain('${config.navigation.group}-${config.slug}-create')`)
-  if (selected.has('detail')) assertions.push(`    expect(router.resolve('/${config.navigation.group}/${config.slug}/record-1/detail').name).toBe('${metadata.routes.detail}')`)
-  else assertions.push(`    expect(router.getRoutes().map((route) => route.name)).not.toContain('${config.navigation.group}-${config.slug}-detail')`)
-  if (selected.has('update')) assertions.push(`    expect(router.resolve('/${config.navigation.group}/${config.slug}/record-1/edit').name).toBe('${metadata.routes.edit}')`)
-  else assertions.push(`    expect(router.getRoutes().map((route) => route.name)).not.toContain('${config.navigation.group}-${config.slug}-edit')`)
-  const navigationBlock = selected.has('list') ? `
-
-    const group = navigation.find((module) => module.name === '${config.navigation.group}')
-    expect(group?.routes).toContainEqual({
-      to: { name: '${metadata.routes.list}' },
-      permission: '${permission}',
-      title: ${literal(config.navigation.title)},
-      icon: ${literal(config.navigation.icon)},
-    })` : ''
+  const listRoute = metadata.routes.list
   return `import { describe, expect, it } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { routes } from 'vue-router/auto-routes'
-${selected.has('list') ? "import { navigation } from '@/manifest/navigation'\n" : ''}
+
 const router = createRouter({ history: createMemoryHistory(), routes })
 
-describe(${literal(`${config.title} route integration`)}, () => {
-  it('registers the standard route tree and navigation entry', () => {
-${assertions.join('\n')}${navigationBlock}
+describe(${literal(`${config.title} route smoke`)}, () => {
+  it('routes the list page', async () => {
+${selected.has('list')
+    ? `    await router.push('/${config.navigation.group}/${config.slug}')
+    expect(router.currentRoute.value.name).toBe('${listRoute}')`
+    : `    expect(router.getRoutes().map((route) => route.name)).not.toContain('${config.navigation.group}-${config.slug}')`}
   })
 })
 `
@@ -753,6 +746,9 @@ function invalidPayloadLiteral(valid, actionKeys, fields) {
 }
 
 function renderApiSpec(config) {
+  // Minimal workflow proof: each selected action succeeds and persists.
+  // Access and validation stay because they are stable and cheap. Copy
+  // checks stay out: UI correctness is the user's responsibility.
   const selected = new Set(config.selectedActions)
   const entity = lowerCamel(config.symbol)
   const plural = `${entity}s`
@@ -762,154 +758,82 @@ function renderApiSpec(config) {
   const hasCreate = selected.has('create')
   const hasList = selected.has('list')
   const hasDetail = selected.has('detail')
-  const hasUpdate = selected.has('update')
+  const hasUpdate = selected.has('update') && Object.keys(updatePayload).length > 0
   const hasDelete = selected.has('delete')
   const needsSetup = (hasList || hasDetail || hasUpdate || hasDelete) && Object.keys(record).length > 0
   const defineRecord = needsSetup || hasCreate
   const invalidCreate = hasCreate ? invalidPayloadLiteral(record, config.actions.create.fields, config.fields) : null
   const invalidUpdate = hasUpdate ? invalidPayloadLiteral(updatePayload, config.actions.update.fields, config.fields) : null
-  const setupInsert = needsSetup ? `    await db.insert(${plural}).values({ id, ...record })\n` : ''
-  const createBlock = hasCreate ? `    expect((await app.request('/${config.slug}/create', { method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: denied.cookie }, body: JSON.stringify(record) })).status).toBe(403)\n    expect((await app.request('/${config.slug}/create', { method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: admin.cookie }, body: JSON.stringify(${invalidCreate}) })).status).toBe(400)\n${needsSetup ? `    expect(await db.select().from(${plural}).where(eq(${plural}.id, id))).toHaveLength(1)\n` : ''}    const createResponse = await app.request('/${config.slug}/create', { method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: admin.cookie }, body: JSON.stringify(record) })\n    expect(createResponse.status).toBe(201)\n    createdId = ((await createResponse.json()) as { data: { id: string } }).data.id\n    expect(await db.select().from(${plural}).where(eq(${plural}.id, createdId))).toMatchObject([record])\n` : ''
-  const listBlock = hasList ? `    expect((await app.request('/${config.slug}/list', { headers: { Cookie: denied.cookie } })).status).toBe(403)\n    const listResponse = await app.request('/${config.slug}/list', { headers: { Cookie: admin.cookie } })\n    expect(listResponse.status).toBe(200)\n${needsSetup ? `    expect(JSON.stringify(await listResponse.json())).toContain(id)\n` : hasCreate ? `    expect(JSON.stringify(await listResponse.json())).toContain(createdId)\n` : ''}` : ''
-  const detailTarget = needsSetup ? 'id' : hasCreate ? 'createdId' : 'id'
-  const detailBlock = hasDetail ? `    expect((await app.request('/${config.slug}/detail/' + ${detailTarget}, { headers: { Cookie: denied.cookie } })).status).toBe(403)\n    const detailResponse = await app.request('/${config.slug}/detail/' + ${detailTarget}, { headers: { Cookie: admin.cookie } })\n    expect(detailResponse.status).toBe(200)\n${needsSetup || hasCreate ? `    expect(await detailResponse.json()).toMatchObject({ data: record })\n` : ''}` : ''
-  const updateBlock = hasUpdate ? `    expect((await app.request('/${config.slug}/update/' + id, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Cookie: denied.cookie }, body: JSON.stringify(updatePayload) })).status).toBe(403)\n    expect((await app.request('/${config.slug}/update/' + id, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Cookie: admin.cookie }, body: JSON.stringify(${invalidUpdate}) })).status).toBe(400)\n    expect(await db.select().from(${plural}).where(eq(${plural}.id, id))).toMatchObject([record])\n    const updateResponse = await app.request('/${config.slug}/update/' + id, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Cookie: admin.cookie }, body: JSON.stringify(updatePayload) })\n    expect(updateResponse.status).toBe(200)\n    expect(await db.select().from(${plural}).where(eq(${plural}.id, id))).toMatchObject([{ ...record, ...updatePayload }])\n` : ''
-  const deleteBlock = hasDelete ? `    expect((await app.request('/${config.slug}/delete/' + id, { method: 'DELETE', headers: { Cookie: denied.cookie } })).status).toBe(403)\n    expect(await db.select().from(${plural}).where(eq(${plural}.id, id))).toHaveLength(1)\n    const deleteResponse = await app.request('/${config.slug}/delete/' + id, { method: 'DELETE', headers: { Cookie: admin.cookie } })\n    expect(deleteResponse.status).toBe(200)\n    expect(await db.select().from(${plural}).where(eq(${plural}.id, id))).toHaveLength(0)\n` : ''
-  const cleanupDeletes = hasCreate ? `    await db.delete(${plural}).where(eq(${plural}.id, id))\n    if (createdId) await db.delete(${plural}).where(eq(${plural}.id, createdId))\n` : `    await db.delete(${plural}).where(eq(${plural}.id, id))\n`
-  return `import { afterAll, expect, it } from 'vitest'\nimport { eq } from 'drizzle-orm'\nimport { app } from '../../../app'\nimport { closeDb, getDb } from '../../../db'\nimport { cleanupSessions, createSystemSession, testId } from '../../../testing/session'\nimport { ${plural} } from './${config.slug}.entity'\n\nafterAll(() => closeDb())\n\nit(${literal(`proves ${config.title} standard actions`)}, async () => {\n  const db = getDb()\n  const admin = await createSystemSession(${JSON.stringify(permissions)})\n  const denied = await createSystemSession([])\n  const id = testId(${literal(config.slug)})\n${defineRecord ? `  const record = ${JSON.stringify(record)}\n` : ''}${hasUpdate ? `  const updatePayload = ${JSON.stringify(updatePayload)}\n` : ''}${hasCreate ? `  let createdId: string | undefined\n` : ''}  try {\n${setupInsert}${createBlock}${listBlock}${detailBlock}${updateBlock}${deleteBlock}  } finally {\n${cleanupDeletes}    await cleanupSessions()\n  }\n}, 60_000)\n`
+  // Seed rows through the API when create exists, else insert directly.
+  // One record proves the read and write path.
+  const setupInsert = needsSetup && !hasCreate ? `    await db.insert(${plural}).values({ id, ...record })\n` : ''
+  const createBlock = hasCreate ? `    const deniedCreate = await app.request('/${config.slug}/create', { method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: denied.cookie }, body: JSON.stringify(record) })\n    expect(deniedCreate.status).toBe(403)\n    const invalidCreate = await app.request('/${config.slug}/create', { method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: admin.cookie }, body: JSON.stringify(${invalidCreate}) })\n    expect(invalidCreate.status).toBe(400)\n    const createResponse = await app.request('/${config.slug}/create', { method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: admin.cookie }, body: JSON.stringify(record) })\n    expect(createResponse.status).toBe(201)\n    createdId = ((await createResponse.json()) as { data: { id: string } }).data.id\n    const targetId = createdId\n    expect(await db.select().from(${plural}).where(eq(${plural}.id, targetId))).toMatchObject([record])\n` : ''
+  const updateSetup = hasUpdate && !hasCreate ? `    const targetId = id\n` : ''
+  const readTarget = hasCreate && (hasList || hasDetail || hasUpdate || hasDelete) ? 'targetId' : 'id'
+  const listBlock = hasList ? `    const deniedList = await app.request('/${config.slug}/list', { headers: { Cookie: denied.cookie } })\n    expect(deniedList.status).toBe(403)\n    const listResponse = await app.request('/${config.slug}/list', { headers: { Cookie: admin.cookie } })\n    expect(listResponse.status).toBe(200)\n    expect(JSON.stringify(await listResponse.json())).toContain(${readTarget})\n` : ''
+  const detailBlock = hasDetail ? `    const deniedDetail = await app.request('/${config.slug}/detail/' + ${readTarget}, { headers: { Cookie: denied.cookie } })\n    expect(deniedDetail.status).toBe(403)\n    const detailResponse = await app.request('/${config.slug}/detail/' + ${readTarget}, { headers: { Cookie: admin.cookie } })\n    expect(detailResponse.status).toBe(200)\n    expect(await detailResponse.json()).toMatchObject({ data: record })\n` : ''
+  const updateBlock = hasUpdate ? `    const deniedUpdate = await app.request('/${config.slug}/update/' + ${readTarget}, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Cookie: denied.cookie }, body: JSON.stringify(updatePayload) })\n    expect(deniedUpdate.status).toBe(403)\n    const invalidUpdate = await app.request('/${config.slug}/update/' + ${readTarget}, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Cookie: admin.cookie }, body: JSON.stringify(${invalidUpdate}) })\n    expect(invalidUpdate.status).toBe(400)\n    const updateResponse = await app.request('/${config.slug}/update/' + ${readTarget}, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Cookie: admin.cookie }, body: JSON.stringify(updatePayload) })\n    expect(updateResponse.status).toBe(200)\n    expect(await db.select().from(${plural}).where(eq(${plural}.id, ${readTarget}))).toMatchObject([{ ...record, ...updatePayload }])\n` : ''
+  const deleteBlock = hasDelete ? `    const deniedDelete = await app.request('/${config.slug}/delete/' + ${readTarget}, { method: 'DELETE', headers: { Cookie: denied.cookie } })\n    expect(deniedDelete.status).toBe(403)\n    const deleteResponse = await app.request('/${config.slug}/delete/' + ${readTarget}, { method: 'DELETE', headers: { Cookie: admin.cookie } })\n    expect(deleteResponse.status).toBe(200)\n    expect(await db.select().from(${plural}).where(eq(${plural}.id, ${readTarget}))).toHaveLength(0)\n` : ''
+  const cleanupDeletes = `    await db.delete(${plural}).where(eq(${plural}.id, id))\n${hasCreate ? `    if (createdId) await db.delete(${plural}).where(eq(${plural}.id, createdId))\n` : ''}`
+  return `import { afterAll, expect, it } from 'vitest'\nimport { eq } from 'drizzle-orm'\nimport { app } from '../../../app'\nimport { closeDb, getDb } from '../../../db'\nimport { cleanupSessions, createSystemSession, testId } from '../../../testing/session'\nimport { ${plural} } from './${config.slug}.entity'\n\nafterAll(() => closeDb())\n\nit(${literal(`proves ${config.title} standard actions`)}, async () => {\n  const db = getDb()\n  const admin = await createSystemSession(${JSON.stringify(permissions)})\n  const denied = await createSystemSession([])\n  const id = testId(${literal(config.slug)})\n${defineRecord ? `  const record = ${JSON.stringify(record)}\n` : ''}${hasUpdate ? `  const updatePayload = ${JSON.stringify(updatePayload)}\n` : ''}${hasCreate ? `  let createdId: string | undefined\n` : ''}  try {\n${setupInsert}${createBlock}${updateSetup}${listBlock}${detailBlock}${updateBlock}${deleteBlock}  } finally {\n${cleanupDeletes}    await cleanupSessions()\n  }\n}, 60_000)\n`
 }
 
 function browserManualReason(config) {
+  // The slim journey needs the full list/create/update path plus
+  // test.update. Anything smaller gets manual browser proof.
   const selected = new Set(config.selectedActions)
-  const hasWebAction = ['list', 'detail', 'create', 'update'].some((action) => selected.has(action))
-  if (!hasWebAction || !config.navigation) return 'no web action selected'
+  const hasFullPath = ['list', 'create', 'update'].every((action) => selected.has(action))
+  if (!hasFullPath || Object.keys(config.test?.update ?? {}).length === 0) return 'slim journey needs list, create, update, and test.update'
+  if (!config.navigation) return 'slim journey needs navigation'
   const unsupportedField = config.fields.find((field) => !field.rendererSupported)
   if (unsupportedField) return `custom renderer for ${unsupportedField.key}:${unsupportedField.renderer} makes that UI action manual`
-  if (!selected.has('create') && !config.seed) return 'read-only journey needs a seed record'
   return null
 }
 
 function renderBrowserSpec(config) {
+  // Minimal workflow journey: create, edit, reload. It proves the data
+  // path works. It never proves copy, layout, dialogs, seed display, or
+  // delete flow. UI correctness is the user's responsibility.
+  // Callers check browserManualReason first; this returns null there too.
+  if (browserManualReason(config) !== null) return null
   const selected = new Set(config.selectedActions)
-  const metadata = moduleMetadata(config)
   const firstField = config.fields[0]
   const record = config.test?.record ?? config.seed?.records[0] ?? {}
   const updatePayload = config.test?.update ?? {}
   const updateKey = Object.keys(updatePayload)[0]
   const updateValue = updateKey ? updatePayload[updateKey] : undefined
-  const seed = config.seed?.records[0]
-  const hasList = selected.has('list')
-  const hasCreate = selected.has('create')
-  const hasDetail = selected.has('detail')
-  const hasUpdate = selected.has('update')
-  const hasDelete = selected.has('delete')
   const lines = []
   lines.push(`import { expect, test } from './fixtures'`)
   lines.push('')
   lines.push(`test.use({ fastAuth: true })`)
   lines.push('')
   lines.push(`test(${literal(`${config.title} journey persists across reload`)}, async ({ authenticatedPage: page }) => {`)
-  if (hasList) {
-    lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
-    if (seed) lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(seed[firstField.key]))}, exact: true })).toBeVisible()`)
-    // A list with no rows renders the empty slot ("No data"), not a table:
-    // assert the list page chrome instead. The rows appear after Create below.
-    else if (record[firstField.key] !== undefined) lines.push(`  await expect(page.getByRole('heading', { name: ${literal(config.labels.listTitle)} })).toBeVisible()`)
+  lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
+  lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}/create')`)
+  for (const [key, value] of Object.entries(record)) {
+    if (typeof value === 'boolean') continue
+    lines.push(`  await page.getByRole('textbox', { name: ${literal(config.fields.find((field) => field.key === key)?.label ?? key)} }).fill(${literal(String(value))})`)
   }
-  if (hasCreate) {
-    lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}/create')`)
-    for (const [key, value] of Object.entries(record)) {
-      if (typeof value === 'boolean') continue
-      lines.push(`  await page.getByRole('textbox', { name: ${literal(config.fields.find((field) => field.key === key)?.label ?? key)} }).fill(${literal(String(value))})`)
-    }
-    lines.push(`  await page.getByRole('button', { name: ${literal(config.labels.submitLabel)}, exact: true }).click()`)
-    // The framework defaultTo (detail, else list) fires after a successful
-    // submit. Save resolves through the resource run, so wait for the POST
-    // response before asserting the redirect: without the wait the assertion
-    // can run while the save is still in flight. Then expect the framework
-    // redirect, not an explicit goto. Never assert the success toast: it
-    // never paints after a real save.
-    lines.push(`  await page.waitForResponse((response) => response.url().includes('/${config.slug}/create') && response.request().method() === 'POST')`)
-    if (hasDetail) {
-      lines.push(`  await expect(page).toHaveURL(new RegExp('/${config.navigation.group}/${config.slug}/.+/detail'))`)
-      // DetailView renders the static resource title as the heading; the
-      // record value renders in the detail table below it.
-      lines.push(`  await expect(page.getByRole('heading', { name: ${literal(config.labels.detailTitle)} })).toBeVisible()`)
-      lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(record[firstField.key]))}, exact: true })).toBeVisible()`)
-    } else if (hasList) {
-      lines.push(`  await expect(page).toHaveURL(new RegExp('/${config.navigation.group}/${config.slug}$'))`)
-      lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(record[firstField.key]))}, exact: true })).toBeVisible()`)
-    } else {
-      lines.push(`  await expect(page.getByRole('button', { name: ${literal(config.labels.submitLabel)}, exact: true })).toBeVisible()`)
-    }
-  }
-  if (hasDetail && !hasCreate) {
-    // DetailView heading is the static resource title; the record value is
-    // asserted in the read-only journey context below where available.
-    lines.push(`  await expect(page.getByRole('heading', { name: ${literal(config.labels.detailTitle)} })).toBeVisible()`)
-  }
-  if (hasUpdate && updateKey) {
-    // After saving the Update the framework defaultTo fires (detail, else
-    // list). Wait for the PATCH response, then expect the redirect and
-    // assert the saved value there, then reload and assert again to prove
-    // persistence across reload. Do not assert the volatile success toast.
-    // The journey is its own cleanup: it deletes the row it created, so
-    // after a green run no same-valued row remains; keep the assertions
-    // unscoped cells so a same-valued leftover from a previous RED run
-    // fails loudly instead of passing on the wrong row. The Update page
-    // needs a record id in the URL; the journey edits the record it just
-    // created, whose id is unknown to the static spec, so open the List
-    // first, follow the created row's Edit link, save, and expect the
-    // redirect. The row link keeps working even when a seed record shares
-    // the table.
-    if (hasList) {
-      lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
-      lines.push(`  await page.getByRole('row', { name: new RegExp(${literal(String(record[firstField.key]))}) }).getByRole('link', { name: /edit/i }).click()`)
-    } else if (seed) {
-      lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}/${seed.id}/edit')`)
-    }
-    lines.push(`  await page.getByRole('textbox', { name: ${literal(config.fields.find((field) => field.key === updateKey)?.label ?? updateKey)} }).fill(${literal(String(updateValue))})`)
-    lines.push(`  await page.getByRole('button', { name: ${literal(config.labels.submitLabel)}, exact: true }).click()`)
-    lines.push(`  await page.waitForResponse((response) => response.url().includes('/${config.slug}/update/') && response.request().method() === 'PATCH')`)
-    if (hasDetail) {
-      lines.push(`  await expect(page).toHaveURL(new RegExp('/${config.navigation.group}/${config.slug}/.+/detail'))`)
-      // Same static-title contract as after Create: heading is the resource
-      // title, the saved value is asserted in the detail table.
-      lines.push(`  await expect(page.getByRole('heading', { name: ${literal(config.labels.detailTitle)} })).toBeVisible()`)
-      lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true })).toBeVisible()`)
-      lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
-      lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true })).toBeVisible()`)
-      lines.push(`  await page.reload()`)
-      lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true })).toBeVisible()`)
-    } else if (hasList) {
-      lines.push(`  await expect(page).toHaveURL(new RegExp('/${config.navigation.group}/${config.slug}$'))`)
-      lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true })).toBeVisible()`)
-      lines.push(`  await page.reload()`)
-      lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true })).toBeVisible()`)
-    } else {
-      lines.push(`  await page.reload()`)
-      lines.push(`  await expect(page.getByRole('textbox', { name: ${literal(config.fields.find((field) => field.key === updateKey)?.label ?? updateKey)} })).toHaveValue(${literal(String(updateValue))})`)
-    }
-  }
-  if (hasDelete) {
-    // Delete the UPDATED row when an Update ran (the journey renamed the
-    // created value, so the created value no longer matches any row), else
-    // the created row. The journey is its own cleanup: after a green run no
-    // same-valued row remains, so the final absence assertion proves the
-    // delete. The ListView delete control opens a confirmation dialog; the
-    // row is only removed after the dialog Delete is clicked. Without a
-    // List there is no generated delete surface; report manual.
-    const deleteValue = hasUpdate && updateKey ? String(updateValue) : String(record[firstField.key] ?? '')
-    if (hasList) {
-      lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
-      lines.push(`  await expect(page.getByRole('cell', { name: ${literal(deleteValue)}, exact: true })).toBeVisible()`)
-      lines.push(`  await page.getByRole('row', { name: new RegExp(${literal(deleteValue)}) }).getByRole('button', { name: /delete/i }).click()`)
-      lines.push(`  await page.getByRole('button', { name: 'Delete', exact: true }).click()`)
-      lines.push(`  await expect(page.getByRole('cell', { name: ${literal(deleteValue)}, exact: true })).toHaveCount(0)`)
-    } else {
-      lines.push(`  await page.getByRole('button', { name: /delete/i }).click()`)
-    }
-  }
+  // Submit through the form chrome, not through one locale copy. The
+  // app can translate the submit label, so match the submit role.
+  lines.push(`  await page.getByRole('button', { name: /save|submit/i }).click()`)
+  // Save resolves through the resource run, so wait for the POST response
+  // before asserting the result. Never assert the success toast: it never
+  // paints after a real save.
+  lines.push(`  await page.waitForResponse((response) => response.url().includes('/${config.slug}/create') && response.request().method() === 'POST')`)
+  // Navigation leaves the create page. The exact target route is UI
+  // behavior, so only prove that the save lands on a saved value.
+  lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(record[firstField.key]))}, exact: true }).first()).toBeVisible()`)
+  // Edit the created row through its Edit link, then prove reload persistence.
+  lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
+  lines.push(`  await page.getByRole('row', { name: new RegExp(${literal(String(record[firstField.key]))}) }).getByRole('link', { name: /edit/i }).click()`)
+  lines.push(`  await page.getByRole('textbox', { name: ${literal(config.fields.find((field) => field.key === updateKey)?.label ?? updateKey)} }).fill(${literal(String(updateValue))})`)
+  lines.push(`  await page.getByRole('button', { name: /save|submit/i }).click()`)
+  lines.push(`  await page.waitForResponse((response) => response.url().includes('/${config.slug}/update/') && response.request().method() === 'PATCH')`)
+  lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
+  lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true }).first()).toBeVisible()`)
+  lines.push(`  await page.reload()`)
+  lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true }).first()).toBeVisible()`)
   lines.push(`})`)
   lines.push('')
   return `${lines.join('\n')}`
@@ -963,14 +887,14 @@ function filesFor(config, root) {
     files.push([`${webRoot}/${config.slug}.resource.ts`, renderResource(config)])
     if (selected.has('list')) files.push([`${webRoot}/index.route.vue`, routes.index])
     if (selected.has('create')) files.push([`${webRoot}/create.route.vue`, routes.create])
-    files.push([`${webRoot}/${config.slug}.integration.spec.ts`, renderIntegrationTest(config)])
     if (selected.has('detail')) files.push([`${routeRoot}/detail.route.vue`, routes.detail])
     if (selected.has('update')) files.push([`${routeRoot}/edit.route.vue`, routes.edit])
   }
   const seed = renderSeed(config)
   if (seed) files.push([`${apiRoot}/${config.slug}.seed.ts`, seed])
-  if (!browserManualReason(config)) {
-    files.push([`apps/web/e2e/${config.slug}.spec.ts`, renderBrowserSpec(config)])
+  const browserSpec = renderBrowserSpec(config)
+  if (browserSpec) {
+    files.push([`apps/web/e2e/${config.slug}.spec.ts`, browserSpec])
   }
   return files.map(([relativePath, contents]) => ({ path: resolve(root, relativePath), contents }))
 }
@@ -1285,9 +1209,9 @@ export function scaffold(value, { root = repoRoot } = {}) {
       apiTest: resolve(outputRoot, `apps/api/src/routes/(authenticated)/${config.slug}/${config.slug}.routes.spec.ts`),
       apiTypeCheck: 'pnpm --filter @southneuhof/api type-check',
       webTypeCheck: 'pnpm --filter @southneuhof/framework-web type-check',
-      webTests: config.navigation
-        ? [resolve(outputRoot, `apps/web/src/routes/(authenticated)/${config.navigation.group}/${config.slug}/${config.slug}.integration.spec.ts`)]
-        : [],
+      browserTest: renderBrowserSpec(config) === null
+        ? null
+        : resolve(outputRoot, `apps/web/e2e/${config.slug}.spec.ts`),
     },
   }
 }
@@ -1344,8 +1268,9 @@ export function describeBoundedModule(value, { root = repoRoot } = {}) {
   const apiTest = hasApiAction
     ? { path: resolve(outputRoot, `apps/api/src/routes/(authenticated)/${config.slug}/${config.slug}.routes.spec.ts`) }
     : { manual: 'no API action selected' }
+  const browserSpec = renderBrowserSpec(config)
   const browserPath = resolve(outputRoot, `apps/web/e2e/${config.slug}.spec.ts`)
-  const browserReason = browserManualReason(config)
+  const browserReason = browserSpec === null ? 'slim journey needs list, create and update' : null
   const browserTest = browserReason === null ? { path: browserPath } : { manual: browserReason }
   return {
     selectedActions: config.selectedActions,

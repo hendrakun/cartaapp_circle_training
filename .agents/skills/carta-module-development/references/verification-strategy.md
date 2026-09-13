@@ -74,6 +74,13 @@ against the design; a matching title cannot prove coverage or report freshness.
 
 ## Tests that earn their cost
 
+Standard CRUD needs one API proof plus one slim browser journey. The generated
+API spec proves success plus persistence per action, plus denied access and
+invalid payload rejection on create and update. The slim browser journey
+proves create, edit, and reload persistence for a full list/create/update
+module. UI copy, layout, dialogs, and delete flow stay with the user. New unit
+tests need a changed value or interaction that those two checks cannot detect.
+
 - Assert public outcomes and persisted effects. A status code alone cannot
   prove that a write succeeded or that a denied write changed nothing.
 - Create the few records that distinguish correct behavior from the fault:
@@ -90,7 +97,9 @@ against the design; a matching title cannot prove coverage or report freshness.
   still passes with the changed behavior removed needs stronger assertions.
 
 Skip tests that only copy field arrays, labels, renderer names, route literals,
-export names or source text. Check important configuration through its effect:
+export names or source text. Route structure and navigation membership belong
+to the static UI contract check. A generated copy of them is smoke, not proof:
+when it conflicts with approved behavior, fix the test. Check important configuration through its effect:
 a hidden action, a selected value, a navigable route or rejected access.
 Keep type tests at a changed type contract and framework tests at the framework
 owner. Ordinary modules need neither repeated framework CRUD matrices nor
@@ -101,8 +110,9 @@ snapshots of component internals. Existing weak tests are not templates.
 Resolve package scripts, filters, config and test patterns from this checkout.
 Confirm that focused selectors select the intended tests. Zero tests and skipped
 requirements do not establish acceptance. Generated API evidence proves only
-the permitted/denied, validation, persistence and unchanged-rejection assertions
-that it contains. A generated browser journey proves only the standard path that
+the success-plus-persistence, denied-access, and invalid-payload assertions
+that it contains. The generated route smoke proves only list routing.
+A generated browser journey proves only the create-edit-reload path that
 it performs. Custom acceptance rows need direct evidence; an omitted manual check
 stays unverified.
 The root `test` command does not run the separate application Playwright suite.
@@ -145,10 +155,13 @@ for final review.
 
 ## Tight loop
 
-Run focused checks after a meaningful changed boundary. On failure inspect the
-output and classify the cause: source, test expectation, fixture, environment,
+Run one focused check after a meaningful changed boundary. On failure inspect
+the output and classify the cause: source, test expectation, fixture, environment,
 tooling, pre-existing failure, or an unresolved requirement. Make an evidence-led
-correction inside scope, then rerun the affected checks. Preserve failures in
+correction inside scope, then rerun the affected check. Three red runs on one
+check end the loop: return the logs and the classification to the parent.
+Generated tests are stable by design; a failure there is treated as a real
+signal and escalated on the same rule. Preserve failures in
 the record; a later pass supersedes rather than erases them.
 
 Reuse passing evidence when it covers the obligation and its relevant inputs
@@ -164,7 +177,8 @@ Use ordinary focused test output during development. At a completed assignment
 or final verification, record the required commands together with the existing
 recorder. One report can support several acceptance rows. Reuse current recorded
 passes; ordinary output without the required provenance needs a recorded run.
-Preserve relevant failure artifacts and explain their correction in the handoff.
+Recorder JSON is a final acceptance input. Progress updates use ordinary
+focused output. Preserve relevant failure artifacts and explain their correction in the handoff.
 Update the worksheet after handoff and final review, not after each command.
 
 Each result records exact command/argument vector and working directory,

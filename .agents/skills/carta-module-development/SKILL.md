@@ -38,7 +38,8 @@ can show a useful interaction; its domain, permission model, helper files and
 old framework API are not prerequisites for a new Carta app.
 
 For a first module, establish its actor, data owner, action and visible result,
-then build that complete path. Add child resources, reports or workflow services
+then build that complete path. Show the first runnable result early, before
+dependent actions are complete. Add child resources, reports or workflow services
 when the behavior needs them. Keep domain logic in its module and use existing
 framework contracts directly. A forwarding function or copied type needs a
 purpose beyond renaming an existing API.

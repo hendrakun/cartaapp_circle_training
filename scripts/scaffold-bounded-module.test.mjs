@@ -90,10 +90,11 @@ test('creates explicit source files and stable absolute output', () => {
     'apps/web/src/routes/(authenticated)/settings/test-catalog/[testCatalogId]/edit.route.vue',
     'apps/web/src/routes/(authenticated)/settings/test-catalog/create.route.vue',
     'apps/web/src/routes/(authenticated)/settings/test-catalog/index.route.vue',
-    'apps/web/src/routes/(authenticated)/settings/test-catalog/test-catalog.integration.spec.ts',
     'apps/web/src/routes/(authenticated)/settings/test-catalog/test-catalog.resource.ts',
     'apps/web/src/routes/(authenticated)/settings/test-catalog/test-catalog.schema.ts',
   ].map((path) => resolve(setup.outputRoot, path)).sort()
+  assert.deepEqual(result.generated, expectedRelative)
+  assert.ok(!result.generated.some((path) => path.endsWith('.integration.spec.ts')))
 
   assert.deepEqual(result.generated, expectedRelative)
   assert.deepEqual(result.generated, [...result.generated].sort())
@@ -118,12 +119,13 @@ test('creates explicit source files and stable absolute output', () => {
 
   const createRoute = readFileSync(result.generated.find((path) => path.endsWith('/create.route.vue')), 'utf8')
   assert.match(createRoute, /title="Create Test Catalog"/)
-  assert.match(createRoute, /submit-label="Save"/)
-  assert.match(createRoute, /<template><FormView v-bind="testCatalogs\.create\(\)" title="Create Test Catalog" submit-label="Save" \/><\/template>/)
+  assert.doesNotMatch(createRoute, /submit-label=/)
+  assert.match(createRoute, /<template><FormView v-bind="testCatalogs\.create\(\)" title="Create Test Catalog" \/><\/template>/)
 
   const editRoute = readFileSync(result.generated.find((path) => path.endsWith('/edit.route.vue')), 'utf8')
   assert.match(editRoute, /title="Edit Test Catalog"/)
-  assert.match(editRoute, /<template><FormView v-bind="testCatalogs\.update\(\{ id: String\(route\.params\.testCatalogId\) \}\)" title="Edit Test Catalog" submit-label="Save" \/><\/template>/)
+  assert.doesNotMatch(editRoute, /submit-label=/)
+  assert.match(editRoute, /<template><FormView v-bind="testCatalogs\.update\(\{ id: String\(route\.params\.testCatalogId\) \}\)" title="Edit Test Catalog" \/><\/template>/)
 
   const resource = readFileSync(result.generated.find((path) => path.endsWith('.resource.ts')), 'utf8')
   assert.match(resource, /title: 'Test Catalog'/)
@@ -191,7 +193,7 @@ test('validates selected actions with derived identity, labels, and technical re
     assert.deepEqual(normalized.selectedActions, item.selected, item.name)
     assert.equal(normalized.identity.key, 'id', item.name)
     assert.equal(normalized.labels.listTitle, 'Test Catalog', item.name)
-    assert.equal(normalized.labels.submitLabel, 'Save', item.name)
+    assert.ok(!Object.hasOwn(normalized.labels, 'submitLabel'), item.name)
     assert.deepEqual(
       normalized.technicalDependencies.map(({ action, path, permission }) => ({ action, path, permission })),
       item.technical,
@@ -217,7 +219,7 @@ test('rejects invalid selected actions, permission use, navigation, seed, and te
     ['navigation without list', (value) => { const kept = withoutActions(value, ['list', 'detail']); delete kept.test.update; kept.navigation = { group: 'settings', after: 'settings-roles', title: 'Test Catalog', icon: 'folder' }; delete kept.actions.list; kept.permissions = Object.fromEntries(Object.entries(kept.permissions).filter(([code]) => code !== 'list-test-catalog')); Object.assign(value, kept) }, /navigation is allowed only when the list action exists/],
     ['legacy identity', (value) => { value.identity = { key: 'id', type: 'text', primary: true, generated: 'uuid' } }, /unsupported keys: identity/],
     ['legacy labels', (value) => { value.labels = { listTitle: 'Test Catalog' } }, /unsupported keys: labels/],
-    ['missing test update', (value) => { delete value.test.update }, /test\.update is required for update/],
+    ['missing test update', (value) => { delete value.test.update }, /test\.update is required for the list, create, and update journey/],
     ['unchanged test update', (value) => { value.test.update = { label: 'One', enabled: true } }, /must change at least one update field/],
     ['missing singular', (value) => { delete value.singular }, /singular is required/],
     ['redirect on list', (value) => { value.actions.list.redirect = 'other' }, /allowed only on create and update/],
@@ -264,9 +266,8 @@ test('renders only selected actions and redirects', () => {
   // defaultTo is emitted (matches hand-written modules). Only the
   // no-Detail-no-List manifest redirect emits defaultTo (see solo below).
   assert.doesNotMatch(resource, /defaultTo/)
-  const integration = readFileSync(result.generated.find((path) => path.endsWith('.integration.spec.ts')), 'utf8')
-  assert.match(integration, /settings-test-catalog/)
-  assert.doesNotMatch(integration, /record-1\/detail/)
+  assert.ok(!result.generated.some((path) => path.endsWith('.integration.spec.ts')))
+  assert.equal(result.checks.browserTest, resolve(setup.outputRoot, 'apps/web/e2e/test-catalog.spec.ts'))
   assert.deepEqual(Object.keys(result.permissions).sort(), ['create', 'list', 'update'])
   assert.deepEqual(result.redirects, { create: 'settings-test-catalog', update: 'settings-test-catalog' })
   assert.equal(result.routes.detail, null)
@@ -289,91 +290,59 @@ test('renders only selected actions and redirects', () => {
   assert.ok(soloResult.generated.some((path) => path.endsWith('create/+server.ts')))
 })
 
-test('browser journey expects the framework redirect after submit', () => {
+test('slim browser journey proves create, edit, and reload persistence', () => {
   const setup = workspace(config())
   const result = JSON.parse(execute(['--config', setup.configPath, '--json'], { root: setup.outputRoot, cwd: setup.directory }))
   const browser = result.generated.find((path) => path.endsWith('apps/web/e2e/test-catalog.spec.ts'))
   assert.ok(browser)
   const spec = readFileSync(browser, 'utf8')
-  // Full actions include Detail: create and update expect the detail
-  // redirect, then the journey returns to the list for persistence proof.
-  // No explicit goto between submit and the redirect assertion, and no
-  // toast assertion: the toast is volatile and may never paint.
-  const createSubmit = spec.indexOf(`name: 'Save', exact: true }).click()`)
-  assert.ok(createSubmit > 0)
-  assert.match(spec, /exact: true \}\)\.click\(\)\n  await page\.waitForResponse\(\(response\) => response\.url\(\).includes\('\/test-catalog\/create'\) && response\.request\(\).method\(\) === 'POST'\)\n  await expect\(page\)\.toHaveURL\(new RegExp\('\/settings\/test-catalog\/\.\+\/detail'\)\)/)
-  assert.match(spec, /exact: true \}\)\.click\(\)\n  await page\.waitForResponse\(\(response\) => response\.url\(\).includes\('\/test-catalog\/update\/'\) && response\.request\(\).method\(\) === 'PATCH'\)\n  await expect\(page\)\.toHaveURL\(new RegExp\('\/settings\/test-catalog\/\.\+\/detail'\)\)/)
+  // Slim journey only: no copy, layout, dialog, seed, or delete assertions.
+  // Submit uses the form chrome, not one locale copy.
+  assert.match(spec, /getByRole\('button', \{ name: \/save\|submit\/i \}\)\.click\(\)/)
+  assert.doesNotMatch(spec, /name: 'Save', exact: true/)
+  assert.doesNotMatch(spec, /submit-label="Save"/)
+  assert.doesNotMatch(spec, /toHaveURL/)
+  assert.doesNotMatch(spec, /getByRole\('heading'/)
+  assert.doesNotMatch(spec, /name: 'Delete'/)
   assert.doesNotMatch(spec, /Changes saved/)
-  // The journey deletes the row it created, so assertions stay unscoped
-  // cells: a same-valued leftover from a red run must fail loudly. The
-  // delete step targets the UPDATED value (the journey renamed the row)
-  // and confirms the ListView delete dialog.
-  assert.match(spec, /await expect\(page\.getByRole\('cell', \{ name: 'Two', exact: true \}\)\)\.toBeVisible\(\)/)
-  assert.match(spec, /getByRole\('row', \{ name: new RegExp\('Two'\) \}\)\.getByRole\('button', \{ name: \/delete\/i \}\)\.click\(\)\n  await page\.getByRole\('button', \{ name: 'Delete', exact: true \}\)\.click\(\)/)
-  // Update via the created row's Edit link (seed id stays untouched), then
-  // list + reload assertions.
+  // Workflow: create lands on the saved value, edit it through the row Edit
+  // link, then prove reload persistence.
+  assert.match(spec, /\/test-catalog\/create'\) && response\.request\(\).method\(\) === 'POST'\)/)
+  assert.match(spec, /\/test-catalog\/update\/'\) && response\.request\(\).method\(\) === 'PATCH'\)/)
+  assert.match(spec, /await expect\(page\.getByRole\('cell', \{ name: 'Two', exact: true \}\)\.first\(\)\)\.toBeVisible\(\)/)
   assert.match(spec, /getByRole\('row'.*getByRole\('link', \{ name: \/edit\/i \}\)\.click\(\)/)
   assert.match(spec, /await page\.reload\(\)/)
   // Resource carries no defaultTo when Detail or List exists.
   const resource = readFileSync(result.generated.find((path) => path.endsWith('.resource.ts')), 'utf8')
   assert.doesNotMatch(resource, /defaultTo/)
 
-  // Without Detail the journey expects the list redirect after submit.
-  const noDetail = withoutActions(config(), ['list', 'create', 'update'])
-  const noDetailSetup = workspace(noDetail)
-  const noDetailResult = JSON.parse(execute(['--config', noDetailSetup.configPath, '--json'], { root: noDetailSetup.outputRoot, cwd: noDetailSetup.directory }))
-  const noDetailBrowser = noDetailResult.generated.find((path) => path.endsWith('apps/web/e2e/test-catalog.spec.ts'))
-  assert.ok(noDetailBrowser)
-  const noDetailSpec = readFileSync(noDetailBrowser, 'utf8')
-  assert.match(noDetailSpec, /await expect\(page\)\.toHaveURL\(new RegExp\('\/settings\/test-catalog\$'\)\)\n  await expect\(page\.getByRole\('cell', \{ name: 'One', exact: true \}\)\)\.toBeVisible\(\)/)
-  assert.doesNotMatch(noDetailSpec, /\/test-catalog\/create'\) && response\.request\(\).method\(\) === 'POST'\)\n  await page\.goto/)
+  // Partial paths get no browser file: the user checks the UI.
+  const partial = withoutActions(config(), ['list', 'create'])
+  delete partial.actions.update
+  delete partial.test.update
+  const partialSetup = workspace(partial)
+  const partialResult = JSON.parse(execute(['--config', partialSetup.configPath, '--json'], { root: partialSetup.outputRoot, cwd: partialSetup.directory }))
+  assert.ok(!partialResult.generated.some((path) => path.endsWith('apps/web/e2e/test-catalog.spec.ts')))
 })
 
-test('browser journey asserts the DetailView title contract and list chrome', () => {
-  const setup = workspace(config())
-  const result = JSON.parse(execute(['--config', setup.configPath, '--json'], { root: setup.outputRoot, cwd: setup.directory }))
-  const browser = result.generated.find((path) => path.endsWith('apps/web/e2e/test-catalog.spec.ts'))
-  assert.ok(browser)
-  const spec = readFileSync(browser, 'utf8')
-  // DetailView renders the static resource title as the heading; the record
-  // value renders in the detail table. Never assert a dynamic record-name
-  // heading: it fails against the real DetailView.
-  assert.match(spec, /getByRole\('heading', \{ name: 'Test Catalog' \}\)\)\.toBeVisible\(\)\n  await expect\(page\.getByRole\('cell', \{ name: 'One', exact: true \}\)\)\.toBeVisible\(\)/)
-  assert.match(spec, /getByRole\('heading', \{ name: 'Test Catalog' \}\)\)\.toBeVisible\(\)\n  await expect\(page\.getByRole\('cell', \{ name: 'Two', exact: true \}\)\)\.toBeVisible\(\)/)
-  assert.doesNotMatch(spec, /getByRole\('heading', \{ name: 'One' \}\)/)
-  assert.doesNotMatch(spec, /getByRole\('heading', \{ name: 'Two' \}\)/)
-
-  // An empty list renders the empty slot, not a table: the journey asserts
-  // the list heading first and the table rows only after Create.
-  const noSeed = config()
-  delete noSeed.seed
-  const noSeedSetup = workspace(noSeed)
-  const noSeedResult = JSON.parse(execute(['--config', noSeedSetup.configPath, '--json'], { root: noSeedSetup.outputRoot, cwd: noSeedSetup.directory }))
-  const noSeedBrowser = noSeedResult.generated.find((path) => path.endsWith('apps/web/e2e/test-catalog.spec.ts'))
-  assert.ok(noSeedBrowser)
-  const noSeedSpec = readFileSync(noSeedBrowser, 'utf8')
-  assert.match(noSeedSpec, /getByRole\('heading', \{ name: 'Test Catalog' \}\)\)\.toBeVisible\(\)/)
-  assert.doesNotMatch(noSeedSpec, /getByRole\('table'\)/)
-})
-
-test('generates the API proof spec with permission, persistence, and cleanup checks', () => {
+test('generates the minimal API proof spec', () => {
   const setup = workspace(config())
   const result = JSON.parse(execute(['--config', setup.configPath, '--json'], { root: setup.outputRoot, cwd: setup.directory }))
   const specPath = result.generated.find((path) => path.endsWith('test-catalog.routes.spec.ts'))
   assert.ok(specPath)
   const spec = readFileSync(specPath, 'utf8')
+  // Success plus persistence per action, plus denied access and invalid
+  // payload on create and update. No unchanged-row or copy checks.
   assert.match(spec, /createSystemSession/)
   assert.match(spec, /toBe\(403\)/)
   assert.match(spec, /toBe\(400\)/)
+  assert.match(spec, /toMatchObject\(\[record\]\)/)
+  assert.match(spec, /\{ \.\.\.record, \.\.\.updatePayload \}/)
+  assert.match(spec, /toHaveLength\(0\)/)
   assert.match(spec, /cleanupSessions/)
   assert.match(spec, /closeDb/)
-  assert.match(spec, /from '\.\.\/\.\.\/\.\.\/app'/)
-  assert.match(spec, /from '\.\.\/\.\.\/\.\.\/db'/)
-  assert.match(spec, /from '\.\.\/\.\.\/\.\.\/testing\/session'/)
-  assert.match(spec, /testCatalogs/)
-  assert.match(spec, /eq\(testCatalogs\.id, id\)/)
-  assert.match(spec, /\{ \.\.\.record, \.\.\.updatePayload \}/)
   assert.match(spec, /finally/)
+  assert.doesNotMatch(spec, /toHaveLength\(1\)/)
 })
 
 test('marks an explicit unsupported renderer as unsupported and manual', () => {

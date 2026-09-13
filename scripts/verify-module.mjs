@@ -94,14 +94,12 @@ function staticVerify(config, { root = repoRoot, manifest = config } = {}) {
     )
     if (selected.has('create')) routeFiles.push(
       [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/create.route.vue`, `title="${html(config.labels.createTitle)}"`, 'create title'],
-      [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/create.route.vue`, `submit-label="${html(config.labels.submitLabel)}"`, 'create submit label'],
     )
     if (selected.has('detail')) routeFiles.push(
       [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/${config.slug}.resource.ts`, `title: ${quoted(config.labels.detailTitle)}`, 'detail title'],
     )
     if (selected.has('update')) routeFiles.push(
       [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/[${metadata.routeParam}]/edit.route.vue`, `title="${html(config.labels.editTitle)}"`, 'edit title'],
-      [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/[${metadata.routeParam}]/edit.route.vue`, `submit-label="${html(config.labels.submitLabel)}"`, 'edit submit label'],
     )
   }
   for (const [relativePath, text, name] of routeFiles) {
@@ -156,7 +154,6 @@ export function verificationCommands(config, { withSeed = false } = {}) {
     if (selected.has('create')) webFiles.push(`src/routes/(authenticated)/${group}/${slug}/create.route.vue`)
     if (selected.has('detail')) webFiles.push(`src/routes/(authenticated)/${group}/${slug}/[${metadata.routeParam}]/detail.route.vue`)
     if (selected.has('update')) webFiles.push(`src/routes/(authenticated)/${group}/${slug}/[${metadata.routeParam}]/edit.route.vue`)
-    webFiles.push(`src/routes/(authenticated)/${group}/${slug}/${slug}.integration.spec.ts`)
   }
   const unsupportedRenderer = (normalized.fields ?? []).some((field) => field.rendererSupported === false)
   const hasBrowserFile = hasWebAction && normalized.navigation && !unsupportedRenderer && (selected.has('create') || normalized.seed)

@@ -103,14 +103,14 @@ never runs it. It never runs generated tests or external writes. Review the SQL
 and source, then edit generated source normally. Do not regenerate over edited
 source. On partial failure, inspect the reported paths before any retry.
 
-The generated API spec covers only selected standard actions. Its assertions
-cover permitted and denied requests, validation, persistence and unchanged
-rejected writes where applicable. The browser file is conditional: standard
-renderers and a stable created or seeded record produce one connected journey;
-custom UI or a missing read-only seed gives a manual reason. After Create or
-Update, it waits for the response and asserts the framework redirect to Detail,
-else List. It does not navigate between submit and this assertion. Custom behavior
-needs direct proof.
+The generated API spec covers only selected standard actions. Each action
+proves success plus persistence. Create and update also prove denied access
+and invalid payload rejection. No copy, layout, or dialog assertions exist.
+The slim browser journey covers create, edit, and reload persistence for a
+full list/create/update module. It submits through the form chrome and asserts
+the saved value plus reload persistence. It never asserts one locale copy of
+the submit label. Modules without that full path get manual browser proof:
+the user checks the UI. Custom behavior needs direct proof.
 
 Read [verification-strategy.md](verification-strategy.md) for evidence scope and
 acceptance. The root `verify:module` and `module:evidence` commands are

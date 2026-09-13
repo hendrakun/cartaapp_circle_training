@@ -62,7 +62,8 @@ task authority. Name any blocked check and its missing prerequisite.
 
 Make the first implementation result a complete path through the most uncertain
 integration. Include API, UI and persistence where the approved path uses them.
-Prove its result before adding dependent actions. Keep the path and its tests
+Prove its result before adding dependent actions. Report that result to the user
+before continuing. Keep the path and its tests
 in one assignment. Split further work only
 for a separate result, dependency, independent owner or risk boundary.
 
@@ -81,7 +82,8 @@ to select the smallest sufficient tests and broader checks justified by impact.
 
 State affected owners, intended changes, required interfaces, transaction
 boundaries and test strategy. Resolve commands and working directories from the
-checkout; let the executor add selectors for new tests. Specify critical expected
+checkout; let the executor add selectors for new tests. Name one exemplar file
+per layer with its path and symbol in the owners table. Specify critical expected
 outcomes; let the executor choose test names, fixtures and routine code details.
 Include code excerpts only to explain a fragile interface.
 

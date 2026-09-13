@@ -80,7 +80,7 @@ test('generated evidence has one strategy owner and one verifier pointer', () =>
   assert.ok(verifier.includes('verification-strategy.md#commands-and-environment'))
   const combined = `${strategy}\n${verifier}`
   assert.equal(combined.match(/Generated API evidence/g)?.length, 1)
-  assert.equal(combined.match(/generated browser journey/g)?.length, 1)
+  assert.equal(combined.match(/A generated browser journey/g)?.length, 1)
 })
 
 test('API test entrypoints require the explicit test environment and migrations run the preflight first', () => {

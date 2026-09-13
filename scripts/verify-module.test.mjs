@@ -103,7 +103,7 @@ test('check-only verifies the generated module without changing files', () => {
 
 test('fails when a generated file is missing', () => {
   const setup = fixture()
-  const missing = expectedGeneratedPaths(setup.value, { root: setup.root }).find((path) => path.endsWith('.integration.spec.ts'))
+  const missing = expectedGeneratedPaths(setup.value, { root: setup.root }).find((path) => path.endsWith('.routes.spec.ts'))
   rmSync(missing)
   const result = verify(setup.value, { root: setup.root })
   assert.equal(result.status, 'FAIL')
@@ -138,7 +138,8 @@ test('verification commands include the generated API and browser proof specs', 
   const apiLint = specs.find((command) => command.startsWith('pnpm --filter @southneuhof/api lint:focused'))
   assert.ok(apiLint.includes('src/routes/(authenticated)/test-catalog/test-catalog.routes.spec.ts'), apiLint)
   const webLint = specs.find((command) => command.startsWith('pnpm --filter @southneuhof/framework-web lint:focused'))
-  assert.ok(webLint.includes('src/routes/(authenticated)/settings/test-catalog/test-catalog.integration.spec.ts'), webLint)
+  assert.ok(webLint.includes('src/routes/(authenticated)/settings/test-catalog/test-catalog.resource.ts'), webLint)
+  assert.ok(!webLint.includes('.integration.spec.ts'), webLint)
 })
 
 test('verification e2e command is absent when no browser file is generated', () => {
