@@ -176,6 +176,6 @@ Commit `2edd6bc` closes the review remainder in the main checkout:
 - `pnpm test:module-tooling`: 92 Node pass. `git diff --check`: pass.
 - Candidate worktree proof (specs regenerated from the committed fix,
   disposable targets): 3 browser specs pass, exit 0
-  (`.local/browser-final.md/.json`); both integration specs recorded
-  (trial-products pass; trial-services fails only on the known stale
-  absence line, now documented in the generator comment above).
+  (`.local/browser-final.md/.json`); both integration specs pass after the
+  trial-level repair of the stale absence line (positive assertion of the
+  approved manual Detail route, recorded in `.local/browser-final.md`).
