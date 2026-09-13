@@ -1,0 +1,28 @@
+{
+  "kind": "bounded-module",
+  "slug": "service-levels-update",
+  "table": "service_levels_update",
+  "symbol": "ServiceLevelUpdate",
+  "title": "Service Levels",
+  "singular": "Service Level",
+  "fields": [
+    { "key": "name", "type": "text", "label": "Name", "required": true }
+  ],
+  "actions": {
+    "list": { "fields": ["name"], "permission": "list-service-levels-update" },
+    "update": { "fields": ["name"], "permission": "update-service-levels-update" }
+  },
+  "permissions": {
+    "list-service-levels-update": { "name": "List service levels", "description": "List service levels." },
+    "update-service-levels-update": { "name": "Update service levels", "description": "Update service levels." }
+  },
+  "navigation": { "group": "settings", "after": "settings-roles", "title": "Service Levels", "icon": "folder" },
+  "seed": {
+    "records": [{ "id": "standard", "name": "Standard" }],
+    "updateFields": ["name"]
+  },
+  "test": {
+    "record": { "name": "Standard" },
+    "update": { "name": "Priority" }
+  }
+}

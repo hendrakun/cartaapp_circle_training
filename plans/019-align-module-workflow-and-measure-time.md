@@ -19,7 +19,7 @@
 - Depends on: 016, 017, and 018
 - Category: migration, skills, evaluation, DX
 - Planned at: commit `7eb093d`, 2026-09-12
-- Status: BLOCKED — 2026-09-13, public command mismatch and isolated runtime unavailable
+- Status: BLOCKED — 2026-09-13, isolated controlled runtime unavailable
 
 ## Implementation record — 2026-09-13
 

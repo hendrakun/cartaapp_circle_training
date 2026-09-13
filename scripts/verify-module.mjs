@@ -265,6 +265,7 @@ function parseArgs(argv) {
   let timeoutMs = defaultCommandTimeoutMs
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index]
+    if (argument === '--') continue
     if (argument === '--manifest') {
       manifest = argv[index + 1]
       index += 1

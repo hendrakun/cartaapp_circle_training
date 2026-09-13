@@ -1287,6 +1287,7 @@ function parseArgs(argv) {
   let apply = false
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index]
+    if (argument === '--') continue
     if (argument === '--check') {
       check = true
     } else if (argument === '--apply') {

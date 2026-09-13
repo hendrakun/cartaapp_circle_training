@@ -174,6 +174,7 @@ function parseArgs(argv) {
   let json = false
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index]
+    if (argument === '--') continue
     if (argument === '--manifest' || argument === '--root') {
       const value = argv[++index]
       if (!value || value.startsWith('--')) throw new Error(`${argument} requires a path.`)

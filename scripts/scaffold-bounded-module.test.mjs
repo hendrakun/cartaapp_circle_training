@@ -687,6 +687,17 @@ test('bounded --manifest/--check/--apply CLI surface with detailed preview', asy
   assert.equal(checkMigrationSql('DROP TABLE "test_catalog";', { table: 'test_catalog' }).ok, false)
 })
 
+test('accepts the pnpm lone separator before flags', () => {
+  assert.throws(
+    () => execute(['--', '--manifest', join('no-such-dir', 'missing.json'), '--check'], { root: tmpdir(), cwd: tmpdir() }),
+    (error) => {
+      assert.match(error.message, /ENOENT/)
+      assert.doesNotMatch(error.message, /Unknown argument/)
+      return true
+    },
+  )
+})
+
 test('bounded --apply orchestrates migration with rollback on unrelated operations', async () => {
   const calls = []
   const migrationSqlFor = (root, table) => {

@@ -62,3 +62,27 @@ Independent review of steps 1-5: `REWORK`.
 
 A new small plan must correct the public command contract and review findings
 before the evaluation and controlled trials run again.
+
+## Resume after Plan 020 — 2026-09-13
+
+Plan 020 corrected the public command contract. The documented form with the
+lone pnpm separator now reaches manifest processing in the scaffold, verifier
+and internal integration commands.
+
+One independent candidate worker ran the six revised execute-stage cases. Raw
+redacted output is at
+`.local/carta-module-forward-test/20260913-plan019/resumed-evaluation.md`.
+
+| Case | Result | Evidence |
+|---|---|---|
+| `partial-standard-module` | PASS | Manifest is `VALID`, writes are empty, List/Create/Update are selected, and custom Detail stays manual. |
+| `update-without-detail` | PASS | Manifest is `VALID`; the technical read uses Update permission, no Detail surface exists, and the seeded browser path returns to List. |
+| `read-only-seeded-module` | PASS | Manifest is `VALID`; List/Detail, exact seed, API proof and browser proof paths are present. |
+| `custom-relations` | PASS | Standard scalar work is selected; relation, child, scope and custom browser work stay manual. |
+| `environment-failure` | PASS | Browser preflight reports the missing E2E file and correction; independent manifest check passes. |
+| `migration-contamination` | PASS | The isolated rollback check rejects the unrelated operation and restores invocation-owned writes only. |
+
+No case applied a migration, ran a seed, changed product source or used an
+external target. This run changes the six-case evaluation from `NOT_RUN` to
+partial completion. It does not remove the controlled-trial runtime blocker and
+does not support a speed claim.

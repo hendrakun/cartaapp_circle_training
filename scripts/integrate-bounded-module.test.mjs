@@ -4,7 +4,7 @@ import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { test } from 'node:test'
-import { integrate } from './integrate-bounded-module.mjs'
+import { integrate, execute } from './integrate-bounded-module.mjs'
 
 const temporaryDirectories = []
 
@@ -158,6 +158,17 @@ test('fails closed on a missing anchor without writing partial changes', () => {
 
   assert.throws(() => integrate(config(), { root, apply: true }), /navigation anchor.*missing or ambiguous/)
   for (const [path, contents] of before) assert.equal(readFileSync(join(root, path), 'utf8'), contents)
+})
+
+test('accepts the pnpm lone separator before flags', () => {
+  assert.throws(
+    () => execute(['--', '--manifest', join('no-such-dir', 'missing.json'), '--check'], { root: tmpdir(), cwd: tmpdir() }),
+    (error) => {
+      assert.match(error.message, /ENOENT/)
+      assert.doesNotMatch(error.message, /Unknown argument/)
+      return true
+    },
+  )
 })
 
 test('refuses duplicate domain registrations', () => {

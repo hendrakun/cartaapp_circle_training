@@ -1,8 +1,9 @@
 # Carta module workflow evaluations
 
 These are behavioral evaluation inputs, not a claim that the skills work reliably.
-No independent agent runs have been completed for this change. Node tooling tests
-and metadata/link validation are reported separately.
+The six Plan 019 execute-stage cases have one independent candidate run. Other
+cases remain `NOT_RUN`. Node tooling tests and metadata/link validation are
+reported separately.
 
 ## Run a comparison
 

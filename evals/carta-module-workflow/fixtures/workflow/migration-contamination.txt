@@ -1,4 +1,0 @@
-Command: pnpm scaffold:bounded-module -- --manifest plans/service-levels/module.json --apply
-Result: FAIL before retained writes.
-Drizzle explanation contains CREATE TABLE service_levels and unrelated DROP TABLE archived_roles.
-The command restored owner bytes and removed only files from this invocation.

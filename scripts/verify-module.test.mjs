@@ -154,6 +154,17 @@ test('verification e2e command is absent when no browser file is generated', () 
   assert.equal(specs.some((command) => command.startsWith('pnpm --filter @southneuhof/framework-web test:e2e')), false)
 })
 
+test('accepts the pnpm lone separator before flags', () => {
+  assert.throws(
+    () => execute(['--', '--manifest', join('no-such-dir', 'missing.json'), '--check-only'], { root: tmpdir(), cwd: tmpdir() }),
+    (error) => {
+      assert.match(error.message, /ENOENT/)
+      assert.doesNotMatch(error.message, /Unknown argument/)
+      return true
+    },
+  )
+})
+
 test('reports command duration and timeout state', () => {
   const passed = runCommand(process.execPath, ['-e', ''], { cwd: process.cwd(), timeoutMs: 1000 })
   assert.equal(passed.status, 'PASS')

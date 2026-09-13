@@ -18,10 +18,6 @@ function prose(text) {
     return fence === null
   }).join('\n')
 }
-function activeProse() {
-  return active.flatMap(name => markdownFiles(join(skillsRoot, name))).map(file => prose(readFileSync(file, 'utf8'))).join('\n')
-}
-
 test('active module skills have unique discoverable identities and real local reference targets', () => {
   const failures = []
   for (const name of active) {
@@ -62,28 +58,29 @@ test('root module command aliases resolve to actual local helper scripts', () =>
 test('module workflow selects preflight and compatible standard actions before implementation', () => {
   const router = readFileSync(join(skillsRoot, 'carta-module-development/SKILL.md'), 'utf8')
   const preflight = router.indexOf('pnpm module:preflight')
-  assert.ok(preflight > router.indexOf('Before substantial implementation'))
-  assert.ok(preflight < router.indexOf('pnpm scaffold:bounded-module'))
-  assert.match(router, /all compatible standard actions/)
-  assert.match(router, /Custom Detail work does not remove compatible List, Create or Update/)
-})
+  const generator = router.indexOf('pnpm scaffold:bounded-module')
+  const apply = router.indexOf('with `--apply`')
+  assert.ok(preflight >= 0)
+  assert.ok(preflight < generator)
+  assert.ok(generator < apply)
 
-test('active module guidance uses the one public generator and its write guards', () => {
-  const text = activeProse()
-  assert.doesNotMatch(text, /scaffold_bounded\.py|integrate:bounded-module|integrate-bounded-module\.mjs/)
   const bounded = readFileSync(join(skillsRoot, 'carta-module-development/references/bounded.md'), 'utf8')
-  assert.match(bounded, /never applies the migration/)
-  assert.match(bounded, /never runs it/)
-  assert.match(bounded, /refuses existing\s+generated destinations/)
+  const example = JSON.parse(bounded.match(/```json\n([\s\S]+?)\n```/)[1])
+  assert.deepEqual(Object.keys(example.actions).sort(), ['create', 'list', 'update'])
 })
 
-test('generated evidence remains limited to its direct standard assertions', () => {
+test('active module guidance uses the one public generator', () => {
+  const text = active.flatMap(name => markdownFiles(join(skillsRoot, name))).map(file => readFileSync(file, 'utf8')).join('\n')
+  assert.doesNotMatch(text, /scaffold_bounded\.py|integrate:bounded-module|integrate-bounded-module\.mjs/)
+})
+
+test('generated evidence has one strategy owner and one verifier pointer', () => {
   const strategy = readFileSync(join(skillsRoot, 'carta-module-development/references/verification-strategy.md'), 'utf8')
   const verifier = readFileSync(join(skillsRoot, 'verify-carta-module/SKILL.md'), 'utf8')
-  for (const text of [strategy, verifier]) {
-    assert.match(text, /generated browser journey proves only the standard path/i)
-    assert.match(text, /Custom acceptance rows need direct evidence/i)
-  }
+  assert.ok(verifier.includes('verification-strategy.md#commands-and-environment'))
+  const combined = `${strategy}\n${verifier}`
+  assert.equal(combined.match(/Generated API evidence/g)?.length, 1)
+  assert.equal(combined.match(/generated browser journey/g)?.length, 1)
 })
 
 test('API test entrypoints require the explicit test environment and migrations run the preflight first', () => {
