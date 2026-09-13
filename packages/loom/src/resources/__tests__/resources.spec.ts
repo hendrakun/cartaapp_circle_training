@@ -307,6 +307,54 @@ describe('action resources', () => {
     expect(value.update({ id: '1' }).defaultTo).toBeUndefined()
   })
 
+  it('falls back to the list route when no detail action exists', () => {
+    registerResourceRuntime({
+      queryClient: createFrameworkQueryClient(),
+      adapters: resolveFrameworkAdapters(),
+      fieldDefaults: resolveFrameworkFieldDefaults(),
+    })
+    const value = defineResource(schema, {
+      key: 'records-list-fallback',
+      actions: {
+        list: {
+          run: async () => ({ data: [] }),
+          route: { name: 'records-list' },
+        },
+        create: {
+          run: async (input) => ({ id: '2', ...input }),
+        },
+        update: {
+          run: async (id, input) => ({ id, name: input.name }),
+        },
+      },
+    })
+
+    expect(value.create().defaultTo?.({ id: '2', name: 'Two' })).toEqual({ name: 'records-list' })
+    expect(value.update({ id: '1' }).defaultTo?.({ id: '1', name: 'One' })).toEqual({ name: 'records-list' })
+  })
+
+  it('stays on the page when neither detail nor list routes exist', () => {
+    registerResourceRuntime({
+      queryClient: createFrameworkQueryClient(),
+      adapters: resolveFrameworkAdapters(),
+      fieldDefaults: resolveFrameworkFieldDefaults(),
+    })
+    const value = defineResource(schema, {
+      key: 'records-no-fallback',
+      actions: {
+        create: {
+          run: async (input) => ({ id: '2', ...input }),
+        },
+        update: {
+          run: async (id, input) => ({ id, name: input.name }),
+        },
+      },
+    })
+
+    expect(value.create().defaultTo).toBeUndefined()
+    expect(value.update({ id: '1' }).defaultTo).toBeUndefined()
+  })
+
   it('prefers a declared detail backTo over the inferred list route', () => {
     registerResourceRuntime({
       queryClient: createFrameworkQueryClient(),

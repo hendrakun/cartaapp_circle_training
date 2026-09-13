@@ -323,11 +323,13 @@ function toRoute<TIdentity extends RecordIdentity>(route: ResourceActionRoute<TI
 function formDefaultTo<TRecord extends object, TIdentity extends RecordIdentity>(
   declared: ResourceFormDefaultTo<TRecord> | undefined,
   detailRoute: ResourceActionRoute<TIdentity> | undefined,
+  listRoute: ResourceActionRoute<TIdentity> | undefined,
   identityOf: (record: TRecord) => TIdentity,
 ): ((record: TRecord) => RouteLocationRaw | undefined) | undefined {
   if (declared === false) return undefined
   if (declared !== undefined) return typeof declared === 'function' ? declared : () => declared
-  return detailRoute ? (record) => toRoute(detailRoute, identityOf(record)) : undefined
+  if (detailRoute) return (record) => toRoute(detailRoute, identityOf(record))
+  return listRoute ? () => toRoute(listRoute) : undefined
 }
 
 function identityToken(id: RecordIdentity): string {
@@ -572,7 +574,8 @@ export function defineActionResource<
     create: 'create' in actions ? memoize((args: CreateResourceActionArguments<TCreate> | undefined) => {
       const declaration = actions.create as CreateResourceAction<TRecord, TCreate, TIdentity>
       const detailDeclaration = actions.detail as DetailResourceAction<TRecord, TIdentity> | undefined
-      const defaultTo = formDefaultTo(declaration.defaultTo, detailDeclaration?.route, identity)
+      const listDeclaration = actions.list as ListResourceAction<TRecord, TQuery, TIdentity> | undefined
+      const defaultTo = formDefaultTo(declaration.defaultTo, detailDeclaration?.route, listDeclaration?.route, identity)
       const createFields = resolveFieldReferences(declaration.fields, schema, definition.key, 'create') as FieldsInput<TCreate, TCreate>
       const run = async (input: TCreate) => {
         const result = await declaration.run(input)
@@ -600,6 +603,7 @@ export function defineActionResource<
     update: 'update' in actions ? memoize((args: { id: TIdentity; initialData?: Partial<TUpdate>; searchParameters?: Record<string, unknown>; context?: FieldContext }) => {
       const declaration = actions.update as UpdateResourceAction<TRecord, TUpdate, TIdentity>
       const detailDeclaration = actions.detail as DetailResourceAction<TRecord, TIdentity> | undefined
+      const listDeclaration = actions.list as ListResourceAction<TRecord, TQuery, TIdentity> | undefined
       const searchParameters = args.searchParameters ?? {}
       const updateFields = resolveFieldReferences(declaration.fields, schema, definition.key, 'update') as FieldsInput<TUpdate, TUpdate>
       const run = async (input: TUpdate) => {
@@ -611,7 +615,7 @@ export function defineActionResource<
         const result = await detailDeclaration.run({ ...context, id: args.id, searchParameters })
         return readResourceRecord(result, rendererMapOf(updateFields, runtime()), runtime()) as Partial<TUpdate> | undefined
       } : undefined
-      const defaultTo = formDefaultTo(declaration.defaultTo, detailDeclaration?.route, identity)
+      const defaultTo = formDefaultTo(declaration.defaultTo, detailDeclaration?.route, listDeclaration?.route, identity)
       const context: FieldContext = {
         ...(args.context ?? {}),
         operation: 'update',
