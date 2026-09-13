@@ -329,6 +329,33 @@ test('browser journey expects the framework redirect after submit', () => {
   assert.doesNotMatch(noDetailSpec, /\/test-catalog\/create'\) && response\.request\(\).method\(\) === 'POST'\)\n  await page\.goto/)
 })
 
+test('browser journey asserts the DetailView title contract and list chrome', () => {
+  const setup = workspace(config())
+  const result = JSON.parse(execute(['--config', setup.configPath, '--json'], { root: setup.outputRoot, cwd: setup.directory }))
+  const browser = result.generated.find((path) => path.endsWith('apps/web/e2e/test-catalog.spec.ts'))
+  assert.ok(browser)
+  const spec = readFileSync(browser, 'utf8')
+  // DetailView renders the static resource title as the heading; the record
+  // value renders in the detail table. Never assert a dynamic record-name
+  // heading: it fails against the real DetailView.
+  assert.match(spec, /getByRole\('heading', \{ name: 'Test Catalog' \}\)\)\.toBeVisible\(\)\n  await expect\(page\.getByRole\('cell', \{ name: 'One', exact: true \}\)\)\.toBeVisible\(\)/)
+  assert.match(spec, /getByRole\('heading', \{ name: 'Test Catalog' \}\)\)\.toBeVisible\(\)\n  await expect\(page\.getByRole\('cell', \{ name: 'Two', exact: true \}\)\)\.toBeVisible\(\)/)
+  assert.doesNotMatch(spec, /getByRole\('heading', \{ name: 'One' \}\)/)
+  assert.doesNotMatch(spec, /getByRole\('heading', \{ name: 'Two' \}\)/)
+
+  // An empty list renders the empty slot, not a table: the journey asserts
+  // the list heading first and the table rows only after Create.
+  const noSeed = config()
+  delete noSeed.seed
+  const noSeedSetup = workspace(noSeed)
+  const noSeedResult = JSON.parse(execute(['--config', noSeedSetup.configPath, '--json'], { root: noSeedSetup.outputRoot, cwd: noSeedSetup.directory }))
+  const noSeedBrowser = noSeedResult.generated.find((path) => path.endsWith('apps/web/e2e/test-catalog.spec.ts'))
+  assert.ok(noSeedBrowser)
+  const noSeedSpec = readFileSync(noSeedBrowser, 'utf8')
+  assert.match(noSeedSpec, /getByRole\('heading', \{ name: 'Test Catalog' \}\)\)\.toBeVisible\(\)/)
+  assert.doesNotMatch(noSeedSpec, /getByRole\('table'\)/)
+})
+
 test('generates the API proof spec with permission, persistence, and cleanup checks', () => {
   const setup = workspace(config())
   const result = JSON.parse(execute(['--config', setup.configPath, '--json'], { root: setup.outputRoot, cwd: setup.directory }))

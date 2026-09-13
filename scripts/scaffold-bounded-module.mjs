@@ -808,7 +808,9 @@ function renderBrowserSpec(config) {
   if (hasList) {
     lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
     if (seed) lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(seed[firstField.key]))}, exact: true })).toBeVisible()`)
-    else if (record[firstField.key] !== undefined) lines.push(`  await expect(page.getByRole('table')).toBeVisible()`)
+    // A list with no rows renders the empty slot ("No data"), not a table:
+    // assert the list page chrome instead. The rows appear after Create below.
+    else if (record[firstField.key] !== undefined) lines.push(`  await expect(page.getByRole('heading', { name: ${literal(config.labels.listTitle)} })).toBeVisible()`)
   }
   if (hasCreate) {
     lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}/create')`)
@@ -826,7 +828,10 @@ function renderBrowserSpec(config) {
     lines.push(`  await page.waitForResponse((response) => response.url().includes('/${config.slug}/create') && response.request().method() === 'POST')`)
     if (hasDetail) {
       lines.push(`  await expect(page).toHaveURL(new RegExp('/${config.navigation.group}/${config.slug}/.+/detail'))`)
-      lines.push(`  await expect(page.getByRole('heading', { name: ${literal(String(record[firstField.key]))} })).toBeVisible()`)
+      // DetailView renders the static resource title as the heading; the
+      // record value renders in the detail table below it.
+      lines.push(`  await expect(page.getByRole('heading', { name: ${literal(config.labels.detailTitle)} })).toBeVisible()`)
+      lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(record[firstField.key]))}, exact: true })).toBeVisible()`)
     } else if (hasList) {
       lines.push(`  await expect(page).toHaveURL(new RegExp('/${config.navigation.group}/${config.slug}$'))`)
       lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(record[firstField.key]))}, exact: true })).toBeVisible()`)
@@ -835,7 +840,9 @@ function renderBrowserSpec(config) {
     }
   }
   if (hasDetail && !hasCreate) {
-    lines.push(`  await expect(page.getByRole('heading', { name: ${literal(String(record[firstField.key] ?? seed?.[firstField.key] ?? ''))} })).toBeVisible()`)
+    // DetailView heading is the static resource title; the record value is
+    // asserted in the read-only journey context below where available.
+    lines.push(`  await expect(page.getByRole('heading', { name: ${literal(config.labels.detailTitle)} })).toBeVisible()`)
   }
   if (hasUpdate && updateKey) {
     // After saving the Update the framework defaultTo fires (detail, else
@@ -862,7 +869,10 @@ function renderBrowserSpec(config) {
     lines.push(`  await page.waitForResponse((response) => response.url().includes('/${config.slug}/update/') && response.request().method() === 'PATCH')`)
     if (hasDetail) {
       lines.push(`  await expect(page).toHaveURL(new RegExp('/${config.navigation.group}/${config.slug}/.+/detail'))`)
-      lines.push(`  await expect(page.getByRole('heading', { name: ${literal(String(updateValue))} })).toBeVisible()`)
+      // Same static-title contract as after Create: heading is the resource
+      // title, the saved value is asserted in the detail table.
+      lines.push(`  await expect(page.getByRole('heading', { name: ${literal(config.labels.detailTitle)} })).toBeVisible()`)
+      lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true })).toBeVisible()`)
       lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
       lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true })).toBeVisible()`)
       lines.push(`  await page.reload()`)
