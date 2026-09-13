@@ -19,12 +19,18 @@
 - Depends on: 016, 017, and 018
 - Category: migration, skills, evaluation, DX
 - Planned at: commit `7eb093d`, 2026-09-12
-- Status: BLOCKED — 2026-09-13, isolated controlled runtime unavailable
+- Status: IMPLEMENTED — 2026-09-13, controlled trials green; release repairs committed
 - Status note 2026-09-13: controlled trials ran in disposable worktrees
-  (baseline `7eb093d`, candidate `2d66df8`); browser proof incomplete on both
-  candidate trials, so no speed claim is valid. Independent verdicts:
-  baseline Trial B `PASS`, candidate Trial A `REWORK`, candidate Trial B
-  `REWORK`. See `evals/carta-module-workflow/plan-019-result.md`.
+  (baseline `7eb093d`, candidate `2d66df8` then `b5f7d0d`). Baseline Trial B
+  `PASS`; candidate Trial A and B journeys green after the generator
+  assertion fix (static title plus cell; list chrome for empty state), with
+  API 1/1 PASS each and the custom Detail proof green. Independent
+  `$verify-carta-module` verdicts: baseline Trial B `PASS`; candidate trials
+  `REWORK` on technical repairs only — all four closed (specs regenerated
+  from the committed fix and rerun green; stale integration absence
+  repaired; `CommandPalette` membership assertion; full web `vue-tsc` pass).
+  No speed claim is made: correctness differed during measurement. See
+  `evals/carta-module-workflow/plan-019-result.md`.
 
 ## Implementation record — 2026-09-13
 
