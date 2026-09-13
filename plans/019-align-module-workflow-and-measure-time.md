@@ -19,7 +19,7 @@
 - Depends on: 016, 017, and 018
 - Category: migration, skills, evaluation, DX
 - Planned at: commit `7eb093d`, 2026-09-12
-- Status: TODO — plan only
+- Status: BLOCKED — 2026-09-13, public command mismatch and isolated runtime unavailable
 
 ## Implementation record — 2026-09-13
 
@@ -28,6 +28,25 @@ Required skill inputs read before the first skill edit:
 - `/Users/gamer/.codex/skills/.system/skill-creator/SKILL.md`
 - `/Users/gamer/.agents/skills/writing-for-agents/SKILL.md`
 - `/Users/gamer/.agents/skills/writing-for-agents/SKILL-MECHANICS.md`
+
+Implementation commit: `29e4abe` (`Align module workflow with bounded generation`).
+
+Focused contract tests passed 22/22. All three changed skills passed
+`quick_validate.py`. The full module tooling suite passed 88 Node tests and 2
+Python tests.
+
+Independent review returned `REWORK`: scan command fences for retired commands,
+keep evidence sufficiency in one reference, replace exact prose checks with
+decision checks, and make the six evaluation cases run observable commands in
+isolated fixtures.
+
+The controlled run then met a stop condition. The documented command
+`pnpm scaffold:bounded-module -- --manifest <path> --check` fails with `Unknown
+argument: --`; omitting the first `--` passes. Generator changes are outside this
+plan. Both trial variants were also blocked before runtime proof because isolated
+API, test and browser targets were unavailable. See
+`evals/carta-module-workflow/plan-019-result.md`. No time comparison or speed
+claim is valid.
 
 The user selected this migration and required `$skill-creator` and
 `$writing-for-agents`. Execute it after the commands in plans 016-018 exist and
