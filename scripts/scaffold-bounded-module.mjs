@@ -699,7 +699,11 @@ function renderIntegrationTest(config) {
   const selected = new Set(config.selectedActions)
   const permission = config.actions.list?.permission ?? Object.values(config.actions)[0]?.permission ?? ''
   // Route assertions reference only existing actions: assert a selected route
-  // name, and assert absence only for actions the manifest omitted.
+  // name, and assert absence only for actions the manifest omitted. The
+  // assertions describe generated routes only: a later manual route (for
+  // example an approved custom Detail page) can add a name that the
+  // generated absence check does not know, so absence checks stay scoped to
+  // generated files, not the final route table.
   const assertions = []
   if (selected.has('list')) assertions.push(`    expect(router.resolve('/${config.navigation.group}/${config.slug}').name).toBe('${metadata.routes.list}')`)
   else assertions.push(`    expect(router.getRoutes().map((route) => route.name)).not.toContain('${config.navigation.group}-${config.slug}')`)

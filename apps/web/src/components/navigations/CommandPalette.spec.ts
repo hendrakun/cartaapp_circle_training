@@ -61,7 +61,12 @@ describe('CommandPalette', () => {
 
     await view.get('[data-command-palette-input]').setValue('Settings')
 
-    expect(view.findAll('[role="option"]').map((option) => option.attributes('aria-label'))).toEqual(['Users — Settings', 'Roles — Settings', 'Permissions — Settings'])
+    // The palette lists every navigation entry whose title, module, or alias
+    // matches: generated modules add entries, so assert membership of the
+    // shipped entries instead of an exact list.
+    const labels = view.findAll('[role="option"]').map((option) => option.attributes('aria-label'))
+    expect(labels).toEqual(expect.arrayContaining(['Users — Settings', 'Roles — Settings', 'Permissions — Settings']))
+    expect(labels.every((label) => label?.endsWith('— Settings'))).toBe(true)
   })
 
   it('shows an empty state for an unknown route', async () => {
