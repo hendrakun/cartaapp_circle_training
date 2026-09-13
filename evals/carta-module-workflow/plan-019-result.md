@@ -139,3 +139,26 @@ on both browser journeys). Classification:
 Checks: `pnpm test:module-tooling` 91 Node + 2 Python pass;
 `git diff --check` pass. Main checkout tree clean; trial implementation
 lives only in the disposable worktrees.
+
+## Generator fix and green reruns — 2026-09-13
+
+Commit `b5f7d0d` fixes the generated e2e template (`renderBrowserSpec`):
+Detail assertions use the static resource title plus the record cell instead
+of a dynamic record-name heading; the no-seed empty list asserts list chrome
+instead of `<table>`. Contract test added (92 Node tests pass).
+
+Both candidate journeys rerun green against committed-equivalent output in
+the candidate worktree (specs refreshed from the fixed template; worktree
+generator file restored clean): `trial-products.spec.ts` PASS (~13.6 s),
+`trial-services.spec.ts` PASS (~11.5 s), exit 0. Custom Detail proof
+(`trial-services-custom-detail.spec.ts`) PASS (~14.4 s): heading, name,
+summary Card, reload persistence. Raw records: worktree `.local/`
+(`browser-rerun-fixed.md/.json`, `browser-custom-detail.md/.json`).
+
+Final independent `$verify-carta-module` verdict: `REWORK` on technical
+repairs only — no module or behavior rework. Remainder: (1) the passing
+specs are a worktree overlay until regenerated from the now-committed fix;
+(2) `trial-services.integration.spec.ts` stale `not.toContain(detail)`
+assertion needs a technical repair plus run; (3) `CommandPalette.spec.ts`
+hard-coded nav list needs the same; (4) full web `vue-tsc` unrun on the
+candidate. No blocker.
