@@ -19,6 +19,7 @@
 - Category: migration, generation, DX, correctness
 - Planned at: commit `7eb093d`, 2026-09-12
 - Status: IMPLEMENTED — 2026-09-13, checks summary below; orchestrator review pending, nothing committed
+- Addendum: 2026-09-13 — Loom `formDefaultTo` falls back to List when Detail is absent; generator alignment is uncommitted (see Addendum below)
 
 The user selected this migration. Extend the current bounded generator. Do not
 create another generator or another skill. Generated files are normal editable
@@ -557,6 +558,41 @@ Checks (final state, this checkout):
   spec passed earlier in `018-live2`
   (`test:focused -- 'src/routes/(authenticated)/service-levels/
   service-levels.routes.spec.ts'`, 1 passed).
+
+## Addendum — framework form redirect fallback (2026-09-13)
+
+This addendum corrects the no-redirect rule recorded in steps 5 and 8 and in
+the step-5 checks paragraph. It does not reopen plan 018 execution. Plan 018
+scope forbids framework changes; the Loom change below is outside that scope.
+
+Committed Loom change: `eccf5dc` extends `formDefaultTo` in
+`packages/loom/src/resources/actionResource.ts` with a List fallback. Create
+and Update redirect to Detail when Detail exists, else to List when List
+exists, else stay on the page. Declared `defaultTo` and `defaultTo: false`
+keep their current meaning. New framework tests live in
+`packages/loom/src/resources/__tests__/resources.spec.ts` (list fallback and
+no-target cases).
+
+Consequences for generated modules:
+
+- The generator must emit no explicit `defaultTo` when Detail or List exists.
+  The old step-5 text said the journey stays on the page; that is now wrong.
+- The generated browser journey must wait for the POST/PATCH response, then
+  assert the framework redirect: Detail URL plus record heading when Detail
+  exists, else List URL plus record cell when List exists. It must not use an
+  explicit `goto` between submit and that assertion. The success-toast rule
+  is unchanged: never assert the toast.
+- The plan 018 §2 redirect rules (Detail, else List, else manifest
+  `redirect`) are unchanged. Only the mechanism moved: the framework now
+  performs the List fallback instead of the journey navigating by hand.
+
+Uncommitted generator alignment at the time of this addendum:
+`scripts/scaffold-bounded-module.mjs` plus
+`scripts/scaffold-bounded-module.test.mjs` — framework-redirect assertions,
+no explicit `goto` after submit, ListView delete-dialog confirmation, and a
+no-Detail list-redirect case. Verify with `node --test
+scripts/scaffold-bounded-module.test.mjs` (19 pass at addendum time) plus
+the plan 018 §6 tooling and type-check commands before commit.
 
 ## STOP conditions
 

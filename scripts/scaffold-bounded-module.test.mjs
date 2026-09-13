@@ -289,24 +289,27 @@ test('renders only selected actions and redirects', () => {
   assert.ok(soloResult.generated.some((path) => path.endsWith('create/+server.ts')))
 })
 
-test('browser journey stays on the page after submit and proves persistence on the list', () => {
+test('browser journey expects the framework redirect after submit', () => {
   const setup = workspace(config())
   const result = JSON.parse(execute(['--config', setup.configPath, '--json'], { root: setup.outputRoot, cwd: setup.directory }))
   const browser = result.generated.find((path) => path.endsWith('apps/web/e2e/test-catalog.spec.ts'))
   assert.ok(browser)
   const spec = readFileSync(browser, 'utf8')
-  // Create: submit, then navigate to the list and assert there (no redirect,
-  // no toast assertion: the toast is volatile and may never paint).
+  // Full actions include Detail: create and update expect the detail
+  // redirect, then the journey returns to the list for persistence proof.
+  // No explicit goto between submit and the redirect assertion, and no
+  // toast assertion: the toast is volatile and may never paint.
   const createSubmit = spec.indexOf(`name: 'Save', exact: true }).click()`)
   assert.ok(createSubmit > 0)
-  assert.match(spec, /exact: true \}\)\.click\(\)\n  await page\.waitForResponse\(\(response\) => response\.url\(\).includes\('\/test-catalog\/create'\) && response\.request\(\).method\(\) === 'POST'\)\n  await page\.goto\('\/settings\/test-catalog'\)\n  await expect\(page\.getByRole\('cell'/)
-  assert.match(spec, /exact: true \}\)\.click\(\)\n  await page\.waitForResponse\(\(response\) => response\.url\(\).includes\('\/test-catalog\/update\/'\) && response\.request\(\).method\(\) === 'PATCH'\)/)
+  assert.match(spec, /exact: true \}\)\.click\(\)\n  await page\.waitForResponse\(\(response\) => response\.url\(\).includes\('\/test-catalog\/create'\) && response\.request\(\).method\(\) === 'POST'\)\n  await expect\(page\)\.toHaveURL\(new RegExp\('\/settings\/test-catalog\/\.\+\/detail'\)\)/)
+  assert.match(spec, /exact: true \}\)\.click\(\)\n  await page\.waitForResponse\(\(response\) => response\.url\(\).includes\('\/test-catalog\/update\/'\) && response\.request\(\).method\(\) === 'PATCH'\)\n  await expect\(page\)\.toHaveURL\(new RegExp\('\/settings\/test-catalog\/\.\+\/detail'\)\)/)
   assert.doesNotMatch(spec, /Changes saved/)
   // The journey deletes the row it created, so assertions stay unscoped
   // cells: a same-valued leftover from a red run must fail loudly. The
-  // delete step targets the UPDATED value (the journey renamed the row).
+  // delete step targets the UPDATED value (the journey renamed the row)
+  // and confirms the ListView delete dialog.
   assert.match(spec, /await expect\(page\.getByRole\('cell', \{ name: 'Two', exact: true \}\)\)\.toBeVisible\(\)/)
-  assert.match(spec, /getByRole\('row', \{ name: new RegExp\('Two'\) \}\)\.getByRole\('button', \{ name: \/delete\/i \}\)/)
+  assert.match(spec, /getByRole\('row', \{ name: new RegExp\('Two'\) \}\)\.getByRole\('button', \{ name: \/delete\/i \}\)\.click\(\)\n  await page\.getByRole\('button', \{ name: 'Delete', exact: true \}\)\.click\(\)/)
   // Update via the created row's Edit link (seed id stays untouched), then
   // list + reload assertions.
   assert.match(spec, /getByRole\('row'.*getByRole\('link', \{ name: \/edit\/i \}\)\.click\(\)/)
@@ -314,6 +317,16 @@ test('browser journey stays on the page after submit and proves persistence on t
   // Resource carries no defaultTo when Detail or List exists.
   const resource = readFileSync(result.generated.find((path) => path.endsWith('.resource.ts')), 'utf8')
   assert.doesNotMatch(resource, /defaultTo/)
+
+  // Without Detail the journey expects the list redirect after submit.
+  const noDetail = withoutActions(config(), ['list', 'create', 'update'])
+  const noDetailSetup = workspace(noDetail)
+  const noDetailResult = JSON.parse(execute(['--config', noDetailSetup.configPath, '--json'], { root: noDetailSetup.outputRoot, cwd: noDetailSetup.directory }))
+  const noDetailBrowser = noDetailResult.generated.find((path) => path.endsWith('apps/web/e2e/test-catalog.spec.ts'))
+  assert.ok(noDetailBrowser)
+  const noDetailSpec = readFileSync(noDetailBrowser, 'utf8')
+  assert.match(noDetailSpec, /await expect\(page\)\.toHaveURL\(new RegExp\('\/settings\/test-catalog\$'\)\)\n  await expect\(page\.getByRole\('cell', \{ name: 'One', exact: true \}\)\)\.toBeVisible\(\)/)
+  assert.doesNotMatch(noDetailSpec, /\/test-catalog\/create'\) && response\.request\(\).method\(\) === 'POST'\)\n  await page\.goto/)
 })
 
 test('generates the API proof spec with permission, persistence, and cleanup checks', () => {

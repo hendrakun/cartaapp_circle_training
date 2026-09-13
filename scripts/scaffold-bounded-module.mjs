@@ -327,10 +327,11 @@ export function validateConfig(value) {
   const unsupported = []
   if (customRenderers.length) unsupported.push(`custom renderer for ${customRenderers.join(', ')} makes that UI action manual`)
 
-  // Redirect rule (plan 018 §2): Create and Update redirect to Detail when
-  // Detail exists, else to List when List exists, else to the manifest
-  // `redirect` route name. Route-existence validation is a later part; here
-  // the manifest target is only required to be a non-empty string.
+  // Redirect rule (plan 018 §2 plus the Loom list fallback): Create and
+  // Update redirect to Detail when Detail exists, else to List when List
+  // exists, else to the manifest `redirect` route name. Route-existence
+  // validation is a later part; here the manifest target is only required
+  // to be a non-empty string.
   // Validation order matters: navigation rejects a missing List before the
   // redirect rule can misreport a create-only manifest as missing `redirect`.
   // A create/update-only manifest without Detail or List has no navigation
@@ -551,15 +552,12 @@ function resourceEntry(config, action) {
     .map((field) => `${field.key}: ${literal(field.default)}`)
     .join(', ')
   const initialData = initial ? `\n      initialData: { ${initial} },` : ''
-  // Redirect rule (plan 018 §2): Create/Update default to the Detail route
-  // when Detail exists (no explicit defaultTo; Loom infers the detail route),
-  // else omit defaultTo when List exists (the generated journey stays on the
-  // current page and re-reads the list, matching hand-written modules which
-  // carry no defaultTo), else the manifest `redirect` route name. Loom's
-  // formDefaultTo with a string defaultTo navigates by route NAME via
-  // router.replace; a list route name is a valid target but changes the
-  // current-page assertion pattern, so only the explicit manifest redirect
-  // (no Detail and no List) emits defaultTo.
+  // Redirect rule (plan 018 §2 plus the Loom list fallback): Create/Update
+  // carry no explicit defaultTo when Detail or List exists; Loom redirects
+  // to Detail when Detail exists, else to List when List exists. Only the
+  // explicit manifest redirect (no Detail and no List) emits defaultTo.
+  // Loom's formDefaultTo with a string defaultTo navigates by route NAME via
+  // router.replace.
   const redirectLine = !Object.hasOwn(source, 'detail') && !Object.hasOwn(source, 'list') && (action === 'create' || action === 'update')
     ? `\n      defaultTo: ${literal(config.redirects[action])},`
     : ''
@@ -819,36 +817,40 @@ function renderBrowserSpec(config) {
       lines.push(`  await page.getByRole('textbox', { name: ${literal(config.fields.find((field) => field.key === key)?.label ?? key)} }).fill(${literal(String(value))})`)
     }
     lines.push(`  await page.getByRole('button', { name: ${literal(config.labels.submitLabel)}, exact: true }).click()`)
-    // The generated resource carries no defaultTo (same as hand-written
-    // modules), so the journey stays on the Create page after a successful
+    // The framework defaultTo (detail, else list) fires after a successful
     // submit. Save resolves through the resource run, so wait for the POST
-    // response before leaving the page: without the wait the goto can abort
-    // the in-flight request, and the row only exists after navigation.
-    // Never assert the success toast: it never paints after a real save.
+    // response before asserting the redirect: without the wait the assertion
+    // can run while the save is still in flight. Then expect the framework
+    // redirect, not an explicit goto. Never assert the success toast: it
+    // never paints after a real save.
     lines.push(`  await page.waitForResponse((response) => response.url().includes('/${config.slug}/create') && response.request().method() === 'POST')`)
-    if (hasList) {
-      lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
+    if (hasDetail) {
+      lines.push(`  await expect(page).toHaveURL(new RegExp('/${config.navigation.group}/${config.slug}/.+/detail'))`)
+      lines.push(`  await expect(page.getByRole('heading', { name: ${literal(String(record[firstField.key]))} })).toBeVisible()`)
+    } else if (hasList) {
+      lines.push(`  await expect(page).toHaveURL(new RegExp('/${config.navigation.group}/${config.slug}$'))`)
       lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(record[firstField.key]))}, exact: true })).toBeVisible()`)
     } else {
       lines.push(`  await expect(page.getByRole('button', { name: ${literal(config.labels.submitLabel)}, exact: true })).toBeVisible()`)
     }
   }
-  if (hasDetail) {
+  if (hasDetail && !hasCreate) {
     lines.push(`  await expect(page.getByRole('heading', { name: ${literal(String(record[firstField.key] ?? seed?.[firstField.key] ?? ''))} })).toBeVisible()`)
   }
   if (hasUpdate && updateKey) {
-    // Same no-redirect rule as Create: after saving the Update, navigate to
-    // the List (when it exists) and assert the saved value there, then
-    // reload and assert again to prove persistence across reload. Do not
-    // assert the volatile success toast. The journey is its own cleanup: it
-    // deletes the row it created, so after a green run no same-valued row
-    // remains; keep the assertions unscoped cells so a same-valued leftover
-    // from a previous RED run fails loudly instead of passing on the wrong
-    // row. The Update page needs a record id in the URL; the journey edits
-    // the record it just created, whose id is unknown to the static spec, so
-    // open the List first, follow the created row's Edit link, save, and
-    // return to the List. The row link keeps working even when a seed record
-    // shares the table.
+    // After saving the Update the framework defaultTo fires (detail, else
+    // list). Wait for the PATCH response, then expect the redirect and
+    // assert the saved value there, then reload and assert again to prove
+    // persistence across reload. Do not assert the volatile success toast.
+    // The journey is its own cleanup: it deletes the row it created, so
+    // after a green run no same-valued row remains; keep the assertions
+    // unscoped cells so a same-valued leftover from a previous RED run
+    // fails loudly instead of passing on the wrong row. The Update page
+    // needs a record id in the URL; the journey edits the record it just
+    // created, whose id is unknown to the static spec, so open the List
+    // first, follow the created row's Edit link, save, and expect the
+    // redirect. The row link keeps working even when a seed record shares
+    // the table.
     if (hasList) {
       lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
       lines.push(`  await page.getByRole('row', { name: new RegExp(${literal(String(record[firstField.key]))}) }).getByRole('link', { name: /edit/i }).click()`)
@@ -857,11 +859,16 @@ function renderBrowserSpec(config) {
     }
     lines.push(`  await page.getByRole('textbox', { name: ${literal(config.fields.find((field) => field.key === updateKey)?.label ?? updateKey)} }).fill(${literal(String(updateValue))})`)
     lines.push(`  await page.getByRole('button', { name: ${literal(config.labels.submitLabel)}, exact: true }).click()`)
-    // Same no-redirect rule as Create: wait for the PATCH response before
-    // leaving the page, or the goto aborts the in-flight request.
     lines.push(`  await page.waitForResponse((response) => response.url().includes('/${config.slug}/update/') && response.request().method() === 'PATCH')`)
-    if (hasList) {
+    if (hasDetail) {
+      lines.push(`  await expect(page).toHaveURL(new RegExp('/${config.navigation.group}/${config.slug}/.+/detail'))`)
+      lines.push(`  await expect(page.getByRole('heading', { name: ${literal(String(updateValue))} })).toBeVisible()`)
       lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
+      lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true })).toBeVisible()`)
+      lines.push(`  await page.reload()`)
+      lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true })).toBeVisible()`)
+    } else if (hasList) {
+      lines.push(`  await expect(page).toHaveURL(new RegExp('/${config.navigation.group}/${config.slug}$'))`)
       lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true })).toBeVisible()`)
       lines.push(`  await page.reload()`)
       lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true })).toBeVisible()`)
@@ -875,13 +882,15 @@ function renderBrowserSpec(config) {
     // created value, so the created value no longer matches any row), else
     // the created row. The journey is its own cleanup: after a green run no
     // same-valued row remains, so the final absence assertion proves the
-    // delete. Without a List there is no generated delete surface; report
-    // manual.
+    // delete. The ListView delete control opens a confirmation dialog; the
+    // row is only removed after the dialog Delete is clicked. Without a
+    // List there is no generated delete surface; report manual.
     const deleteValue = hasUpdate && updateKey ? String(updateValue) : String(record[firstField.key] ?? '')
     if (hasList) {
       lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
       lines.push(`  await expect(page.getByRole('cell', { name: ${literal(deleteValue)}, exact: true })).toBeVisible()`)
       lines.push(`  await page.getByRole('row', { name: new RegExp(${literal(deleteValue)}) }).getByRole('button', { name: /delete/i }).click()`)
+      lines.push(`  await page.getByRole('button', { name: 'Delete', exact: true }).click()`)
       lines.push(`  await expect(page.getByRole('cell', { name: ${literal(deleteValue)}, exact: true })).toHaveCount(0)`)
     } else {
       lines.push(`  await page.getByRole('button', { name: /delete/i }).click()`)
