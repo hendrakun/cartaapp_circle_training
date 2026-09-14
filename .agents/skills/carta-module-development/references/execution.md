@@ -29,7 +29,8 @@ Use the plan's owner inventory and generation preview under the
 [discovery reuse rule](../SKILL.md#discovery-reuse).
 
 The first assignment proves one mutation through the most uncertain integration.
-Assign only that result and its prerequisites first. Keep remaining actions in
+Put only that result, its proof obligations and prerequisites in the active
+assignment. Keep remaining actions in
 the plan; assign them after this result passes. The same worker can continue.
 Before dispatch, set the worksheet to `EXECUTE`, mark the active plan
 `IN_PROGRESS`, and name this first result as the next action.
@@ -65,8 +66,8 @@ before the final browser run.
 
 Resolve missing component facts through the applicable layer contract. Build
 the first integration path, including changed value conversion, edit
-hydration and cache refresh where applicable. For a changed UI path, exercise
-it through the browser before adding the remaining UI actions.
+hydration and cache refresh where applicable. When the first path has a selected
+browser obligation, exercise it before adding the remaining UI actions.
 
 Follow [verification strategy](verification-strategy.md#test-order) for test
 order and the [tight loop](verification-strategy.md#tight-loop) for failures,

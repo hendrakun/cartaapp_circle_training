@@ -17,7 +17,7 @@ state behavior; file count and coverage percentage are not completion criteria.
 | Relationship | Valid selection persists; a wrong-parent or inaccessible reference is rejected. Check edit hydration and parent-change clearing through the form when changed. |
 | Access | Direct authenticated requests with and without the required permission or record access; rejected writes leave state unchanged. |
 | Workflow | Legal and illegal transitions, stored effects, and rollback of coupled writes. Test races or retries when their outcome is part of the contract. |
-| UI integration | A focused browser journey through the changed interaction, with visible feedback and a persisted result after reload. |
+| UI integration | Module form integration for standard composition; a browser journey for custom or uncovered interaction. |
 | Cache or consumer | A successful mutation updates the affected list, detail or summary without a manual browser reload. |
 | Migration | Inspect SQL and test the relevant old-to-new data shape on an isolated target. |
 
@@ -30,8 +30,8 @@ An explicit acceptance requirement still needs its stated evidence.
 
 Select proof for every expected outcome within an acceptance case. One case can
 require both API and browser evidence. Put the required surfaces in the worksheet
-before implementation; add separate evidence rows where needed. A UI interaction
-requires browser evidence even when the same case also specifies stored effects.
+before implementation; add separate evidence rows where needed. Select browser
+evidence under the ownership and journey rules below.
 Use visual evidence for display/layout outcomes and source review for framework
 composition. Reuse a check only for outcomes its actual assertions establish.
 
@@ -40,21 +40,43 @@ can support several rows, but each row must have a direct assertion. For changed
 filters, include distinguishing records and count agreement; prove page reset
 and reload retention when required. For partial updates, prove retained values.
 
-For visible actions, prove that the permitted user can find and complete the
-action, see updated data and available actions before reload, and retain the
-result after reload. For filters, change the visible control and check the
-matching records. For file or relation inputs, use the actual control and verify
-the saved value and display. Page-render checks establish presence only.
+## Test ownership
+
+Reuse verified framework behavior for unchanged standard composition. Record the
+test pointer, covered behavior and applicable revision in the plan or handoff
+once. Reuse that pointer on resume; search again only for a gap or change.
+A test file alone is not a passing result. A mocked control does not prove its
+real browser interaction.
+
+| Owner | Proof |
+|---|---|
+| Framework unit/component | Value conversion, validation pipeline, dependency clearing and filter/page state. |
+| Framework browser | Real lookup selection, calendar input, overlays, focus and control integration. |
+| Module form/API | Actual fields and schema, relation source and submitted ID, field dependencies, access, business rules and stored effects. |
+| Application browser | One representative assembled path per distinct integration, plus custom or uncovered interactions. |
+
+Module form tests use the actual module schema and field configuration. Check
+their effect on values and submission, not copied field arrays. Framework
+dependency clearing can be reused; the module still proves that its correct
+parent and child fields are connected. Check relation scope and access at the
+API. Page readiness is a wait condition in a shared helper, not a separate
+module acceptance rule.
+
+If framework proof is missing, name the gap and retain the smallest necessary
+integration check. Request framework work when it is outside scope. Do not
+repeat the framework matrix in each module or silently omit required proof.
 
 ## Browser journeys
 
-Derive journeys from action, transition and conditional-input rules before reading
-existing tests or worksheet evidence. An old API-only evidence choice does not
-remove a changed UI path. Add its browser proof without changing business approval.
+Derive outcomes from action, transition and conditional-input rules, then use
+the ownership rule to select browser journeys. Explicit user-required journeys
+remain required. Existing evidence must cover the actual outcome.
 
-Give each distinct user workflow a browser journey. Split when required controls
-or inputs, the submission contract, action sequence, visible result or failure
-recovery differs. Count user workflows, not code branches or every combination.
+Give each custom workflow or uncovered integration a browser journey. Standard
+forms that use the same verified framework path can share one representative
+application journey; a different field list alone does not require another.
+Split when a new submission contract, action sequence or failure recovery needs
+browser proof. Count integration risks, not resources or every combination.
 Use one independent starting record per selected journey. A rejected submission
 and successful retry can share that record and test.
 
@@ -66,9 +88,10 @@ at the API boundary.
 
 Reuse coverage for unchanged standard CRUD behavior. Module-specific inputs,
 validation, access, uploads and edit hydration still need integration proof.
-Use the actual changed controls and assert the submitted value, updated actions
-and persistence after reload. Seed prerequisites; perform the selected sequence
-through the UI.
+For selected browser journeys, use the actual controls and assert the submitted
+value, visible update and persistence after reload. Seed prerequisites; perform
+the selected sequence through the UI. Keep other module obligations in focused
+form/API tests.
 
 The design selects journey IDs and acceptance links. As tests are written, the
 worksheet maps each to one distinct `file::exact test title`; parameterized cases need distinct titles.
@@ -81,7 +104,8 @@ against the design; a matching title cannot prove coverage or report freshness.
 
 Before adding a test, state in one sentence which plausible wrong result it
 detects and why existing coverage does not detect it. Keep the sentence in the
-existing work notes or handoff. Extend a suitable behavior test before creating
+existing work notes or handoff. Check assertions against the selected outcomes
+before the first expensive browser run. Extend a suitable behavior test before creating
 another file; separate a test when isolation or a distinct failure needs it.
 Generated tests receive the same review before they become a pattern.
 
@@ -94,11 +118,14 @@ use browser tests for the changed interaction and persistence boundary.
 
 ## Tests that earn their cost
 
-Standard CRUD needs one API proof plus one slim browser journey. The generated
+Standard CRUD needs module API proof and a representative application browser
+journey under the ownership rule. The generated
 API spec proves success plus persistence per action, plus denied access and
 invalid payload rejection on create and update. The slim browser journey
 proves create, edit, and reload persistence for a full list/create/update
-module. UI copy, layout, dialogs, and delete flow stay with the user. New unit
+module. Reuse that journey across equivalent standard compositions. Review
+generated tests before keeping them; generation does not require duplicate proof.
+Custom UI copy, layout, dialogs and delete flow remain manual work. New unit
 tests need a changed value or interaction that those two checks cannot detect.
 
 - Assert public outcomes and persisted effects. A status code alone cannot
@@ -178,7 +205,10 @@ for final review.
 Run one focused check after a meaningful changed boundary. On failure inspect
 the output and classify the cause: source, test expectation, fixture, environment,
 tooling, pre-existing failure, or an unresolved requirement. Make an evidence-led
-correction inside scope, then rerun the affected check. Three red runs on one
+correction inside scope, then rerun the affected check. After two failures at
+the same browser interaction, inspect the active route, page readiness and
+failure artifacts before another edit. Report the cause or unresolved fact to
+the parent; change the diagnostic action, not just the selector. Three red runs on one
 check end the loop: return the logs and the classification to the parent.
 Generated tests need the same diagnosis: compare the selector, fixture and
 assertion with the actual contract before changing source. Preserve failures in

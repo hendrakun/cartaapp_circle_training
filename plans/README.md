@@ -15,7 +15,7 @@ probes check both test stability and useful detection. These evaluations remain
 TODO; the wording changes make no claim of measured speed or reliability.
 
 The user selected skill changes first, then plans for tool fixes and forward
-tests. Plans 021–023 are TODO; this planning pass does not execute them.
+tests. Plans 021 and 022 are complete as recorded below; 023 remains TODO.
 The skill revision uses CRUD tables and custom workflow YAML, reuses discovery,
 checks generation before detailed planning, and assigns one working path first.
 The worksheet parser now reads CRUD tables as well as custom workflow records.
@@ -30,9 +30,11 @@ dependencies require the complete predecessor. Plan 023 tests these decisions.
 |---|---|---|---|---|---|
 | [021: Submit without copy dependency](021-remove-submit-copy-dependency.md) | P1 | S | LOW | None | DONE — 2026-09-14, native submit locator, 21 tool tests pass |
 | [022: Report raw controls](022-report-raw-interactive-controls.md) | P1 | S | MED | None | DONE — 2026-09-14, native controls reach review, 18 tests pass |
-| [023: Forward test the revision](023-forward-test-module-skill-revision.md) | P1 | M | MED | 021, 022, skill revision | TODO |
+| [024: Prove shared form controls](024-prove-shared-form-controls.md) | P1 | M | MED | None | TODO |
+| [025: Separate runtime and review freshness](025-separate-runtime-and-review-freshness.md) | P2 | S | MED | None | TODO |
+| [023: Forward test the revision](023-forward-test-module-skill-revision.md) | P1 | M | MED | 021, 022, 024, 025, skill revision | TODO |
 
-Run 021 and 022 before 023. The first two change separate tool owners. Preserve
+Next execute 024 and 025, then 023. The new plans change separate owners. Preserve
 all existing plan status and user application work.
 
 | Finding | Category | Impact | Confidence | Evidence |
@@ -60,9 +62,18 @@ An old Node assertion required command text in the router; it failed after the
 procedure moved to its reference. That wording assertion was removed; the
 generator example check and reference-link checks remain. Behavioral stage
 ordering is part of plan 023. All five final skill changes are complete.
-Next: execute 021 and 022, then run 023. No further skill redesign is required
-before those tests. Application and framework implementation remain outside
-this completed skill-editing task.
+The next skill pass defines framework/module test ownership in one reference,
+checks assertions before expensive runs, and requires page/artifact diagnosis
+after two failures at one browser interaction. Plan 024 closes real-control
+coverage gaps and supplies shared helpers. Plan 025 separates runtime freshness
+from design review; current recorder rules remain in force until it is complete.
+Application and framework source were not changed in this skill pass. The new
+rules still need the controlled trial; no speed improvement is claimed.
+
+Checks for this pass: 96 Node tooling tests and three Python tests passed.
+Both changed skill folders passed skill validation; `git diff --check` passed.
+Framework browser tests and the controlled trial were not run. Concurrent
+application changes were left untouched.
 
 Planned with the improve skill against checkout `00763ed` on 2026-09-08.
 Both plans passed parent review on 2026-09-09.

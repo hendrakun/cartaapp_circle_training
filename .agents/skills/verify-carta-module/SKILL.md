@@ -92,7 +92,10 @@ Apply the generated-evidence limits in
 [verification strategy](../carta-module-development/references/verification-strategy.md#commands-and-environment):
 do not compare edited source with generator templates.
 
-When UI obligations apply, read [UI automation](../carta-module-development/references/ui-automation.md)
+Apply [test ownership](../carta-module-development/references/verification-strategy.md#test-ownership)
+before requesting new browser proof. Check reused framework evidence and actual
+module form/API effects; do not require repeated control tests for each resource.
+When selected browser obligations apply, read [UI automation](../carta-module-development/references/ui-automation.md)
 and map the required outcomes to passing Playwright cases/steps. Inspect source
 and preserved artifacts, including failures. Backend checks and screenshots do
 not replace a required real interaction and persisted result. A feature with no

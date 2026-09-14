@@ -36,7 +36,10 @@ configuration and supported setup; it owns ports, projects, report paths and
 server lifecycle. A development-only visual inspection does not establish the
 required automated journey.
 
-Use role and accessible-name locators, then stable test IDs when needed.
+Reuse existing control helpers. Resolve the active page and named field before
+operating a control; a matching control on the previous page is not readiness.
+Keep framework control mechanics in shared test helpers, not module-specific
+selector sequences. Use role and accessible-name locators, then stable test IDs when needed.
 Select named fixture records; avoid the first arbitrary row. Fix the clock or
 provide explicit dates for time-sensitive behavior. Wait for an observable
 result, not a fixed delay. Keep test data isolated and cleanup tied to returned
@@ -75,5 +78,5 @@ review; functional assertions alone do not prove layout quality. Use image
 comparison only against an approved baseline.
 
 Use the [verification strategy](verification-strategy.md) for evidence freshness
-and verdicts. A supported UI obligation without executable browser evidence
+and verdicts. A selected browser obligation without executable browser evidence
 remains blocked; backend, lint and type checks do not silently replace it.
