@@ -2,7 +2,8 @@
 
 ## Current skill handoff — standard module path, 2026-09-14
 
-Ready for the user's manual forward verification. Standard CRUD now uses one
+Skill updates are ready; the stopped trial's database baseline is not verified.
+Standard CRUD now uses one
 short work record, one continuing executor and an early development preview.
 Custom workflows build on that base in the same record. Full design/plan/worksheet
 records apply only to a scope that needs them, not to every module with a workflow.
@@ -11,15 +12,24 @@ Standard detail pages do not gain custom Edit/Delete controls by default.
 
 Implementation instructions are in
 [`standard-module.md`](../.agents/skills/carta-module-development/references/standard-module.md).
-Forward verification of this revision is reserved for the user. Plans 024 and
-025 remain optional follow-up work, not prerequisites for this trial. The short
+Forward verification of this revision is reserved for the user. Plan 024 is
+already implemented (see the table below); plan 025 remains optional
+follow-up work, not a prerequisite for this trial. The short
 path uses existing controls, ordinary evidence and safe manual generator fallback.
 No new generator, route-type command or connected-entity framework repair is
 claimed as implemented. Those tool limitations remain visible if encountered.
 
-This pass changes skills and handoff plans only. Application code, database data,
-framework source and old test reports are unchanged. Forward verification is
-reserved for the user; no speed or reliability improvement is claimed yet.
+The follow-up also reconciles the API runbook and replaces the file-upload
+test's shared-table reset with existing session fixtures. No database or framework
+changes were made by this follow-up.
+
+Before the next trial, use a confirmed isolated database whose migration history
+matches the selected source revision. Run the focused file-upload tests twice,
+then the API suite to check cross-file effects. These runtime checks remain
+unverified: the current target has unresolved drift and no local PostgreSQL or
+Docker command was available. Do not reset the existing target to complete them.
+Plan 024 is already implemented; keep 025 deferred. Forward
+verification is reserved for the user; no speed or reliability claim is made.
 
 ## Earlier module skill follow-up — 2026-09-14
 
@@ -57,8 +67,9 @@ dependencies require the complete predecessor.
 | [024: Prove shared form controls](024-prove-shared-form-controls.md) | P1 | M | MED | None | IMPLEMENTED — 2026-09-14, real Dialog/Table/calendar cases pass, helper regression passes |
 | [025: Separate runtime and review freshness](025-separate-runtime-and-review-freshness.md) | P2 | S | MED | None | TODO |
 
-Run the manual trial with the current skills. Plans 024 and 025 can follow
-when their gaps are relevant; they do not block this trial. Preserve existing
+Run the manual trial with the current skills. Plan 024 is already implemented
+as recorded in the table above; plan 025 can follow
+when its gap is relevant; it does not block this trial. Preserve existing
 plan status and user application work.
 
 | Finding | Category | Impact | Confidence | Evidence |

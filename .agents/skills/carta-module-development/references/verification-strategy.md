@@ -126,17 +126,26 @@ Run a focused check after a meaningful boundary change. Preserve complete output
 the exact command and its real exit code. A pipe to `tail` or `grep` can hide a
 failed command; capture the status of the check itself. Read saved output rather
 than rerunning a test only to show another portion.
+Use the harness's saved output, the existing evidence recorder, or redirect a
+command to a new log and preserve its status before reading the log. A full
+suite is a final integration check, not the loop for one known failure.
 
 Classify a failure as source, test, fixture, environment, tooling or requirement.
-Correct the cause, then rerun affected checks. After two failures at the same
-browser interaction, inspect the active route, readiness and failure artifacts
-before another selector edit. After three unsuccessful corrections to one fault,
-report the unresolved cause and change the approach before continuing.
+Correct the cause, then rerun affected checks. After two failed attempts at the
+same fault, report the evidence, proposed cause and next different check before
+more repairs. For browser faults, inspect the active page and failure artifacts.
+If the cause remains unknown after that check, stop the affected repair and
+request a focused diagnosis or missing authority; continue independent work.
+Compare a baseline only in an isolated checkout with a matching isolated target.
+Stashing tracked files leaves untracked files and database state unchanged.
 Keep useful failure artifacts; a later pass does not erase them.
 
 Reuse sufficient passes while owners, dependencies, tests, fixtures and environment
 remain applicable. A new reviewer or a final-report label is not a reason to rerun.
 Environment drift can invalidate evidence without a source change.
+For login-only reads, use a signed-in fixture without module read grants.
+For shared API tests, use the migrated schema and clean up owned rows. A test
+that must replace schema needs its own isolated target, not the shared suite DB.
 
 ## Evidence interface
 

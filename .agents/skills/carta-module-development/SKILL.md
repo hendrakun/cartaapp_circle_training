@@ -32,6 +32,11 @@ or authority; do not reopen clear requirements because an example differs.
 
 ## Discovery reuse
 
+Before broad technical discovery, separate explicit requirements, delegated
+defaults and material questions. Inspect only the owner needed to resolve a
+question, then ask it. Exclude options that contradict the request. Report the
+intended result and next action before starting a repository survey.
+
 Start with the requested change, current owners and one applicable pattern.
 Read further for a named missing fact, changed input or observed failure.
 Inspect the smallest owner and necessary direct callers; batch independent
@@ -46,6 +51,8 @@ not a file budget or permission to skip necessary inspection.
 Pass decisions, reasons and exact source pointers on handoff. Reuse them while
 current. A new stage or worker is not a reason to repeat discovery. Keep these
 facts in the existing work record, not a separate discovery log.
+Delegate discovery only for a named gap, with an answer and stopping condition.
+Reuse the answer; read its source again only for an unresolved detail or change.
 
 ## Build and finish
 

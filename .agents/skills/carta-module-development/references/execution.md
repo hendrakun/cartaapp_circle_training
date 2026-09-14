@@ -2,9 +2,11 @@
 
 ## Assignment
 
-Keep one executor for connected work through implementation and repair. Delegate
-when a worker can keep that ownership; use direct execution if the environment
-would require fresh workers for each checkpoint. Split workers only for genuinely
+For module delivery, the parent owns questions, scope, progress and review.
+Delegate implementation and repair to one continuing worker when the harness
+supports it. The parent must not repeat the worker's discovery or edit its files
+in parallel. Use direct execution when delegation is unavailable, prohibited or
+cannot preserve ownership; state that reason. Split workers only for genuinely
 independent work with non-conflicting files and test targets.
 
 An assignment names the requested result, exact owners/patterns, unresolved facts,
@@ -29,6 +31,12 @@ Resolve current package commands and reuse a current preflight. Select only
 needed capabilities with `pnpm module:preflight -- --needs <capabilities>`.
 Establish the intended development target and write authority before setup is
 needed. Test/E2E targets and development preview are separate.
+For a fresh trial, confirm that source, migration history and the selected
+database belong to the same baseline. A clean Git tree does not prove this.
+If existing tables conflict with pending migrations, stop affected writes and
+report the mismatch. Use a confirmed disposable target or an authorized
+reconciliation. Do not drop tables, remove applied migrations or change journal
+entries to make a module check pass.
 
 Before migration generation, check the affected entity import structure and
 existing data. Resolve connected-entity/audit references using the supported
