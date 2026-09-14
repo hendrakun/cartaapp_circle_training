@@ -1,268 +1,180 @@
 # Verification strategy
 
-Use this reference while planning proof obligations, collecting evidence and
-reviewing a Carta module. Carta supplies Vitest, Playwright, lint and type-check
-infrastructure. Package scripts/configuration own exact commands and selectors;
-those tools are framework defaults, not product choices.
+Verify the requested user result, not the document shape or test count.
+Start with the original request and later decisions. An implementation example
+or inferred default cannot override them. Optional refinements are not gates.
 
 ## Select proof by behavior and impact
 
-For each acceptance outcome, name a plausible fault, then choose the smallest
-check that detects it. Reuse one check across outcomes it proves. Test names
-state behavior; file count and coverage percentage are not completion criteria.
+Choose the smallest check that detects a plausible wrong result. Reuse checks
+for the outcomes they actually establish. Keep access and data protection real.
 
 | Risk | Useful proof |
 |---|---|
-| Input conversion or domain validation | Accepted and rejected values at the owning schema or API boundary; verify the stored value when persistence can change it. |
-| Relationship | Valid selection persists; a wrong-parent or inaccessible reference is rejected. Check edit hydration and parent-change clearing through the form when changed. |
-| Access | Direct authenticated requests with and without the required permission or record access; rejected writes leave state unchanged. |
-| Workflow | Legal and illegal transitions, stored effects, and rollback of coupled writes. Test races or retries when their outcome is part of the contract. |
-| UI integration | Module form integration for standard composition; a browser journey for custom or uncovered interaction. |
-| Cache or consumer | A successful mutation updates the affected list, detail or summary without a manual browser reload. |
-| Migration | Inspect SQL and test the relevant old-to-new data shape on an isolated target. |
+| Input/domain validation | Focused schema/API accepted and rejected values. |
+| Relation | Correct identity persists, list/detail show the label, edit loads it; invalid references fail at the API. |
+| Access | Intended users can read; unauthorized writes fail and leave data unchanged. |
+| Filter | Distinguishing records show the correct filter result and count. |
+| Workflow | Legal/illegal transitions, coupled stored effects and rollback; races only where required. |
+| UI integration | Actual populated list/detail/form output and a representative browser path. |
+| Migration | Reviewed SQL and relevant existing-data checks on an isolated target. |
 
-Use API integration tests with the real application and test database for
-access, query scope, constraints and transactions. Use unit tests for domain
-logic with meaningful inputs and outputs. Use browser tests for interaction
-and integration; keep exhaustive permission and state combinations at the API.
-A layout or copy-only change can use visual inspection and existing checks.
-An explicit acceptance requirement still needs its stated evidence.
-
-Select proof for every expected outcome within an acceptance case. One case can
-require both API and browser evidence. Put the required surfaces in the worksheet
-before implementation; add separate evidence rows where needed. Select browser
-evidence under the ownership and journey rules below.
-Use visual evidence for display/layout outcomes and source review for framework
-composition. Reuse a check only for outcomes its actual assertions establish.
-
-Use a separately checkable acceptance row for each independent outcome. A test
-can support several rows, but each row must have a direct assertion. For changed
-filters, include distinguishing records and count agreement; prove page reset
-and reload retention when required. For partial updates, prove retained values.
+For the standard base and added workflows, record checks in the short work record. No
+acceptance IDs or per-surface rows are required. For the full process, map
+required outcomes and selected evidence surfaces in the worksheet.
+An added workflow needs proof of its changed behavior and its restrictions on
+CRUD, not another run of unchanged standard-control tests.
 
 ## Test ownership
 
-Reuse verified framework behavior for unchanged standard composition. Record the
-test pointer, covered behavior and applicable revision in the plan or handoff
-once. Reuse that pointer on resume; search again only for a gap or change.
-A test file alone is not a passing result. A mocked control does not prove its
-real browser interaction.
+Use established framework contracts for unchanged standard composition. Reuse
+known current coverage; do not audit the framework suite for each new field.
+A known coverage gap or changed control requires a focused integration check,
+not a repeated framework matrix in each module. A mocked control cannot prove
+the real browser interaction.
 
 | Owner | Proof |
 |---|---|
-| Framework unit/component | Value conversion, validation pipeline, dependency clearing and filter/page state. |
-| Framework browser | Real lookup selection, calendar input, overlays, focus and control integration. |
-| Module form/API | Actual fields and schema, relation source and submitted ID, field dependencies, access, business rules and stored effects. |
-| Application browser | One representative assembled path per distinct integration, plus custom or uncovered interactions. |
+| Framework unit/component | Conversion, validation pipeline, dependency clearing and filter/page state. |
+| Framework browser | Real controls, calendar/lookup operation, overlays and focus. |
+| Module form/API | Actual schema and field configuration, relation source/identity, access, business rules and stored effects. |
+| Application browser | Representative assembled path and custom/uncovered interactions. |
 
-Module form tests use the actual module schema and field configuration. Check
-their effect on values and submission, not copied field arrays. Framework
-dependency clearing can be reused; the module still proves that its correct
-parent and child fields are connected. Check relation scope and access at the
-API. Page readiness is a wait condition in a shared helper, not a separate
-module acceptance rule.
-
-If framework proof is missing, name the gap and retain the smallest necessary
-integration check. Request framework work when it is outside scope. Do not
-repeat the framework matrix in each module or silently omit required proof.
+Use actual module schemas and fields in form integration checks. Prove the
+correct parent/child connection, not the framework clearing algorithm again.
+Page readiness is synchronization, not a separate module acceptance case.
+Framework gaps outside scope are follow-up work; retain the smallest necessary
+local proof and report any material result that remains unverified.
 
 ## Browser journeys
 
-Derive outcomes from action, transition and conditional-input rules, then use
-the ownership rule to select browser journeys. Explicit user-required journeys
-remain required. Existing evidence must cover the actual outcome.
+Inspect populated list, detail and edit surfaces early. Check meaningful names,
+values, required fields and action placement. A form lookup passing does not
+establish the relation's list/detail display.
 
-Give each custom workflow or uncovered integration a browser journey. Standard
-forms that use the same verified framework path can share one representative
-application journey; a different field list alone does not require another.
-Split when a new submission contract, action sequence or failure recovery needs
-browser proof. Count integration risks, not resources or every combination.
-Use one independent starting record per selected journey. A rejected submission
-and successful retry can share that record and test.
+Use one compact browser path per distinct integration risk, not per resource
+or validation branch. Equivalent standard forms can share it. Use meaningful
+module data, including relations or optional inputs that distinguish the changed
+integration; a name-only smoke cannot prove the rest of the form.
 
-For example, safe review then close differs from unsafe review then close. If
-investigation is optional after unsafe review, select both branches: close without
-it, and reject missing required evidence then upload and close. Check retained
-evidence when it changes requiredness. Keep other state/permission combinations
-at the API boundary.
+For selected paths, operate real controls, observe the visible update and verify
+persistence after reload or navigation. Seed prerequisites on the isolated target.
+Keep exhaustive validation and permission combinations at the API. Split custom
+workflow paths when sequence, required inputs or recovery actually differs.
+Explicit user-required checks remain required.
 
-Reuse coverage for unchanged standard CRUD behavior. Module-specific inputs,
-validation, access, uploads and edit hydration still need integration proof.
-For selected browser journeys, use the actual controls and assert the submitted
-value, visible update and persistence after reload. Seed prerequisites; perform
-the selected sequence through the UI. Keep other module obligations in focused
-form/API tests.
-
-The design selects journey IDs and acceptance links. As tests are written, the
-worksheet maps each to one distinct `file::exact test title`; parameterized cases need distinct titles.
-The executor selects fixtures and assertions from the approved outcomes. Run `check_worksheet.py --browser-report`
-on the preserved Playwright JSON report. Every selected case must pass in each
-reported project without skipped attempts or retry failures. Review assertions
-against the design; a matching title cannot prove coverage or report freshness.
+Only the full process uses journey IDs and exact worksheet mappings. Run its
+`check_worksheet.py --browser-report` against preserved Playwright JSON.
+A matching title proves neither sufficient assertions nor fresh evidence.
 
 ## Test justification
 
-Before adding a test, state in one sentence which plausible wrong result it
-detects and why existing coverage does not detect it. Keep the sentence in the
-existing work notes or handoff. Check assertions against the selected outcomes
-before the first expensive browser run. Extend a suitable behavior test before creating
-another file; separate a test when isolation or a distinct failure needs it.
-Generated tests receive the same review before they become a pattern.
+Before adding a test, identify the wrong result it detects and the gap in existing
+coverage. State this briefly in the work update when it is not evident; no new
+ledger is needed. Inspect assertions before the first expensive browser run.
+Extend a suitable behavior test before creating another file.
 
-An assertion must fail on the named fault and remain valid after a harmless
-implementation change. Exact copy, field order or route configuration needs an
-explicit product or public-interface requirement. Otherwise assert its effect.
-Preserve accessible control use; a stable selector must still exercise the real
-input and submission. Keep exhaustive access and validation cases at the API;
-use browser tests for the changed interaction and persistence boundary.
+Assertions should survive harmless implementation changes. Exact copy, field
+order and configuration literals need an explicit public/product requirement.
+Check actual field effects and displayed values, not copied arrays or source text.
+Preserve accessible control use. A failing locator is not a reason to change
+the product to suit the test.
 
 ## Tests that earn their cost
 
-Standard CRUD needs module API proof and a representative application browser
-journey under the ownership rule. The generated
-API spec proves success plus persistence per action, plus denied access and
-invalid payload rejection on create and update. The slim browser journey
-proves create, edit, and reload persistence for a full list/create/update
-module. Reuse that journey across equivalent standard compositions. Review
-generated tests before keeping them; generation does not require duplicate proof.
-Custom UI copy, layout, dialogs and delete flow remain manual work. New unit
-tests need a changed value or interaction that those two checks cannot detect.
+Standard CRUD needs focused module API proof and a representative assembled
+browser path, with rendered checks for changed display values. Reuse existing
+proof; generated tests are editable starting points, not a required test matrix.
 
-- Assert public outcomes and persisted effects. A status code alone cannot
-  prove that a write succeeded or that a denied write changed nothing.
-- Create the few records that distinguish correct behavior from the fault:
-  another parent for scope, a tie for sorting, a conflicting state for a
-  transition. Give fixtures unique identities and clean up only owned rows.
-- Separate independent rules so one failure does not hide the others. Keep
-  one sequential test when the sequence itself is the behavior under test.
-- Use installed test helpers and inferred types. Mock an external boundary
-  when needed; keep authorization, persistence and transaction behavior real
-  when those are the claim. Test-specific wrappers must remove real repeated
-  setup or express a domain action.
-- For a regression, show that the assertion fails on the prior behavior when
-  practical. Otherwise explain which wrong outcome it detects. A test that
-  still passes with the changed behavior removed needs stronger assertions.
-
-Skip tests that only copy field arrays, labels, renderer names, route literals,
-export names or source text. Route structure and navigation membership belong
-to the static UI contract check. A generated copy of them is smoke, not proof:
-when it conflicts with approved behavior, fix the test. Check important configuration through its effect:
-a hidden action, a selected value, a navigable route or rejected access.
-Keep type tests at a changed type contract and framework tests at the framework
-owner. Ordinary modules need neither repeated framework CRUD matrices nor
-snapshots of component internals. Existing weak tests are not templates.
+- Assert public results and stored effects, not status codes alone.
+- Use the few fixtures that distinguish the fault. Give them unique identities;
+  clean up only owned rows in dependency order, including after failure.
+- Keep one sequential test when the sequence is the behavior. Separate unrelated
+  rules when one failure would hide another.
+- Use installed helpers and inferred types. Mock external boundaries where
+  appropriate, not the authorization/persistence boundary being claimed.
+- For a regression, demonstrate the intended failure when practical. A setup or
+  compile failure does not establish that the assertion detects the defect.
 
 ## Commands and environment
 
-Resolve package scripts, filters, config and test patterns from this checkout.
-Confirm that focused selectors select the intended tests. Zero tests and skipped
-requirements do not establish acceptance. Generated API evidence proves only
-the success-plus-persistence, denied-access, and invalid-payload assertions
-that it contains. The generated route smoke proves only list routing.
-A generated browser journey proves only the create-edit-reload path that
-it performs. Custom acceptance rows need direct evidence; an omitted manual check
-stays unverified.
-The root `test` command does not run the separate application Playwright suite.
-Loom's browser tests and application E2E are different surfaces. Respect serial
-API specifications sharing a database and serialize memory-heavy type checks.
+Resolve current scripts, config and focused selectors once. Zero selected tests
+and skipped required cases are not passes. Generated API evidence proves only
+its actual success, persistence, access and payload assertions.
+A generated browser journey proves only the path and values it exercises.
+An omitted manual check stays unverified.
 
-Before DB-backed checks, use the guarded test command and explicit isolated
-configuration. The API test preflight requires `.env.test`, a declared test
-purpose/name and a target distinct from development. For browser tests, use the
-existing guarded E2E setup described in [ui-automation.md](ui-automation.md).
-A declared target identifies permitted disposable data; it is not permission
-to mutate production or arbitrary remote systems.
+The root test command does not run application Playwright. Loom browser tests
+and application E2E are separate surfaces. Use guarded isolated test/E2E targets,
+never the development database for a test reset. Serialize checks sharing mutable
+data and memory-heavy type checks. Prepare ordinary prerequisites within authority;
+report exact blockers rather than substituting static checks for runtime proof.
 
-Dependencies, browser binaries, ports and fixtures are operational prerequisites.
-Prepare ordinary local prerequisites within task authority. If they cannot be
-established safely, report the exact blocked checks rather than offering a new
-test framework or claiming the runtime result from static checks.
+Use [UI automation](ui-automation.md) when running browser tests. Development
+migration and seed readiness follow [execution](execution.md#prepare-and-build).
 
 ## Test order
 
-Use test-first work for regressions and critical rules: unauthorized access,
-financial errors, data loss, irreversible external effects, invalid final
-decisions, broken coupled writes, or a consequence the user identifies as serious.
-Inspect the assertions against the approved rule before implementation. Keep
-this check within the worker's task; final review checks tests and code together.
-A user-required review gate still applies.
-
-For routine new routes and forms, implementation can precede focused behavior
-tests. Group related changes around an observable result. Existing coverage can
-satisfy an outcome when its assertions and inputs remain applicable.
-
-For a regression, observe the expected failure when practical. Setup faults and
-empty test selections do not establish it. If failure cannot be reproduced,
-state that limit and the wrong outcome the test detects. Keep useful failure
-output for diagnosis; a separate red report is not a completion requirement.
-
-Change business assertions only with the decision owner's authority. A technical
-test repair can proceed when it preserves the approved outcome; report the change
-for final review.
+Use test-first work for regressions and critical access/data-loss rules when
+practical. Routine new routes and forms can be implemented before their focused
+tests. User-required gates still apply. Preserve approved behavior when repairing
+tests; changed requirements need the decision owner's authority.
 
 ## Tight loop
 
-Run one focused check after a meaningful changed boundary. On failure inspect
-the output and classify the cause: source, test expectation, fixture, environment,
-tooling, pre-existing failure, or an unresolved requirement. Make an evidence-led
-correction inside scope, then rerun the affected check. After two failures at
-the same browser interaction, inspect the active route, page readiness and
-failure artifacts before another edit. Report the cause or unresolved fact to
-the parent; change the diagnostic action, not just the selector. Three red runs on one
-check end the loop: return the logs and the classification to the parent.
-Generated tests need the same diagnosis: compare the selector, fixture and
-assertion with the actual contract before changing source. Preserve failures in
-the record; a later pass supersedes rather than erases them.
+Run a focused check after a meaningful boundary change. Preserve complete output,
+the exact command and its real exit code. A pipe to `tail` or `grep` can hide a
+failed command; capture the status of the check itself. Read saved output rather
+than rerunning a test only to show another portion.
 
-Reuse passing evidence when it covers the obligation and its relevant inputs
-and environment are still valid. A new reviewer is not a reason to rerun it.
-A change to a dependency, fixture, schema, config, contract or test can make it
-stale even when the module file is unchanged. Include those inputs. A live
-external dependency or contaminated shared environment may need fresh checking
-without a source change; fingerprints alone cannot establish runtime isolation.
+Classify a failure as source, test, fixture, environment, tooling or requirement.
+Correct the cause, then rerun affected checks. After two failures at the same
+browser interaction, inspect the active route, readiness and failure artifacts
+before another selector edit. After three unsuccessful corrections to one fault,
+report the unresolved cause and change the approach before continuing.
+Keep useful failure artifacts; a later pass does not erase them.
+
+Reuse sufficient passes while owners, dependencies, tests, fixtures and environment
+remain applicable. A new reviewer or a final-report label is not a reason to rerun.
+Environment drift can invalidate evidence without a source change.
 
 ## Evidence interface
 
-Use ordinary focused test output during development. At a completed assignment
-or final verification, record the required commands together with the existing
-recorder. One report can support several acceptance rows. Select the recorder
-before a final check so one execution supplies output and provenance. Reuse
-current recorded passes during review; ordinary output without the required
-provenance needs a recorded run.
-Recorder JSON is a final acceptance input. Progress updates use ordinary
-focused output. Preserve relevant failure artifacts and explain their correction in the handoff.
-Update the worksheet after handoff and final review, not after each command.
+For the standard base and added workflows, preserve command output, exit status, selected
+cases, source state and non-secret environment identity in the existing work
+record or linked reports. Keep browser artifacts for visible checks and diagnosis.
+Check relevant changes on resume. No recorder JSON is mandatory; do not repeat a
+valid run just to change its report format.
 
-Each result records exact command/argument vector and working directory,
-selected cases, environment identity (no credentials), source and approved design
-revision, relevant input content fingerprints, result/exit code and artifact
-paths. Include untracked files, deletions and changed dependency inputs. Git SHA
-and changed filenames alone cannot distinguish two edits to the same file.
-Keep final reports out of the tracked source input set to avoid self-invalidating
-results. Include the design, but not worksheet status churn, as a contract input.
+A work-document edit requires review of its changed requirements, not an automatic
+runtime rerun. Changed behavior still needs sufficient assertions. If a test or
+generator consumes a document, that document is a runtime input.
 
-Use `node scripts/module-evidence.mjs --help` for snapshots, command recording
-and freshness checks. The recorder executes a command once, preserves stdout and
-stderr, and marks results invalid when relevant inputs change during the run.
-The input list is a declared scope, not an automatic dependency analysis. Include
-applicable owners, tests, configuration, lockfile and affected shared dependencies.
-An empty input set is invalid. Reports are evidence, not proof that their selected
-scope was sufficient.
+For the full process or explicitly required recorded evidence, use
+`node scripts/module-evidence.mjs --help`. Select the recorder before the final
+run; it preserves output and checks input changes during execution. Include actual
+owners, tests, fixtures, config, lockfile and affected dependencies, including
+dirty/untracked files. Fingerprinting a snapshot file alone does not fingerprint
+the source paths listed inside it. Preserve the current recorder contract:
+include the approved design and keep reports/status output outside the input set.
+Do not edit old reports or remove inputs to make stale evidence pass.
 
-The bounded static checker reports `scope: static`, `runtime: NOT_RUN` and
-`acceptance: NOT_REVIEWED`. Its runtime mode covers its listed commands, not
-Playwright or semantic acceptance. Use `--reports` for a durable summary and
-command logs; its helper snapshot must be supplemented with contract/dependency
-inputs when they are not in the generated-module set.
-
-For generated work, rerun the current manifest `--check` and inspect current
-source and behavior. Generated files become normal editable source after their
-one creation. Template comparison cannot verify an edited file.
+Full-process results need exact command, working directory, selected cases,
+environment identity, source/design revision, relevant content fingerprints and
+artifact paths. Update worksheet links at handoff/review, not after each command.
+Static checker PASS, runtime PASS and acceptance are different claims.
+Inspect current generated source as normal code; template comparison is not
+verification of edited files. Reuse a current generation preview if applicable.
 
 ## Verdicts
 
-`PASS` for an acceptance review means all required behavior is implemented and
-proved with current sufficient evidence. `REWORK` means a wrong/incomplete result
-fixable inside scope. `BLOCKED` means a missing decision, environment, authority
-or inaccessible evidence prevents a sound verdict. Record the exact affected
-acceptance IDs. Static pass, runtime pass and module acceptance are distinct.
+- `PASS`: requested outcomes work with sufficient current evidence; required
+  development preview setup is complete or explicitly outside delivery scope.
+- `REWORK`: an in-scope defect or material proof gap needs correction.
+- `BLOCKED`: a missing decision, authority, environment or evidence prevents
+  a sound verdict. Name the affected user result.
+
+Separate defects, material verification gaps and non-blocking suggestions.
+Each blocking finding states its user/access/data consequence or the important
+outcome left unproved. Do not block on optional polish or documentation layout.
+Do not waive required behavior, security or data protection as a time-saving step.

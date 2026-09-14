@@ -8,12 +8,16 @@ Review custom UI code against the
 [framework-first composition rule](../SKILL.md#framework-first-composition).
 Check whether each custom block owns an unmet requirement or duplicates supported
 framework behavior. Reuse the pattern checks from planning; inspect new deviations.
-Run the [UI contract check](ui-contract.md) for declared component use and
-resolution. Inspect source for undeclared surfaces and unjustified exceptions.
+Use the [UI contract check](ui-contract.md) when a contract exists, the full
+process requires it, or custom composition needs it. Standard work needs no
+new JSON just to verify normal Views. Inspect unjustified custom controls.
 Behavior tests prove interaction; neither test counts nor component imports prove
 framework composition.
 
 Choose tests by failure risk, not by file count:
+
+- Inspect populated list/detail/edit output first: relation names, meaningful
+  values, required fields, existing edit values and standard action placement.
 
 - A dependency test changes the parent, proves the stale child is cleared, and
   checks the submitted value. Calling the behavior function alone misses wiring.

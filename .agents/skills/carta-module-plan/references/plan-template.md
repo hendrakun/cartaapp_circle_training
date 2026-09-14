@@ -1,5 +1,8 @@
 # Module implementation plan
 
+This template is for the full process. Ordinary CRUD uses the
+[standard work record](../../carta-module-development/references/standard-module.md).
+
 Use `plans/<feature>/NNN-<result>.md`, one plan per complete result.
 Preserve valid numbering on resume. Reference design IDs instead of copying rules.
 The worksheet alone maps acceptance and journeys to tests and results.
@@ -27,7 +30,7 @@ transaction boundaries and interfaces between plans. Name existing examples and
 applicable layer contracts. State migration and consumer update order when needed.
 Leave routine code and test details to the executor.
 
-Reference each resource manifest and its current `--check` output. Use that
+When generation is selected, reference its manifest and current `--check` output. Use that
 output for generated owners; list the manual remainder here. Record each
 selected pattern once with an exact file and symbol, source revision, why it
 fits, and the manual remainder. The executor should receive the decision, not
@@ -39,6 +42,8 @@ Name the first result and subsequent assignments under the
 [assignment rule](../../carta-module-development/references/execution.md#assignment).
 Record plan dependencies under the worksheet contract. Include environment
 preparation and the check that ends each assignment.
+Include the development migration, required seed and preview URL checkpoint.
+The first UI result includes all necessary layers; test setup alone is insufficient.
 
 ## UI contract
 

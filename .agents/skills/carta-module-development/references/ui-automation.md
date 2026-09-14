@@ -7,15 +7,16 @@ outcomes; the executor selects cases and data that demonstrate them.
 
 Saved Playwright Test TypeScript cases are the default. Agents run commands and
 review reports; computer-controlled clicks are optional diagnosis, not a delivery
-gate. Select actors, fixtures, steps and assertions from the approved outcomes. Put IDs
-in test titles and name meaningful `test.step` sections. Keep UI-owned assertions
+gate. Select actors, fixtures, steps and assertions from the approved outcomes.
+Use IDs only when the full-process record has them; standard work needs no
+journey inventory. Name meaningful steps. Keep UI-owned assertions
 in browser tests and exhaustive access/state combinations at the API.
 
 ## Journey and data
 
 Use focused Playwright cases with named steps that map to acceptance IDs.
 Use the [journey selection rule](verification-strategy.md#browser-journeys) and
-worksheet mapping. Give each selected journey an independent record and distinct
+worksheet mapping only for the full process. Give each selected journey an independent record and distinct
 test title. Include child navigation when it changes. Exercise those actions through the visible authenticated UI, then
 verify the persisted outcome by reload or navigation. API setup can create
 fixtures and establish authenticated actors; it does not replace the interaction
@@ -64,8 +65,9 @@ merely because it was initially called a debug run.
 Preserve the configured JSON/HTML reports and relevant attachments under a
 unique `plans/<feature>/reports/<run>/` directory before another run overwrites
 working outputs. Preserve relative attachment layout or adjust links when
-copying. Record the exact command, working directory, design revision, input
-snapshot, environment identity and cases/steps covered.
+copying. Record the exact command, working directory, source state, environment
+identity and cases/steps covered. Add the design revision and input snapshot
+when the full process requires them.
 
 Inspect the failed assertion and logs first, then screenshots, trace or DOM
 snapshots as needed. Use interactive browser diagnosis only when artifacts leave

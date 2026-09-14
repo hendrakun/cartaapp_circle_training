@@ -1,5 +1,10 @@
 # Module contract
 
+This is the full-process contract for a scope that needs explicit traceability.
+Start with the [standard module base](../../carta-module-development/references/standard-module.md),
+including custom workflows. A relation, filter or custom action alone does not
+require this inventory. Record the scope covered here and reference the rest.
+
 `plans/<feature>/design.md` owns intended behavior and approval. Plans own
 technical decisions; the worksheet owns progress; reports own observed results.
 Use tables for data, standard CRUD actions and their acceptance cases. Use YAML

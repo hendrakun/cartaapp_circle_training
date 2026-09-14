@@ -80,7 +80,8 @@ Do not apply one identifier rule to all inputs:
   `view` keys. Use the source identity for detail, CRUD, and cache operations.
   When a pre-filled value uses a different picked key, load it through a loader
   that accepts that key or through returned list records. Never pass `pick` as a
-  detail ID. Check a pre-filled lookup in the focused Playwright journey.
+  detail ID. Check the pre-filled value through the actual form; reuse browser
+  proof under the verification strategy instead of adding a journey per lookup.
 - A multi lookup or select keeps the exact selected records in the live draft
   and sends them unchanged. The backend extracts identity fields only at the
   persistence boundary, then sends current labels in the same record array.

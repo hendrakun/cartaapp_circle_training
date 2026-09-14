@@ -66,6 +66,11 @@ behavior instead of adding parallel state in the route.
 
 ## Configure relation sources
 
+For each new or changed relation, use the
+[complete display/form pattern](../web-ui-surfaces/references/fields.md).
+Complete its API display data and list/detail projection with the form, rather
+than leaving display work for a later assignment.
+
 Use the owner resource as `source`. Its `list` action supplies server search and
 paging; `detail` resolves a selected record outside the current page. Static
 arrays are for closed choices, not database collections. Pass filters through

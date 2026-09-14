@@ -1,7 +1,10 @@
 # UI contract check
 
-For changed web surfaces, record `plans/<feature>/ui-contract.json`. Paths are
-repository-relative. Select current public exports; default imports use `default`.
+Use this optional static check for the full process, an existing contract or
+custom composition that needs it. Ordinary standard Views need no JSON record;
+inspect their actual output and composition. When selected, record
+`plans/<feature>/ui-contract.json`. Paths are repository-relative. Select current
+public exports; default imports use `default`.
 
 ```json
 {
@@ -37,7 +40,7 @@ explicitly requires different text. Inspect label props or the app dictionary
 before replacing a control. A mock label or plan action name does not require exact copy. Cite the explicit
 text requirement when a control override exists only to change its label.
 
-Run from the repository root and record the command with module evidence:
+Run from the repository root and preserve the command result:
 
 ```sh
 node scripts/module-ui-check.mjs plans/<feature>/ui-contract.json
@@ -45,8 +48,8 @@ node scripts/module-ui-check.mjs plans/<feature>/ui-contract.json
 
 Exit `0` means the declared static checks pass; `1` means defects; `2` means
 exceptions need review. The orchestrator resolves each exception against the
-requirement and component source before acceptance. The executor cannot approve
-its own deviation.
+requirement and component source before acceptance. Label self-review when an
+independent reviewer is unavailable or the user requests direct work.
 
 The checker uses the installed Vue parser. It checks template component bindings,
 selected imports in template use, and declared Create overrides. It reports

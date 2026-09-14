@@ -1,8 +1,12 @@
 # Custom workflows
 
-Use this reference for custom workflow behavior. The
-[module contract](module-contract.md) owns authority, shared rules, coverage and
-readiness. Keep standard CRUD actions in its tables.
+Add custom workflow behavior to the
+[standard module base](../../carta-module-development/references/standard-module.md).
+Keep rules and YAML records in the existing work record. Use names to reference
+shared conditions; IDs and the full inventory are needed only when a scoped
+[module contract](module-contract.md) already requires them.
+The templates below show available properties, not a required field checklist.
+Keep only properties needed to settle the action and its checks.
 
 For stateful behavior, define each state variable, initial value, valid combinations
 and terminal states. Give named conditions exact predicates. Use:
@@ -10,7 +14,8 @@ and terminal states. Give named conditions exact predicates. Use:
 | Transition ID | From state | Action | Condition | To state | Effect references |
 |---|---|---|---|---|---|
 
-Reference shared invariants from the module contract.
+Reference shared rules from the existing record. Apply workflow restrictions to
+standard CRUD actions as well as custom actions.
 
 Specify no-match rejection and overlapping-condition precedence, or make conditions
 exclusive. For joins, define completion; for returns, define retained and cleared

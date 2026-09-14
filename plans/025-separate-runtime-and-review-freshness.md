@@ -1,5 +1,9 @@
 # Plan 025: Separate runtime freshness from acceptance review
 
+Optional follow-up for full-process recorded evidence. The standard-module path
+now permits ordinary current evidence and needs no recorder change. Existing
+recorded reports retain their original input/freshness contract.
+
 ## Status
 
 - Priority: P2

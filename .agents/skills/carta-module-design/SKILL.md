@@ -5,10 +5,24 @@ description: Design or revise a Carta module when business behavior, application
 
 # Carta module design
 
-Turn the request into an evidence-backed behavioral contract at
-`plans/<feature>/design.md`. The next agent must be able to implement the
-agreed behavior without inventing business rules. This skill designs; it does
-not edit application source or authorize implementation.
+Resolve the requested behavior without inventing business rules. This skill
+designs; it does not edit application source or grant new write authority.
+
+## Select the record
+
+Start with the [standard module base](../carta-module-development/references/standard-module.md),
+including its rule for adding custom workflows.
+Resolve only material behavior gaps and record the result in the existing work
+document. Stop there for a design-only request; otherwise return to the requesting
+workflow. Custom actions alone do not require the full procedure below.
+
+Use the remaining sections where a consequential change or required traceability
+needs a full contract. State its scope in `plans/<feature>/design.md`; reference
+unaffected behavior from the existing work record.
+The original request and later answers govern over examples.
+An inferred default cannot override explicit requirements or become user-confirmed
+merely because it appears in a design. Ask about material conflicts, not settled
+facts. Use delegated routine defaults without a separate approval ceremony.
 
 ## Establish the starting point
 

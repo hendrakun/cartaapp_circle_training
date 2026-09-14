@@ -1,5 +1,10 @@
 # Display fields
 
+A relation is complete when the user can select its label, save its identity,
+see its name in list and detail, and load that selection on edit. Treat these as
+one implementation result. Verify with a real named record before reusing the
+pattern. Lookup configuration alone covers only the input side.
+
 Use `defineFields(schema, definitions)` for shared labels and projections.
 Select field references in each action's visible order. Use a schema key string
 when the app default supplies all needed configuration. Use one terminal

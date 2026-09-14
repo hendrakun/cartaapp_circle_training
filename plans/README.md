@@ -1,6 +1,30 @@
 # File-routing plans
 
-## Module skill follow-up — 2026-09-14
+## Current skill handoff — standard module path, 2026-09-14
+
+Ready for the user's manual forward verification. Standard CRUD now uses one
+short work record, one continuing executor and an early development preview.
+Custom workflows build on that base in the same record. Full design/plan/worksheet
+records apply only to a scope that needs them, not to every module with a workflow.
+Relation display and edit values, requested access and usable results lead review.
+Standard detail pages do not gain custom Edit/Delete controls by default.
+
+Implementation instructions are in
+[`standard-module.md`](../.agents/skills/carta-module-development/references/standard-module.md).
+Plan 023 below now describes manual verification of this revision. Plans 024 and
+025 remain optional follow-up work, not prerequisites for this trial. The short
+path uses existing controls, ordinary evidence and safe manual generator fallback.
+No new generator, route-type command or connected-entity framework repair is
+claimed as implemented. Those tool limitations remain visible if encountered.
+
+This pass changes skills and handoff plans only. Application code, database data,
+framework source and old test reports are unchanged. Forward verification is
+reserved for the user; no speed or reliability improvement is claimed yet.
+
+## Earlier module skill follow-up — 2026-09-14
+
+The following notes record earlier revisions. The current handoff above governs
+where their mandatory worksheet/generation procedure differs.
 
 Discovery/test follow-up: layer skills now read broad architecture, registration
 and export references only for an unresolved fact. Discovery reports occur after
@@ -32,10 +56,11 @@ dependencies require the complete predecessor. Plan 023 tests these decisions.
 | [022: Report raw controls](022-report-raw-interactive-controls.md) | P1 | S | MED | None | DONE — 2026-09-14, native controls reach review, 18 tests pass |
 | [024: Prove shared form controls](024-prove-shared-form-controls.md) | P1 | M | MED | None | TODO |
 | [025: Separate runtime and review freshness](025-separate-runtime-and-review-freshness.md) | P2 | S | MED | None | TODO |
-| [023: Forward test the revision](023-forward-test-module-skill-revision.md) | P1 | M | MED | 021, 022, 024, 025, skill revision | TODO |
+| [023: Forward test the revision](023-forward-test-module-skill-revision.md) | P1 | M | MED | Current skill revision | TODO — manual verification reserved for user |
 
-Next execute 024 and 025, then 023. The new plans change separate owners. Preserve
-all existing plan status and user application work.
+Run the manual trial in 023 with the current skills. Plans 024 and 025 can follow
+when their gaps are relevant; they do not block this trial. Preserve existing
+plan status and user application work.
 
 | Finding | Category | Impact | Confidence | Evidence |
 |---|---|---|---|---|
@@ -43,7 +68,8 @@ all existing plan status and user application work.
 | Raw controls pass without review | DX/tests | Framework replacements can be missed | HIGH | `scripts/module-ui-check.test.mjs:22` |
 | Revised delivery behavior is unproved | Tests | Time and completeness remain uncertain | HIGH | `plans/module-development-findings-2026-09-14.md`, Forward test run facts |
 
-Considered and rejected: removing the worksheet (small measured cost); another
+Earlier considered and rejected: removing the worksheet (then judged small;
+superseded for standard CRUD after the later 102-edit planning trace); another
 generator or skill (existing owners suffice); automatic relation/workflow
 generation (business rules remain manual); calling static pass acceptance.
 Plans 019–020 remain historical results, not proof of this new revision.

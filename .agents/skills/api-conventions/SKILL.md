@@ -20,9 +20,11 @@ or callback contract; reuse current pattern decisions from the plan.
 ## Access
 
 The root scope resolves identity; the `(authenticated)` scope requires a session.
-Use `requirePermission` from `src/identity.ts` for each protected operation.
-Authentication alone does not grant operation permission. Public placement needs
-an explicit product requirement.
+Use `requirePermission` from `src/identity.ts` when the approved operation requires
+a permission. If the requirement permits all signed-in users to read records,
+the authenticated scope is sufficient for those reads. Do not copy a stricter
+read guard from an example. Authentication does not grant other permissions.
+Public placement needs an explicit product requirement.
 
 Define exact codes in `src/authorization/catalog.ts`. Standard verbs are `view`,
 `list`, `detail`, `create`, `update`, and `delete`, followed by the module code.

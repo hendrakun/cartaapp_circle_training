@@ -1,5 +1,9 @@
 # Module execution worksheet
 
+Use this record only for the full process or to resume an existing worksheet.
+Ordinary CRUD uses the [standard module path](standard-module.md). Its short
+record does not need this checker or conversion into these tables.
+
 The feature folder contains `design.md`, numbered plans, `worksheet.md` and
 `reports/`. The design owns behavior, approval and the obligation inventory.
 Plans own technical decisions. The worksheet owns status and test/result links.

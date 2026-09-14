@@ -1,5 +1,9 @@
 # Plan 024: Prove shared form controls once
 
+Optional follow-up, not a prerequisite for the standard-module skill trial.
+The short path reuses current control contracts and retains focused proof for
+known gaps. Do not claim these proposed helpers already exist.
+
 ## Status
 
 - Priority: P1

@@ -20,6 +20,11 @@ collections.
 
 ## Standard resource path
 
+Standard detail pages use the direct DetailView prop bag without custom Edit or
+Delete controls. List row actions are the normal location. Use a detail controls
+slot only for a named workflow need; permission to delete does not require a
+second delete control. Existing customized pages are not default templates.
+
 Resource actions are independent. Expose the actions required by the task;
 a resource does not need all CRUD actions. Use `FormView` for independent form
 pages and `DialogForm` for input within the current interaction. Choose from the

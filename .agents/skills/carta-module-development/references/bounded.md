@@ -2,6 +2,9 @@
 
 This optional scaffold writes application source once. Route discovery needs no
 scaffold command or manifest; use normal file edits for later route changes.
+Use it only when it saves work. A dirty-worktree restriction or unsupported
+contract is a reason to use normal edits, not to stash user work or investigate
+generator internals during module delivery. Preserve useful generated files.
 
 ## Complete module operation
 
@@ -20,14 +23,14 @@ fields. Actions can share a permission code. Every used code must exist once in
 
 Relations, dependent input, child resources, scoped access, workflow,
 concurrency, existing-data migration, custom query, report and custom surfaces
-stay manual. Keep independent standard actions in the manifest. An unsupported
+stay manual. Include independent standard actions when generation is useful. An unsupported
 explicit renderer makes its UI and browser proof manual. Unknown actions,
 extensions and manifest keys fail.
 
 ## Manifest
 
-Prepare the manifest after data and requested actions are settled, before
-detailed technical planning. Use `plans/<feature>/module.json` for one resource
+If generation is selected, prepare the manifest after data and actions are settled.
+Use `plans/<feature>/module.json` for one resource
 or `plans/<feature>/<resource>.module.json` for several resources. Each manifest
 describes one table. Identity, route names,
 labels, standard renderers and normal redirects are derived. This partial example
@@ -109,6 +112,9 @@ and never applies the migration. It registers an exact seed when present and
 never runs it. It never runs generated tests or external writes. Review the SQL
 and source, then edit generated source normally. Do not regenerate over edited
 source. On partial failure, inspect the reported paths before any retry.
+The generator's no-migration/no-seed execution rule is not a delivery restriction.
+The executor performs authorized development setup under
+[execution](execution.md#prepare-and-build).
 
 The generated API spec covers only selected standard actions. Each action
 proves success plus persistence. Create and update also prove denied access
@@ -116,8 +122,9 @@ and invalid payload rejection. No copy, layout, or dialog assertions exist.
 The slim browser journey covers create, edit, and reload persistence for a
 full list/create/update module. It submits through the form chrome and asserts
 the saved value plus reload persistence. It never asserts one locale copy of
-the submit label. Modules without that full path get manual browser proof:
-the user checks the UI. Custom behavior needs direct proof.
+the submit label. Modules without that full path need separately selected UI
+proof. The executor owns it unless the user explicitly reserves the check.
+Custom behavior needs direct proof.
 
 Read [verification-strategy.md](verification-strategy.md) for evidence scope and
 acceptance. The root `verify:module` and `module:evidence` commands are

@@ -33,13 +33,17 @@ keep custom code limited to the unmet requirement.
 Select in order: standard View/action, supported slot or adjacent section,
 lower-level framework component, then local code for a named unmet requirement.
 Keep standard Create controls unless the requested interaction needs an override.
+Keep standard Edit/Delete in list row actions. A standard detail is a plain
+`DetailView`; custom detail controls need a specific workflow requirement.
+The existing Roles detail customization is not the standard CRUD template.
 Import template components or identify their runtime registration; a test stub
 or type declaration does not register a component.
 
-Record each changed surface's component, extension and actual gap in the plan's
-[UI contract](references/ui-contract.md). Check once per interaction pattern.
-Run the contract check before handoff; review every exception against the current
-component source. A custom layout retains framework controls and field rendering.
+Check composition once per interaction pattern. Standard work records only a
+real deviation in its work document; it needs no UI JSON. Use the
+[UI contract](references/ui-contract.md) for full-process work, an existing
+contract or custom composition that needs static checking. Review deviations
+against the required result, not merely whether a slot supports them.
 
 ## Choose and build
 
@@ -49,7 +53,7 @@ component source. A custom layout retains framework controls and field rendering
 | File routes, nested parents, tabs, Back, route lifecycle | [File routing](references/file-routing.md) |
 | Lists, cards, filters, actions, dialogs | [Surfaces](references/surfaces.md) |
 | Workflow detail, history, related records | [Detail layout](references/detail-layout.md) |
-| Display fields and relation labels | [Fields](references/fields.md) |
+| Any new or changed relation, display fields or labels | [Fields](references/fields.md) |
 | Form values, sources, dependencies, child editing | [Build resource forms](../build-resource-form/SKILL.md) |
 
 Routes own URLs, query state, navigation, dialogs, and workflow feedback.

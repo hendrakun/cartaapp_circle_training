@@ -12,6 +12,16 @@ new product scope, or implement source changes.
 
 ## Confirm authority and current context
 
+Start with the [standard module base](../carta-module-development/references/standard-module.md),
+including custom workflows added to it.
+Add exact owners, work order, setup and suitable checks to the existing work
+record. The original request and decisions can be the approved contract; a
+separate design file is not required. Return that short plan without creating
+numbered plans, a worksheet or UI JSON. A plan-only request stops there.
+Use the remaining procedure only for a scoped full contract or an existing full
+plan. A custom action alone does not require it. Include workflow restrictions
+on standard actions in the first result; keep later workflow work explicit.
+
 Read the design and its approval source. Use the shared
 [module contract](../carta-module-design/references/module-contract.md) to assess
 readiness without requiring a rewrite into a particular layout. Keep an
@@ -26,9 +36,9 @@ appropriate checks rather than asking the user to choose a testing stack.
 Resolve exact commands from this checkout and distinguish script inspection
 from a successful execution.
 
-Before detailed technical planning, assess each resource with the
-[generation contract](../carta-module-development/references/bounded.md).
-Record the resulting preview and manual owners in the plan.
+Use the [generation contract](../carta-module-development/references/bounded.md)
+only when a scaffold saves work. If selected, record the preview and manual
+owners. Otherwise plan normal edits without a manifest.
 
 Technical discovery ends when each requested action has an exact owner, a
 supported implementation path or named gap, and a suitable check. Record each
@@ -68,6 +78,9 @@ called a complete application workflow.
 Put environment preparation first. Record selected capabilities and the
 `module:preflight` result in the plan's environment row. Use existing setup within
 task authority. Name any blocked check and its missing prerequisite.
+Include development migration, required seed and preview under the
+[execution setup rule](../carta-module-development/references/execution.md#prepare-and-build);
+test setup does not replace them.
 
 Select the first result under the
 [assignment rule](../carta-module-development/references/execution.md#assignment).
