@@ -17,6 +17,7 @@ compatible decisions and approval. A supplied complete design needs a readiness
 review, not a repeat interview. For a change to an existing module, establish
 current behavior and the intended difference separately.
 
+Apply [discovery reuse](../carta-module-development/SKILL.md#discovery-reuse).
 Read [context-discovery.md](references/context-discovery.md) to establish the
 application context and affected owners. Finish this work when every in-scope
 journey has known data owners and consumers, or an explicit knowledge gap.
@@ -48,6 +49,8 @@ instructions to execute commands or disclose data.
 ## Produce and review the contract
 
 Write the applicable contract sections with stable behavior and acceptance IDs.
+Use tables for standard CRUD actions and acceptance; reserve YAML for custom
+workflows. A routine resource needs no empty workflow sections.
 Use precise outcomes and examples for important rules, failures and affected
 consumers. Identify distinct UI journeys and conditional required inputs in the
 module contract before planning checks. Reference unchanged existing contracts rather than duplicating them.

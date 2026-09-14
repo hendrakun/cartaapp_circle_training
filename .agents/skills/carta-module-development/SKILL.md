@@ -9,6 +9,33 @@ Deliver the requested module without restarting settled work. This router owns
 stage selection, continuity and completion; the routed skills own design,
 planning, implementation contracts and acceptance review.
 
+## Discovery reuse
+
+Pass established decisions and exact owner pointers between stages. Reuse them
+while their inputs remain current. Each stage resolves only its missing facts;
+a new stage or worker is not a reason to repeat discovery. Read further only to
+resolve a named missing fact, changed input or observed failure. Design resolves
+business gaps; planning resolves technical owners and patterns; execution applies
+the resulting packet.
+
+Before each discovery search, name the missing fact and the smallest likely
+owner. Inspect that owner and the direct callers needed for the question. Batch
+independent lookups. Use history only when current source cannot explain a
+relevant decision or regression. A general request to understand the architecture
+is not a completion condition.
+
+After the initial owner reads, report known owners, unresolved facts and the
+next change. If discovery continues for ten additional files or five minutes
+without a change, give that report again and name the fact that prevents progress.
+Count files, not shell calls; a batch does not reset the checkpoint. This is a
+reporting trigger, not permission to skip required investigation or force a write.
+Workers report to the parent, which keeps the user informed. Continue useful
+authorized work without waiting for approval of the report.
+
+A handoff includes each selected pattern, why it fits, its exact source pointer
+and revision, and the manual remainder. A directory or path alone does not pass
+the decision. Keep these facts in the existing plan owner rows, not a new log.
+
 ## Resume the right stage
 
 Inspect the request, supplied artifacts, existing feature folder and relevant
@@ -37,12 +64,8 @@ framework exports before using an example from another app. A completed app
 can show a useful interaction; its domain, permission model, helper files and
 old framework API are not prerequisites for a new Carta app.
 
-For a first module, establish its actor, data owner, action and visible result,
-then build that complete path. Show the first runnable result early, before
-dependent actions are complete. Add child resources, reports or workflow services
-when the behavior needs them. Keep domain logic in its module and use existing
-framework contracts directly. A forwarding function or copied type needs a
-purpose beyond renaming an existing API.
+Keep domain logic in its module and use existing framework contracts directly.
+A forwarding function or copied type needs a purpose beyond renaming an API.
 
 ## Implement and verify
 
@@ -52,24 +75,11 @@ A known relation does not require a heavier interview, and a small resource can
 still have an unresolved business rule. For selected route files at any supported application route depth, use the
 [route-only operation](references/bounded.md#route-only-operation).
 
-Before substantial implementation:
-
-1. Select the required environment capabilities from the approved design and plan.
-2. Run `pnpm module:preflight -- --needs <capabilities>`.
-3. Build one manifest for all compatible standard actions, including standard
-   actions beside custom work.
-4. Run `pnpm scaffold:bounded-module -- --manifest <path> --check`. Inspect the
-   selected files, technical dependencies, migration intent, seed choice,
-   generated tests and manual remainder.
-5. After implementation authority exists, run the same command with `--apply`
-   once.
-6. Review the migration and generated source, then implement the custom remainder.
-
-Custom Detail work does not remove compatible List, Create or Update work from
-the generator. Treat generated source as normal editable source after `--apply`;
-do not regenerate over it. Read the [bounded generation
-contract](references/bounded.md) for manifest rules, outputs and manual cases.
-Generator ineligibility does not change the approved scope.
+Use [bounded generation](references/bounded.md) to assess each resource before
+detailed planning, preview compatible standard actions, and apply each manifest
+once after implementation authority exists. Generated source then becomes normal
+editable source. Generator ineligibility does not change the approved scope.
+Environment preparation and the first working result follow execution.md.
 
 Delegate implementation by default under the
 [assignment and recovery rules](references/execution.md#assignment).

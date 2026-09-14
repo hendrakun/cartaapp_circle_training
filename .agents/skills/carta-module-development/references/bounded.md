@@ -26,7 +26,10 @@ extensions and manifest keys fail.
 
 ## Manifest
 
-Write `plans/<feature>/module.json` after design approval. Identity, route names,
+Prepare the manifest after data and requested actions are settled, before
+detailed technical planning. Use `plans/<feature>/module.json` for one resource
+or `plans/<feature>/<resource>.module.json` for several resources. Each manifest
+describes one table. Identity, route names,
 labels, standard renderers and normal redirects are derived. This partial example
 generates List, Create and Update while Detail stays custom. `navigation.group`
 selects an existing authenticated route and navigation group. A Create or Update
@@ -94,6 +97,10 @@ pnpm scaffold:bounded-module -- --manifest plans/<feature>/module.json --apply
 Read `--help` for optional flags. `--check` writes nothing and reports selected
 actions, Update hydration, paths, owner edits, migration intent, seed choice,
 generated tests and manual work. Inspect each result.
+
+This output completes discovery of generated owners. Record manual owners and
+unresolved interfaces in the plan. Reuse the preview while the manifest,
+generator and relevant destination inputs remain current.
 
 After implementation authority exists, run `--apply` once. It refuses existing
 generated destinations. It writes new source and uses installed Drizzle Kit to

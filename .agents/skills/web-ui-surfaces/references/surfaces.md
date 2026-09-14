@@ -113,6 +113,10 @@ permission or explicit `null`; each destructive control confirms the action.
 
 ## Filters and tabs
 
+`ListView` uses the `filters` prop for its Filter button and popover. The
+`#filters` slot renders a separate section; it does not enable that button.
+Choose the supported surface before writing the browser interaction.
+
 Follow `docs/ui/collections.md`. Keep query state route-local. Use
 `ChipFilter` for a collection query and state its optional or required
 selection contract. Use framework `Tabs` for one selected local surface or

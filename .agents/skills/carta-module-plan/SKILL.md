@@ -17,13 +17,22 @@ Read the design and its approval source. Use the shared
 readiness without requiring a rewrite into a particular layout. Keep an
 existing plan that already meets the same bar.
 
-Inspect the actual affected owners and consumers, relevant layer contracts,
+Apply [discovery reuse](../carta-module-development/SKILL.md#discovery-reuse).
+Inspect the required owners and consumers, relevant layer contracts,
 and current package scripts/configuration. Record an existing exemplar for
 non-obvious patterns. Separate observed repository facts from proposed technical
 changes. Carta supplies Vitest, Playwright, type checking and linting; select
 appropriate checks rather than asking the user to choose a testing stack.
 Resolve exact commands from this checkout and distinguish script inspection
 from a successful execution.
+
+Before detailed technical planning, assess each resource with the
+[generation contract](../carta-module-development/references/bounded.md).
+Record the resulting preview and manual owners in the plan.
+
+Technical discovery ends when each requested action has an exact owner, a
+supported implementation path or named gap, and a suitable check. Record each
+pattern decision with an exact source pointer once in the owners table.
 
 For backend routes, read the
 [file-routing contract](../api-conventions/references/file-routing.md). Name the
@@ -60,12 +69,9 @@ Put environment preparation first. Record selected capabilities and the
 `module:preflight` result in the plan's environment row. Use existing setup within
 task authority. Name any blocked check and its missing prerequisite.
 
-Make the first implementation result a complete path through the most uncertain
-integration. Include API, UI and persistence where the approved path uses them.
-Prove its result before adding dependent actions. Report that result to the user
-before continuing. Keep the path and its tests
-in one assignment. Split further work only
-for a separate result, dependency, independent owner or risk boundary.
+Select the first result under the
+[assignment rule](../carta-module-development/references/execution.md#assignment).
+Use the worksheet's plan dependency rule to separate plans from assignments.
 
 Use [plan-template.md](references/plan-template.md) for numbered plans at
 `plans/<feature>/001-<result>.md`. Preserve existing numbering on resume. The

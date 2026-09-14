@@ -70,7 +70,8 @@ repeated validation where direct use preserves the required behavior.
 Compare the design inventory with worksheet acceptance and plan ownership. Check
 required branches, invariants and whole sequences, including browser obligations.
 Check every expected outcome against the assertion or visual evidence that proves
-it. Compare distinct workflow branches with the design journey inventory; inspect
+it. Apply the same coverage criteria to CRUD tables and custom workflow YAML;
+the record format does not establish correctness. Compare distinct workflow branches with the design journey inventory; inspect
 conditional input paths even when another path passes. Run the worksheet browser
 report check and UI contract check. Inspect component exceptions and tests that
 stub forms, schemas, serialization or unresolved components; those stubs cannot
@@ -85,7 +86,7 @@ Broaden checks when shared changes expose dependent consumers. Fingerprints
 prove selected file freshness, not that the selected dependencies or test
 assertions were adequate.
 
-For a generated module, run the current manifest command with read-only `--check`,
+For generated modules, reuse current previews or run each manifest with read-only `--check`,
 inspect current generated and integrated source, and read actual helper reports.
 Apply the generated-evidence limits in
 [verification strategy](../carta-module-development/references/verification-strategy.md#commands-and-environment):

@@ -4,7 +4,7 @@
 
 Delegate implementation unless the user requests direct execution or delegation
 is unavailable. Prefer one worker for one coherent journey: related standard
-resources stay in one assignment with one discovery pass. Split into several
+resources stay with one worker across assignments. Split into several
 workers only for a real dependency, separate outcome, conflicting writes, or
 independent risk boundary. The parent owns scope, assignments, worksheet state and final
 acceptance. Each worker owns one bounded result, including its tests and fixes.
@@ -20,16 +20,19 @@ Each assignment names:
 - Applicable layer skill and reference paths.
 - Permitted writes, isolated test target and shared resource owner.
 - First integration check and completion condition.
-- Read budget: design, plan, manifest, plus at most one exemplar file per
-  layer. Read framework references only when a command or type error names them.
+- Established pattern decisions under the discovery reuse rule below.
 
-Pass source pointers and unresolved facts, not the discovery transcript. Select
+Pass the decisions, source pointers and unresolved facts, not the transcript. Select
 references for the assigned work from the router's layer contracts. A worker
 resolves routine coding and test details within the approved behavior.
-Run the first write within the read budget. Report the first runnable result
-before polishing later actions.
+Use the plan's owner inventory and generation preview under the
+[discovery reuse rule](../SKILL.md#discovery-reuse).
 
 The first assignment proves one mutation through the most uncertain integration.
+Assign only that result and its prerequisites first. Keep remaining actions in
+the plan; assign them after this result passes. The same worker can continue.
+Before dispatch, set the worksheet to `EXECUTE`, mark the active plan
+`IN_PROGRESS`, and name this first result as the next action.
 Include its API, UI and persisted result where applicable. Show that result to
 the user before dependent work starts: a runnable route plus one focused test
 is enough for the first checkpoint. Include an edit round
@@ -38,11 +41,16 @@ after this path works. A complete path need not cover the whole lifecycle. Split
 not at test failure and test success. Several assignments can share one plan;
 set that plan to `IMPLEMENTED` only after all its work and checks are complete.
 
+At this first result, the parent checks the discovery summary and applies
+[test justification](verification-strategy.md#test-justification) to the new
+tests before assigning similar actions. Correct a weak test pattern before
+copying it. Use existing results and assertions; this is a brief checkpoint,
+not a second acceptance review or a reason to rerun passing checks. For direct
+execution, perform the same check and report the result.
+
 Run independent assignments concurrently only when their writes and test targets
 do not conflict. Name one owner for shared files, migrations and test preparation.
-A later plan can start after the parent confirms the entity, migration intent
-and one focused pass for the interface it needs. Full plan acceptance need not
-block this start; record the interface revision the dependent work uses.
+Apply the [plan dependency rule](module-execution-worksheet.md#state-and-completion).
 
 ## Prepare and build
 
@@ -55,19 +63,14 @@ the exact failure by acceptance ID, correct it within authority, and continue
 design, manifest work and independent code. A required setup fault must be known
 before the final browser run.
 
-Confirm the planned UI components against current exports before using them.
-Name one exemplar file per layer with its path and symbol. Build the first integration path, including changed value conversion, edit
+Resolve missing component facts through the applicable layer contract. Build
+the first integration path, including changed value conversion, edit
 hydration and cache refresh where applicable. For a changed UI path, exercise
 it through the browser before adding the remaining UI actions.
 
 Follow [verification strategy](verification-strategy.md#test-order) for test
-order. Run one focused check for the changed file after a meaningful boundary
-change, then one type check before handoff. Reuse a passing run when its
-inputs still apply; new checks need a new reason. A worker gets three attempts
-per check: inspect the failure, correct its cause, rerun once. After the third
-red run, stop and return the logs to the parent. A stable failure is a real
-signal, not a prompt for more edits. Run broader regression checks after
-related changes are complete or when shared changes require them.
+order and the [tight loop](verification-strategy.md#tight-loop) for failures,
+evidence reuse and repeated checks. Run one type check before handoff.
 
 Use [UI automation](ui-automation.md) for browser checks and
 [bounded generation](bounded.md) for eligible source generation. Keep migrations,
@@ -98,8 +101,7 @@ it. Record the last result, remaining IDs and next action for each handoff.
 ## Review and finish
 
 The worker returns changed owners, test references, command results, deviations
-and unresolved IDs. A green handoff is trusted: the parent reviews the diff and
-assertions, and reruns a check only when its inputs changed. Collect final evidence as defined by the
+and unresolved IDs. Collect final evidence as defined by the
 [verification strategy](verification-strategy.md#evidence-interface).
 The parent checks the diff and assertions before accepting the handoff. Return
 specific defects to the same worker. Use a separate plan review only when its

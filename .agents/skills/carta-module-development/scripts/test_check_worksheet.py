@@ -2,11 +2,18 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
-from check_worksheet import check, check_browser_report
+from check_worksheet import check, check_browser_report, table
 import json
 
 
 class WorksheetCheck(unittest.TestCase):
+    def test_reads_all_matching_tables_and_checks_later_rows(self):
+        source = '| ID | Value |\n|---|---|\n| B-01 | One |\n\n## Next\n\n| ID | Value |\n|---|---|\n| B-02 | Two |\n'
+        self.assertEqual(table(source, ['ID', 'Value']), [
+            {'ID': 'B-01', 'Value': 'One'}, {'ID': 'B-02', 'Value': 'Two'}])
+        with self.assertRaises(ValueError):
+            table(source.replace('| B-02 | Two |', '| B-02 | Two | Extra |'), ['ID', 'Value'])
+
     def test_each_selected_path_needs_an_observed_pass(self):
         with TemporaryDirectory() as directory:
             folder = Path(directory)
@@ -79,6 +86,41 @@ id: A-01
                 self.assertTrue(check(folder))
             (folder / 'green.json').write_text(json.dumps(green))
             self.assertEqual(check(folder), [])
+            crud = design.replace('```yaml\nid: B-01\n```',
+                '\n| ID | Action | Access and scope | Inputs | Rules or exceptions | Expected result | Acceptance IDs |\n'
+                '|---|---|---|---|---|---|---|\n| B-01 | Create | Admin | Name | Unique | Saved | A-01 |\n')
+            crud = crud.replace('```yaml\nid: A-01\n```',
+                '\n| ID | Rule references | Given | Action and input | Expected result and stored/unchanged values | Required visible result |\n'
+                '|---|---|---|---|---|---|\n| A-01 | B-01 | Admin | Create One | One stored | One after reload |\n')
+            (folder / 'design.md').write_text(crud)
+            self.assertEqual(check(folder), [])
+            action_table = crud[crud.index('| ID | Action |'):crud.index('| ID | Rule references |')].strip()
+            acceptance_table = crud[crud.index('| ID | Rule references |'):crud.index('| Journey |')].strip()
+            for extra, message in [(action_table, 'duplicate rule IDs'),
+                                   (acceptance_table, 'duplicate acceptance record IDs')]:
+                (folder / 'design.md').write_text(crud + '\n' + extra + '\n')
+                self.assertTrue(any(message in error for error in check(folder)))
+            second = '\n' + action_table.replace('B-01', 'B-02').replace('A-01', 'A-02')
+            second += '\n\n' + acceptance_table.replace('B-01', 'B-02').replace('A-01', 'A-02') + '\n'
+            (folder / 'design.md').write_text(crud + second)
+            self.assertTrue(check(folder))  # Later tables need inventory and evidence too.
+            multi = (crud + second).replace('| W-01.normal | B-01 | A-01 |',
+                '| W-01.normal | B-01 | A-01 |\n| W-02.normal | B-02 | A-02 |')
+            (folder / 'design.md').write_text(multi)
+            (folder / 'worksheet.md').write_text(worksheet.replace('| A-01 | BROWSER |',
+                '| A-01 | BROWSER |\n| A-02 | BROWSER |') +
+                '\n| Acceptance | Plan | Surface | Test case | Implementation | Evidence | Review | Result |\n'
+                '|---|---|---|---|---|---|---|---|\n'
+                '| A-02 | P-01 | BROWSER | request.spec.ts::second save | app.ts:save | green.json | report.md | PASS |\n')
+            (folder / '001-result.md').write_text('- Acceptance: A-01, A-02\n')
+            self.assertEqual(check(folder), [])
+            (folder / 'worksheet.md').write_text(worksheet)
+            (folder / '001-result.md').write_text(plan)
+            (folder / 'design.md').write_text(crud + '\nid: A-01\n')
+            self.assertTrue(check(folder))
+            (folder / 'design.md').write_text(crud.replace('| A-01 | B-01 | Admin', '| A-02 | B-01 | Admin'))
+            self.assertTrue(check(folder))
+            (folder / 'design.md').write_text(design)
             pending = worksheet.replace('`DONE`', '`EXECUTE`').replace('| VERIFIED |', '| IN_PROGRESS |').replace('request.spec.ts::saves and reloads', 'PENDING').replace('| PASS |', '| PENDING |')
             for status in ['TODO', 'IN_PROGRESS', 'BLOCKED']:
                 (folder / 'worksheet.md').write_text(pending.replace('| IN_PROGRESS |', f'| {status} |'))

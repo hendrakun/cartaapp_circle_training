@@ -27,12 +27,18 @@ transaction boundaries and interfaces between plans. Name existing examples and
 applicable layer contracts. State migration and consumer update order when needed.
 Leave routine code and test details to the executor.
 
+Reference each resource manifest and its current `--check` output. Use that
+output for generated owners; list the manual remainder here. Record each
+selected pattern once with an exact file and symbol, source revision, why it
+fits, and the manual remainder. The executor should receive the decision, not
+an instruction to rediscover it.
+
 ## Work order
 
-Check the required isolated test environment before implementation. Start with
-one complete path through the most uncertain integration. Include API, UI and
-persistence where the approved path uses them. Prove its result before dependent
-actions. Name remaining results and their dependencies.
+Name the first result and subsequent assignments under the
+[assignment rule](../../carta-module-development/references/execution.md#assignment).
+Record plan dependencies under the worksheet contract. Include environment
+preparation and the check that ends each assignment.
 
 ## UI contract
 

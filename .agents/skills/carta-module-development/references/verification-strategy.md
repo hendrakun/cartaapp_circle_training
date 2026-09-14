@@ -35,6 +35,11 @@ requires browser evidence even when the same case also specifies stored effects.
 Use visual evidence for display/layout outcomes and source review for framework
 composition. Reuse a check only for outcomes its actual assertions establish.
 
+Use a separately checkable acceptance row for each independent outcome. A test
+can support several rows, but each row must have a direct assertion. For changed
+filters, include distinguishing records and count agreement; prove page reset
+and reload retention when required. For partial updates, prove retained values.
+
 For visible actions, prove that the permitted user can find and complete the
 action, see updated data and available actions before reload, and retain the
 result after reload. For filters, change the visible control and check the
@@ -71,6 +76,21 @@ The executor selects fixtures and assertions from the approved outcomes. Run `ch
 on the preserved Playwright JSON report. Every selected case must pass in each
 reported project without skipped attempts or retry failures. Review assertions
 against the design; a matching title cannot prove coverage or report freshness.
+
+## Test justification
+
+Before adding a test, state in one sentence which plausible wrong result it
+detects and why existing coverage does not detect it. Keep the sentence in the
+existing work notes or handoff. Extend a suitable behavior test before creating
+another file; separate a test when isolation or a distinct failure needs it.
+Generated tests receive the same review before they become a pattern.
+
+An assertion must fail on the named fault and remain valid after a harmless
+implementation change. Exact copy, field order or route configuration needs an
+explicit product or public-interface requirement. Otherwise assert its effect.
+Preserve accessible control use; a stable selector must still exercise the real
+input and submission. Keep exhaustive access and validation cases at the API;
+use browser tests for the changed interaction and persistence boundary.
 
 ## Tests that earn their cost
 
@@ -160,8 +180,8 @@ the output and classify the cause: source, test expectation, fixture, environmen
 tooling, pre-existing failure, or an unresolved requirement. Make an evidence-led
 correction inside scope, then rerun the affected check. Three red runs on one
 check end the loop: return the logs and the classification to the parent.
-Generated tests are stable by design; a failure there is treated as a real
-signal and escalated on the same rule. Preserve failures in
+Generated tests need the same diagnosis: compare the selector, fixture and
+assertion with the actual contract before changing source. Preserve failures in
 the record; a later pass supersedes rather than erases them.
 
 Reuse passing evidence when it covers the obligation and its relevant inputs
@@ -175,8 +195,10 @@ without a source change; fingerprints alone cannot establish runtime isolation.
 
 Use ordinary focused test output during development. At a completed assignment
 or final verification, record the required commands together with the existing
-recorder. One report can support several acceptance rows. Reuse current recorded
-passes; ordinary output without the required provenance needs a recorded run.
+recorder. One report can support several acceptance rows. Select the recorder
+before a final check so one execution supplies output and provenance. Reuse
+current recorded passes during review; ordinary output without the required
+provenance needs a recorded run.
 Recorder JSON is a final acceptance input. Progress updates use ordinary
 focused output. Preserve relevant failure artifacts and explain their correction in the handoff.
 Update the worksheet after handoff and final review, not after each command.

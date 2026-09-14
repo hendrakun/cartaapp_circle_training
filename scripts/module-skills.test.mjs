@@ -55,15 +55,7 @@ test('root module command aliases resolve to actual local helper scripts', () =>
   assert.deepEqual(Object.keys(scripts).filter(name => scripts[name].includes('scaffold-bounded-module.mjs')), ['scaffold:bounded-module'])
 })
 
-test('module workflow selects preflight and compatible standard actions before implementation', () => {
-  const router = readFileSync(join(skillsRoot, 'carta-module-development/SKILL.md'), 'utf8')
-  const preflight = router.indexOf('pnpm module:preflight')
-  const generator = router.indexOf('pnpm scaffold:bounded-module')
-  const apply = router.indexOf('with `--apply`')
-  assert.ok(preflight >= 0)
-  assert.ok(preflight < generator)
-  assert.ok(generator < apply)
-
+test('bounded example selects compatible standard actions beside manual work', () => {
   const bounded = readFileSync(join(skillsRoot, 'carta-module-development/references/bounded.md'), 'utf8')
   const example = JSON.parse(bounded.match(/```json\n([\s\S]+?)\n```/)[1])
   assert.deepEqual(Object.keys(example.actions).sort(), ['create', 'list', 'update'])

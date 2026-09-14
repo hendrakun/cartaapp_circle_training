@@ -1,5 +1,69 @@
 # File-routing plans
 
+## Module skill follow-up — 2026-09-14
+
+Discovery/test follow-up: layer skills now read broad architecture, registration
+and export references only for an unresolved fact. Discovery reports occur after
+initial owner reads and again after ten further files or five minutes without a
+change. The threshold triggers communication, not a forced write. Plans pass
+pattern decisions, reasons and revisions. The first working result includes a
+brief review of test justification before the pattern is repeated.
+
+Plan 023 now measures reads that resolve no new fact, time to communication and
+first working output, and test repair cost. Bounded harmless-change and fault
+probes check both test stability and useful detection. These evaluations remain
+TODO; the wording changes make no claim of measured speed or reliability.
+
+The user selected skill changes first, then plans for tool fixes and forward
+tests. Plans 021–023 are TODO; this planning pass does not execute them.
+The skill revision uses CRUD tables and custom workflow YAML, reuses discovery,
+checks generation before detailed planning, and assigns one working path first.
+The worksheet parser now reads CRUD tables as well as custom workflow records.
+
+The final wording pass moved custom workflow YAML into a conditional reference,
+defined shared rules with I-IDs, and removed repeated procedures from stage
+entry points. The checker reads all repeated tables and rejects duplicate rule
+and acceptance IDs. Early dependent assignments stay in one plan; cross-plan
+dependencies require the complete predecessor. Plan 023 tests these decisions.
+
+| Plan | Priority | Effort | Risk | Depends on | Status |
+|---|---|---|---|---|---|
+| [021: Submit without copy dependency](021-remove-submit-copy-dependency.md) | P1 | S | LOW | None | TODO |
+| [022: Report raw controls](022-report-raw-interactive-controls.md) | P1 | S | MED | None | TODO |
+| [023: Forward test the revision](023-forward-test-module-skill-revision.md) | P1 | M | MED | 021, 022, skill revision | TODO |
+
+Run 021 and 022 before 023. The first two change separate tool owners. Preserve
+all existing plan status and user application work.
+
+| Finding | Category | Impact | Confidence | Evidence |
+|---|---|---|---|---|
+| English submit selector | Bug/tests | Correct localized forms fail | HIGH | `scripts/scaffold-bounded-module.mjs:819`, `:831` |
+| Raw controls pass without review | DX/tests | Framework replacements can be missed | HIGH | `scripts/module-ui-check.test.mjs:22` |
+| Revised delivery behavior is unproved | Tests | Time and completeness remain uncertain | HIGH | `plans/module-development-findings-2026-09-14.md`, Forward test run facts |
+
+Considered and rejected: removing the worksheet (small measured cost); another
+generator or skill (existing owners suffice); automatic relation/workflow
+generation (business rules remain manual); calling static pass acceptance.
+Plans 019–020 remain historical results, not proof of this new revision.
+
+Scope: selected module skills, generator submission, UI checker, and evaluation
+contracts. No full application, framework, security, dependency, deployment or
+performance audit was performed. No new product direction was requested.
+Skill validation passed for six changed skill folders, seven Node skill checks
+passed, and two Python tests passed with new CRUD acceptance cases. The first
+Python run failed because fixture tables lacked a separating blank line; the
+fixture was corrected. Full runtime forward tests remain unrun.
+
+Final handoff checks: `pnpm test:module-tooling` passed 92 Node tests and three
+Python tests. Four workflow skill validations and `git diff --check` passed.
+An old Node assertion required command text in the router; it failed after the
+procedure moved to its reference. That wording assertion was removed; the
+generator example check and reference-link checks remain. Behavioral stage
+ordering is part of plan 023. All five final skill changes are complete.
+Next: execute 021 and 022, then run 023. No further skill redesign is required
+before those tests. Application and framework implementation remain outside
+this completed skill-editing task.
+
 Planned with the improve skill against checkout `00763ed` on 2026-09-08.
 Both plans passed parent review on 2026-09-09.
 

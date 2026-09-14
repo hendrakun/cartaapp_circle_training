@@ -5,9 +5,11 @@ description: Build or review Carta backend file routes, inherited scopes, entiti
 
 # API conventions
 
+Apply [discovery reuse](../carta-module-development/SKILL.md#discovery-reuse).
 Read the approved behavior and affected owners in `apps/api/src`. For route
 changes, read [file routing](references/file-routing.md) before choosing files
-or hooks. Check current exports in `packages/sprindle/docs/reference.md`.
+or hooks. Check `packages/sprindle/docs/reference.md` for an unresolved export
+or callback contract; reuse current pattern decisions from the plan.
 
 | Work | Read |
 |---|---|

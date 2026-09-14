@@ -76,6 +76,13 @@ Plan: `TODO`, `IN_PROGRESS`, `IMPLEMENTED`, `VERIFIED`, `BLOCKED`, `SUPERSEDED`.
 Dependencies can proceed from `IMPLEMENTED` or `VERIFIED` plans. `VERIFIED`
 requires all owned acceptance rows passed and an orchestrator review report.
 
+A plan dependency requires the whole predecessor to be implemented. Keep work
+that can start after an early interface check in ordered assignments within the
+same plan. The plan remains `IN_PROGRESS` until all assignments and checks are
+complete. Separate independent plans have no dependency. On resume, reconcile
+plan boundaries and acceptance ownership before dispatch if the old split would
+require a false `IMPLEMENTED` state; preserve design approval and valid evidence.
+
 Acceptance: `PENDING`, `PASS`, `FAIL`, `BLOCKED`. Exclusions require approved
 scope. The executor records evidence; the orchestrator records acceptance and
 state. User-selected direct execution uses the same criteria and labels self-review.

@@ -16,6 +16,10 @@ Keep route placement and inheritance under the [file-routing contract](file-rout
 - Preserve field meaning: omitted patch values mean unchanged; `null` means
   cleared only where allowed. Validate a dependent-field change against the
   resulting record, not only the fields present in the patch.
+- For immutable fields, implement the approved reject-or-ignore behavior and
+  prove the stored value stays unchanged after a direct update request.
+- Validate calendar dates as dates, not only text shape. Apply the declared
+  blank/null rule before checking date order against the resulting record.
 - Reuse `optionalText` for nullable text. Preserve each entity's audit-column
   nullability and foreign keys; identical names do not make definitions equal.
 - Keep scalar relation IDs/codes in ordinary foreign-key writes. Put Drizzle
@@ -50,6 +54,11 @@ For detail/update/delete, combine scope with the primary key in the source
 operation. An inaccessible row returns the same 404 as an absent row. An access
 read followed by an unscoped write is not sufficient. Validate newly selected
 related records against the same ownership boundary.
+
+When a relation must satisfy a mutable state rule at write time, keep the check
+and write in one protected database operation. Choose constraints, locks or
+isolation that preserve the rule under concurrent changes; a transaction alone
+does not establish that guarantee. Apply the rule to create and relation moves.
 
 `create-app.ts` installs `dataWrite: auditStamp()`. Only canonical create/update invoke
 it. Its typed `operation` selects audit values; custom state named `values`

@@ -11,15 +11,16 @@ clear hierarchy, and predictable behavior, not identical pages.
 
 ## Find the current boundary
 
-Read `docs/architecture/web-application-architecture.md`, `docs/ui/README.md`,
-and the UI branch for the changed surface. Inspect its route, schema, resource,
-app adapter, and the relevant Loom exports. For a new app surface, inspect
-`apps/web/src/main.ts`, app defaults, navigation manifest, and authenticated
-layout before adding another owner for them.
+Apply [discovery reuse](../carta-module-development/SKILL.md#discovery-reuse).
+Start with the changed route/resource or generated source and the applicable
+reference below. Reuse the plan's verified adapter and component choices.
+Inspect an export or one nearby example only for an unresolved contract.
 
-Use nearby modules as evidence, then check their pattern against the current
-public API. Reuse a pattern already checked in this task while its contract is
-unchanged. Keep framework changes within explicit user scope.
+Read `docs/architecture/web-application-architecture.md` when ownership or app
+integration is unclear; use `docs/ui/README.md` to locate a missing visual rule.
+Inspect `apps/web/src/main.ts`, app defaults or the authenticated layout only
+when changing their setup or resolving a registration/default problem. Read
+the navigation manifest when adding an entry. Keep framework changes within scope.
 
 ## Framework-first composition
 

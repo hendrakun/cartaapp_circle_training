@@ -5,10 +5,13 @@ description: Build or review Carta form values, validation, relation sources, de
 
 # Build resource forms
 
-Read the owning API entity, schema, resource, and route. Check the current
-`packages/loom/README.md` field contract and `apps/web/src/framework/inputs/registry.ts`.
-Use [web-ui-surfaces](../web-ui-surfaces/SKILL.md) for page composition and
-`docs/ui/forms.md` for app form defaults.
+Apply [discovery reuse](../carta-module-development/SKILL.md#discovery-reuse).
+Trace the changed value through its API schema, resource and route; reuse
+current pattern decisions from the plan. Read the field contract in
+`packages/loom/README.md` when its shape is unresolved, and
+`apps/web/src/framework/inputs/registry.ts` when renderer registration or defaults
+are unresolved. Use [web-ui-surfaces](../web-ui-surfaces/SKILL.md) for changed
+page composition and `docs/ui/forms.md` for an unresolved app form default.
 
 ## Define the value contract
 
@@ -43,7 +46,8 @@ validators. A failed submit must preserve the draft.
 
 ## Select controls
 
-Read [field choices](references/form-field-types.md) for value-specific guidance.
+Read [field choices](references/form-field-types.md) when selecting a new control
+or resolving a value mismatch.
 Use the registered renderer, then an existing composite. Use `table`/`TableInput`
 for form-owned row arrays. If those cannot express one domain value, use the
 [custom field contract](references/custom-field-contract.md).
