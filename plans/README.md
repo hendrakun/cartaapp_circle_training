@@ -11,7 +11,7 @@ Standard detail pages do not gain custom Edit/Delete controls by default.
 
 Implementation instructions are in
 [`standard-module.md`](../.agents/skills/carta-module-development/references/standard-module.md).
-Plan 023 below now describes manual verification of this revision. Plans 024 and
+Forward verification of this revision is reserved for the user. Plans 024 and
 025 remain optional follow-up work, not prerequisites for this trial. The short
 path uses existing controls, ordinary evidence and safe manual generator fallback.
 No new generator, route-type command or connected-entity framework repair is
@@ -33,13 +33,13 @@ change. The threshold triggers communication, not a forced write. Plans pass
 pattern decisions, reasons and revisions. The first working result includes a
 brief review of test justification before the pattern is repeated.
 
-Plan 023 now measures reads that resolve no new fact, time to communication and
-first working output, and test repair cost. Bounded harmless-change and fault
+Forward verification measures reads that resolve no new fact, time to
+communication and first working output, and test repair cost. Bounded harmless-change and fault
 probes check both test stability and useful detection. These evaluations remain
 TODO; the wording changes make no claim of measured speed or reliability.
 
 The user selected skill changes first, then plans for tool fixes and forward
-tests. Plans 021 and 022 are complete as recorded below; 023 remains TODO.
+tests. Plans 021 and 022 are complete as recorded below.
 The skill revision uses CRUD tables and custom workflow YAML, reuses discovery,
 checks generation before detailed planning, and assigns one working path first.
 The worksheet parser now reads CRUD tables as well as custom workflow records.
@@ -48,7 +48,7 @@ The final wording pass moved custom workflow YAML into a conditional reference,
 defined shared rules with I-IDs, and removed repeated procedures from stage
 entry points. The checker reads all repeated tables and rejects duplicate rule
 and acceptance IDs. Early dependent assignments stay in one plan; cross-plan
-dependencies require the complete predecessor. Plan 023 tests these decisions.
+dependencies require the complete predecessor.
 
 | Plan | Priority | Effort | Risk | Depends on | Status |
 |---|---|---|---|---|---|
@@ -56,9 +56,8 @@ dependencies require the complete predecessor. Plan 023 tests these decisions.
 | [022: Report raw controls](022-report-raw-interactive-controls.md) | P1 | S | MED | None | DONE — 2026-09-14, native controls reach review, 18 tests pass |
 | [024: Prove shared form controls](024-prove-shared-form-controls.md) | P1 | M | MED | None | IMPLEMENTED — 2026-09-14, real Dialog/Table/calendar cases pass, helper regression passes |
 | [025: Separate runtime and review freshness](025-separate-runtime-and-review-freshness.md) | P2 | S | MED | None | TODO |
-| [023: Forward test the revision](023-forward-test-module-skill-revision.md) | P1 | M | MED | Current skill revision | TODO — manual verification reserved for user |
 
-Run the manual trial in 023 with the current skills. Plans 024 and 025 can follow
+Run the manual trial with the current skills. Plans 024 and 025 can follow
 when their gaps are relevant; they do not block this trial. Preserve existing
 plan status and user application work.
 
@@ -66,7 +65,7 @@ plan status and user application work.
 |---|---|---|---|---|
 | English submit selector | Bug/tests | Correct localized forms fail | HIGH | `scripts/scaffold-bounded-module.mjs:819`, `:831` |
 | Raw controls pass without review | DX/tests | Framework replacements can be missed | HIGH | `scripts/module-ui-check.test.mjs:22` |
-| Revised delivery behavior is unproved | Tests | Time and completeness remain uncertain | HIGH | `plans/module-development-findings-2026-09-14.md`, Forward test run facts |
+| Revised delivery behavior is unproved | Tests | Time and completeness remain uncertain | HIGH | Forward test run facts |
 
 Earlier considered and rejected: removing the worksheet (then judged small;
 superseded for standard CRUD after the later 102-edit planning trace); another
@@ -86,8 +85,8 @@ Final handoff checks: `pnpm test:module-tooling` passed 92 Node tests and three
 Python tests. Four workflow skill validations and `git diff --check` passed.
 An old Node assertion required command text in the router; it failed after the
 procedure moved to its reference. That wording assertion was removed; the
-generator example check and reference-link checks remain. Behavioral stage
-ordering is part of plan 023. All five final skill changes are complete.
+generator example check and reference-link checks remain. All five final skill
+changes are complete.
 The next skill pass defines framework/module test ownership in one reference,
 checks assertions before expensive runs, and requires page/artifact diagnosis
 after two failures at one browser interaction. Plan 024 closes real-control
