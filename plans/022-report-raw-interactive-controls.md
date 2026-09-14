@@ -8,7 +8,7 @@
 - Category: tests, dx
 - Depends on: None
 - Planned at: `c9b11b7`, 2026-09-14, with the uncommitted skill revision from this task
-- Status: TODO
+- Status: DONE — 2026-09-14, in working tree uncommitted (no commit per scope)
 
 ## Why this matters
 
@@ -87,3 +87,28 @@ After three failed runs of one check, report the evidence before further work.
 Review framework reuse from actual source. This check covers explicit native
 controls only; dynamic components and behavior inside child components still
 need source review. Add another tag only after an observed omission justifies it.
+
+## Results — 2026-09-14
+
+- Drift check: `git diff c9b11b7 -- scripts/module-ui-check.mjs scripts/module-ui-check.test.mjs .agents/skills/web-ui-surfaces/references/ui-contract.md` exits 0. No drift.
+- Baseline before the change: 8 tests pass. Caller search finds no live
+  caller of `checkUiContract` or `module-ui-check` outside the checker,
+  its test, plans, and reports, so no caller treats exit 2 as acceptance.
+  The existing exit-2 path (surface `gap`) stays usable; the new items
+  reuse the same review list and exit code.
+- Change: the AST walk reports each native `button`, visible `input`,
+  `select`, and `textarea` as `file:line: native <tag> needs source review
+  against the shared controls`. A literal `type="hidden"` input stays
+  silent; an absent, dynamic, or spread type needs review. Native layout
+  elements add no item. `errors` still carry structural failures only,
+  and a surface `gap` explains a requirement without approving the item.
+- Reference update states what the checker detects and how the reviewer
+  resolves each item (replace with the shared control or keep it for the
+  named `gap` requirement). It repeats the static limits: explicit native
+  controls only, child-component behavior still needs source review.
+- `node --test scripts/module-ui-check.test.mjs scripts/module-skills.test.mjs`:
+  18 pass, 0 fail (11 checker + 7 skills, including reference-link validation).
+- `git diff --check`: exit 0.
+- Changed files: `scripts/module-ui-check.mjs`,
+  `scripts/module-ui-check.test.mjs`,
+  `.agents/skills/web-ui-surfaces/references/ui-contract.md`, this plan.

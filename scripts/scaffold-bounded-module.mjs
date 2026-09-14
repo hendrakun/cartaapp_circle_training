@@ -814,9 +814,10 @@ function renderBrowserSpec(config) {
     if (typeof value === 'boolean') continue
     lines.push(`  await page.getByRole('textbox', { name: ${literal(config.fields.find((field) => field.key === key)?.label ?? key)} }).fill(${literal(String(value))})`)
   }
-  // Submit through the form chrome, not through one locale copy. The
-  // app can translate the submit label, so match the submit role.
-  lines.push(`  await page.getByRole('button', { name: /save|submit/i }).click()`)
+  // Submit through the native submit control, not through one locale
+  // copy. The app can translate the submit label, so the test must not
+  // match button text. FormView renders one Button type="submit" per form.
+  lines.push(`  await page.locator('form button[type="submit"]').click()`)
   // Save resolves through the resource run, so wait for the POST response
   // before asserting the result. Never assert the success toast: it never
   // paints after a real save.
@@ -828,7 +829,7 @@ function renderBrowserSpec(config) {
   lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
   lines.push(`  await page.getByRole('row', { name: new RegExp(${literal(String(record[firstField.key]))}) }).getByRole('link', { name: /edit/i }).click()`)
   lines.push(`  await page.getByRole('textbox', { name: ${literal(config.fields.find((field) => field.key === updateKey)?.label ?? updateKey)} }).fill(${literal(String(updateValue))})`)
-  lines.push(`  await page.getByRole('button', { name: /save|submit/i }).click()`)
+  lines.push(`  await page.locator('form button[type="submit"]').click()`)
   lines.push(`  await page.waitForResponse((response) => response.url().includes('/${config.slug}/update/') && response.request().method() === 'PATCH')`)
   lines.push(`  await page.goto('/${config.navigation.group}/${config.slug}')`)
   lines.push(`  await expect(page.getByRole('cell', { name: ${literal(String(updateValue))}, exact: true }).first()).toBeVisible()`)

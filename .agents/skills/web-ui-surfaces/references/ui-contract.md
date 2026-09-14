@@ -49,7 +49,12 @@ requirement and component source before acceptance. The executor cannot approve
 its own deviation.
 
 The checker uses the installed Vue parser. It checks template component bindings,
-selected imports in template use, and declared Create overrides. Vue built-ins
+selected imports in template use, and declared Create overrides. It reports
+each native `button`, visible `input`, `select`, and `textarea` as a review
+item with file and line, since any of them can replace a shared control.
+A literal `type="hidden"` input carries state rather than an interaction and
+stays silent; any other type source (absent, dynamic, spread) needs review.
+Vue built-ins
 and Vue Router components are recognized; confirm the app installs its router.
 For explicit globals, add `"globals": [{"tag": "SharedWidget", "registration":
 "apps/web/src/main.ts"}]`. The checker requires a literal `.component()` call;
@@ -59,6 +64,9 @@ are not runtime registration.
 Dynamic components, plugin registration and aliases outside supported syntax
 need source review or a focused extension to the checker. A binding check cannot
 prove that an imported module exports the symbol; run the app type check too.
+A review item is not a defect: open the file and line, compare the native
+control against the shared controls, and either replace it with the shared
+control or keep it for the named requirement in the surface `gap`.
 Compare the contract with the complete changed file list. Inspect file renderers,
 slots and adjacent sections; a token View beside a replacement body is a defect.
 A static pass does not prove requirement coverage, runtime behavior or acceptance.

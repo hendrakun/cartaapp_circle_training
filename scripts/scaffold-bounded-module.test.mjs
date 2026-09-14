@@ -1,5 +1,6 @@
 import { strict as assert } from 'node:assert'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync, symlinkSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { isAbsolute, join, resolve } from 'node:path'
 import { test } from 'node:test'
@@ -297,8 +298,9 @@ test('slim browser journey proves create, edit, and reload persistence', () => {
   assert.ok(browser)
   const spec = readFileSync(browser, 'utf8')
   // Slim journey only: no copy, layout, dialog, seed, or delete assertions.
-  // Submit uses the form chrome, not one locale copy.
-  assert.match(spec, /getByRole\('button', \{ name: \/save\|submit\/i \}\)\.click\(\)/)
+  // Submit targets the native submit control, not one locale copy.
+  assert.match(spec, /locator\('form button\[type=\"submit\"\]'\)\.click\(\)/)
+  assert.doesNotMatch(spec, /save\|submit/)
   assert.doesNotMatch(spec, /name: 'Save', exact: true/)
   assert.doesNotMatch(spec, /submit-label="Save"/)
   assert.doesNotMatch(spec, /toHaveURL/)
@@ -323,6 +325,75 @@ test('slim browser journey proves create, edit, and reload persistence', () => {
   const partialSetup = workspace(partial)
   const partialResult = JSON.parse(execute(['--config', partialSetup.configPath, '--json'], { root: partialSetup.outputRoot, cwd: partialSetup.directory }))
   assert.ok(!partialResult.generated.some((path) => path.endsWith('apps/web/e2e/test-catalog.spec.ts')))
+})
+
+test('generated submit steps work with translated submit labels', async (t) => {
+  // Regression: the old role-name selector (/save|submit/i) fails when the
+  // app translates the submit label (for example Simpan). The generated
+  // steps must submit through the native submit control instead. Each
+  // extracted step runs verbatim against a real form, so this fails before
+  // the fix on the non-English label and passes after it.
+  const setup = workspace(config())
+  const result = JSON.parse(execute(['--config', setup.configPath, '--json'], { root: setup.outputRoot, cwd: setup.directory }))
+  const browser = result.generated.find((path) => path.endsWith('apps/web/e2e/test-catalog.spec.ts'))
+  assert.ok(browser)
+  const spec = readFileSync(browser, 'utf8')
+  const steps = spec.split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.includes('.click()') && line.toLowerCase().includes('button'))
+    .map((line) => line.replace(/^await\s+/, ''))
+  assert.equal(steps.length, 2)
+
+  let playwright = null
+  try {
+    playwright = createRequire(new URL('../apps/web/package.json', import.meta.url))('@playwright/test')
+  } catch {
+    playwright = null
+  }
+  if (!playwright) {
+    t.skip('Playwright is not installed; cannot run the submit regression.')
+    return
+  }
+  let executable
+  try {
+    executable = playwright.chromium.executablePath()
+  } catch {
+    t.skip('Chromium path is unavailable; cannot run the submit regression.')
+    return
+  }
+  const { statSync } = await import('node:fs')
+  try {
+    statSync(executable)
+  } catch {
+    t.skip('Chromium binary is missing; cannot run the submit regression.')
+    return
+  }
+
+  const launched = await playwright.chromium.launch()
+  try {
+    const page = await launched.newPage()
+    try {
+      for (const label of ['Save', 'Submit', 'Simpan']) {
+        await page.setContent(`<form id="target"><input name="label" value="x"><button type="submit">${label}</button><button type="button">Unrelated</button></form>`)
+        await page.evaluate(() => {
+          window.submits = []
+          document.querySelector('form').addEventListener('submit', (event) => {
+            event.preventDefault()
+            window.submits.push('target')
+          })
+        })
+        for (const step of steps) {
+          await Function('page', `"use strict"; return (${step});`)(page)
+        }
+        const submits = await page.evaluate(() => window.submits)
+        assert.deepEqual(submits, ['target', 'target'])
+      }
+    } finally {
+      await page.close()
+    }
+  } finally {
+    await launched.close()
+  }
 })
 
 test('generates the minimal API proof spec', () => {

@@ -28,8 +28,8 @@ dependencies require the complete predecessor. Plan 023 tests these decisions.
 
 | Plan | Priority | Effort | Risk | Depends on | Status |
 |---|---|---|---|---|---|
-| [021: Submit without copy dependency](021-remove-submit-copy-dependency.md) | P1 | S | LOW | None | TODO |
-| [022: Report raw controls](022-report-raw-interactive-controls.md) | P1 | S | MED | None | TODO |
+| [021: Submit without copy dependency](021-remove-submit-copy-dependency.md) | P1 | S | LOW | None | DONE — 2026-09-14, native submit locator, 21 tool tests pass |
+| [022: Report raw controls](022-report-raw-interactive-controls.md) | P1 | S | MED | None | DONE — 2026-09-14, native controls reach review, 18 tests pass |
 | [023: Forward test the revision](023-forward-test-module-skill-revision.md) | P1 | M | MED | 021, 022, skill revision | TODO |
 
 Run 021 and 022 before 023. The first two change separate tool owners. Preserve

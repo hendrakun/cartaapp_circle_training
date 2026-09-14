@@ -8,7 +8,7 @@
 - Category: bug, tests
 - Depends on: None
 - Planned at: `c9b11b7`, 2026-09-14, with the uncommitted skill revision from this task
-- Status: TODO
+- Status: DONE — 2026-09-14, in working tree uncommitted (no commit per scope)
 
 ## Why this matters
 
@@ -83,3 +83,23 @@ the same check, report the evidence and cause before further work.
 If form submission changes, review this generator contract with FormView. Keep
 locale-specific product copy outside standard generated assertions. This plan
 does not fix the hand-written journeys from the forward test.
+
+## Results — 2026-09-14
+
+- Drift check: `git diff c9b11b7 -- scripts/...` exits 0. No drift.
+  Tree is otherwise clean except untracked `opencode.jsonc`.
+- New regression `generated submit steps work with translated submit labels`
+  extracts both generated submit steps and runs them verbatim through
+  real Chromium against `Save`, `Submit`, and `Simpan` forms.
+  Before the fix it fails with a 30s timeout on
+  `getByRole('button', { name: /save|submit/i })` for the `Simpan` label.
+- Fix: both generated sites now emit
+  `await page.locator('form button[type="submit"]').click()`.
+  FormView renders one `Button type="submit"` per form
+  (`FormView.vue:205`, inside `Form.vue:390` `<form>`).
+  No label is forced on application forms. Waits, values, edit, and
+  reload checks are intact.
+- `node --test scripts/scaffold-bounded-module.test.mjs`: 21 pass, 0 fail.
+- `git diff --check`: exit 0.
+- Changed files: `scripts/scaffold-bounded-module.mjs`,
+  `scripts/scaffold-bounded-module.test.mjs`, this plan.
