@@ -12,7 +12,7 @@ known gaps. Do not claim these proposed helpers already exist.
 - Category: tests, dx
 - Depends on: None
 - Planned at: `9720b43`, 2026-09-14
-- Status: TODO
+- Status: IMPLEMENTED — 2026-09-14 at `218b325`, evidence below
 
 ## Why this matters
 
@@ -112,3 +112,116 @@ new dependency, live data reset or an out-of-scope repair. After two failures
 at one interaction, inspect the active page and artifacts before another edit.
 Future control changes update these tests and helpers at their owner. Module
 tests still prove actual schema, relations, access and stored effects.
+
+## Evidence — 2026-09-14 at `218b325`
+
+Drift: `git diff 9720b43 -- packages/loom apps/web/e2e` is empty. Owners are
+unchanged. Reused coverage stays valid. Gap stays as planned: mocked Dialog
+and Table in `LookupInput.spec.ts`, mocked picker in
+`datepicker-popup.spec.ts`. State tests in `views.spec.ts` and
+`behavior.spec.ts` stay authoritative. No repeat of that state cover.
+
+New framework browser proof, no `vi.mock` on controls:
+
+- `packages/loom/src/components/composites/__tests__/LookupInput.browser.spec.ts`
+  opens the real Dialog, clicks the row for Option two in the real Table,
+  clicks Simpan, and checks model `two`, label Option two, and dialog close.
+  It also checks initial scalar `one` shows Option one by stub `loadDetail`.
+- `packages/loom/src/components/inputs/__tests__/DateInput.browser.spec.ts`
+  mounts DateInput with the real picker inline. It shows initial
+  `2026-02-15` as active day 15, clicks day 20, and checks model
+  `2026-02-20` and active day 20. It also checks empty stays null until a
+  calendar day commits.
+- `packages/loom/vitest.browser.config.ts` adds the two new specs to the
+  explicit `test.include` list. Chromium provider stays.
+
+New application helper proof, local fixture only, no API or database use.
+Fixture mirrors real Loom output, with portals. No invented
+`data-form-field`, `combobox`, `listbox`, or `option` roles.
+
+Portal behavior, verified in owners:
+
+- Lookup Dialog renders via reka DialogPortal to `body`
+  (`DialogContent.vue`). The Loom browser spec finds it with
+  `document.body.querySelector('[role="dialog"]')`. The dialog holds no
+  field key. Only one dialog is visible at a time.
+- Datepicker menu teleports to `body` by default (`DateInput.vue`
+  `:teleport` default true). The Loom browser spec mounts with
+  `teleport: false` and `inline: true` only for test mount. Helpers match
+  production and use body scope.
+
+Real DOM selectors used:
+
+- Page scope: `section` with heading name, e.g. Target Form. This proves
+  navigation reached the target form. API health alone does not prove it.
+- Field scope: `.is-form-field` with `label[for="field-<key>"]`. This is
+  the Form.vue contract. Field `<key>` is `assignee`, `reviewer`, `due`.
+  Scope covers the trigger and the input, never the portal.
+- Lookup trigger: `div.overlay` in the field scope. This is the
+  LookupInput.vue trigger.
+- Lookup dialog: single visible `[role="dialog"]` at page scope, found
+  after the scoped trigger click. `toHaveCount(1)` proves no second
+  dialog. Table row: `getByRole('row', { name: option })` on `table`
+  with `thead` and `tbody`, e.g. Option two. Row click follows the
+  TableContent `tr` row-click contract. Commit: `getByRole('button',
+  { name: 'Simpan' })`, the framework commit label in the dialog. Close is
+  proved by wait for dialog hidden. A missing record rejects. The helper
+  then sends Escape and waits for close, then rethrows. No silent
+  wrong-row commit is possible. The fixture dialog holds a SearchBox
+  input, as real LookupInput does.
+- Date: `.dp__input` click in the field scope opens body-level
+  `.dp__menu`. The fixture nests no menu in the field. Day click uses
+  `.dp__cell_inner:not(.dp__cell_offset):not(.dp__cell_disabled)` with
+  exact day text from the ISO value, e.g. `2026-02-20` picks day `20`.
+  Pass proves the scoped input value changed. Menu close timing is
+  picker-owned and stays out of the helper contract.
+
+- `apps/web/e2e/form-controls.ts` owns `waitForFormField(page, target,
+  field, wait?)`, `selectLookupOption(page, target, field, option,
+  wait?)`, and `fillDateField(page, target, field, value, wait?)`. Each
+  takes target page identity, field key, value. Locators use page and
+  field scope for trigger and input, page scope for the single visible
+  portal. No order use. No current month use. No application submit text
+  use. No business assertions in helpers.
+- `apps/web/e2e/form-controls.spec.ts` keeps both previous page and target
+  form present. Target starts hidden. Readiness fails while hidden. Past
+  that, it proves helper acts on reviewer Option two while target
+  assignee stays idle and dialog closes, then on target assignee Option
+  one while the previous live assignee stays at Option one and dialog
+  closes, then date due `2026-02-20` in the scoped input. Negative cases:
+  readiness rejects before target opens; missing record Option nine
+  rejects, both fields stay at prior text, previous stays idle, dialog is
+  hidden; wrong field `owner` rejects; previous page holds no target
+  heading. Rejects use short timeouts to keep run time sane.
+- `apps/web/playwright.control-helpers.config.ts` is the isolated test-only
+  config. No app webServer. No setup use.
+
+Commands run, all pass:
+
+- `pnpm --dir packages/loom test`: 57 files pass, 447 tests pass.
+- `pnpm --dir packages/loom test:browser`: 7 files pass, 25 tests pass.
+  New specs add 4 tests to prior 21.
+- `pnpm --dir packages/loom type-check`: pass.
+- `pnpm test:module-tooling`: 96 Node tests pass, 3 Python tests pass.
+- `pnpm --dir apps/web exec playwright test --config playwright.control-helpers.config.ts`:
+  1 test passes in real Chromium, no server start.
+- `git diff --check`: exit 0.
+- Note: `pnpm --dir apps/web type-check` fails on clean tree too. It reports
+  a missing `divisionId` type in app user code. This failure is out of scope.
+  Plan scope needs no app type-check. Required loom type-check passes.
+
+Tested behavior: real lookup select and commit, initial lookup label,
+real calendar day select and commit, helper page and field scope on
+target form with live previous-page control present, missing-record
+reject with closed dialog and idle fields.
+Gaps: overlay focus return is not asserted. Dialog warns it lacks Title
+and Description in test mount. ListView browser file gains no new filter
+case. Existing state tests cover reset behavior. The local helper
+fixture mirrors Loom DOM with portals but is not the live app. Date helper waits
+for input value change, not menu close. Date callers must pin the
+picker month with an explicit initial value for a fixed day pick.
+
+Helper pointers: use `apps/web/e2e/form-controls.ts` for page readiness,
+named lookup choice, and date fill. See case in
+`apps/web/e2e/form-controls.spec.ts`. See framework proof in the two new
+Loom browser specs. UI reference links these files.

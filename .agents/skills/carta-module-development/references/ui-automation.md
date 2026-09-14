@@ -46,6 +46,33 @@ provide explicit dates for time-sensitive behavior. Wait for an observable
 result, not a fixed delay. Keep test data isolated and cleanup tied to returned
 record IDs, including after a failed assertion.
 
+Shared control helpers now exist and pass. Use them. Do not copy new selector
+sequences for the same controls. They use real Loom output. No test
+attributes were added to production.
+
+- `apps/web/e2e/form-controls.ts`: `waitForFormField(page, target, field, wait?)`,
+  `selectLookupOption(page, target, field, option, wait?)`,
+  `fillDateField(page, target, field, value, wait?)`. Page scope uses the target
+  heading. Field scope uses `.is-form-field` plus `label[for="field-<key>"]`
+  for the trigger and the input. Both overlays portal to `body`: the lookup
+  dialog via DialogPortal, the date menu via datepicker teleport. Helpers use
+  the single visible body overlay, then prove ownership by scoped value
+  change. Lookup opens `div.overlay`, asserts one visible dialog, clicks the
+  dialog table row by name, clicks `Simpan`, waits for dialog close. A
+  missing record rejects and closes the dialog with Escape. Date clicks
+  scoped `.dp__input`, clicks the body menu `.dp__cell_inner` day from the
+  ISO value, waits for scoped input change. No order use. No current month
+  use. No application submit text use. No business assertions in helpers.
+- `apps/web/e2e/form-controls.spec.ts`: proves helpers act on the target form
+  while the previous live control stays present. Two lookup fields prove
+  correct field scope. Explicit date `2026-02-20`. Missing record rejects
+  with idle fields and closed dialog. Wrong field rejects.
+- Run: `pnpm --dir apps/web exec playwright test --config playwright.control-helpers.config.ts`.
+  Isolated config. No app server. No setup use. No API or database access.
+- Framework proof: `packages/loom/src/components/composites/__tests__/LookupInput.browser.spec.ts`
+  uses the real Dialog and Table. `packages/loom/src/components/inputs/__tests__/DateInput.browser.spec.ts`
+  uses the real calendar. Run: `pnpm --dir packages/loom test:browser`.
+
 ## Evidence and diagnosis
 
 Use the existing Playwright runner. Record final evidence under the

@@ -54,7 +54,7 @@ dependencies require the complete predecessor. Plan 023 tests these decisions.
 |---|---|---|---|---|---|
 | [021: Submit without copy dependency](021-remove-submit-copy-dependency.md) | P1 | S | LOW | None | DONE — 2026-09-14, native submit locator, 21 tool tests pass |
 | [022: Report raw controls](022-report-raw-interactive-controls.md) | P1 | S | MED | None | DONE — 2026-09-14, native controls reach review, 18 tests pass |
-| [024: Prove shared form controls](024-prove-shared-form-controls.md) | P1 | M | MED | None | TODO |
+| [024: Prove shared form controls](024-prove-shared-form-controls.md) | P1 | M | MED | None | IMPLEMENTED — 2026-09-14, real Dialog/Table/calendar cases pass, helper regression passes |
 | [025: Separate runtime and review freshness](025-separate-runtime-and-review-freshness.md) | P2 | S | MED | None | TODO |
 | [023: Forward test the revision](023-forward-test-module-skill-revision.md) | P1 | M | MED | Current skill revision | TODO — manual verification reserved for user |
 
