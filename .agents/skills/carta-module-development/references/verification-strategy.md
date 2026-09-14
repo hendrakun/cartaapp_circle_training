@@ -48,6 +48,16 @@ local proof and report any material result that remains unverified.
 
 ## Browser journeys
 
+For module UI delivery, preserve a runnable Playwright Test spec in the
+application E2E suite for the representative path. Extend an existing suitable
+spec before adding a file. This applies to generated and manually written
+application code; headless work and explicit user exclusions remain outside it.
+Use the existing runner, fixtures and shared controls in
+[UI automation](ui-automation.md). Keep only module-specific assertions.
+Temporary inline scripts are for diagnosis or preview inspection, not a
+replacement for this spec. Record its path, focused command and run result;
+an unrun required spec remains unverified.
+
 Inspect populated list, detail and edit surfaces early. Check meaningful names,
 values, required fields and action placement. A form lookup passing does not
 establish the relation's list/detail display.
@@ -56,6 +66,10 @@ Use one compact browser path per distinct integration risk, not per resource
 or validation branch. Equivalent standard forms can share it. Use meaningful
 module data, including relations or optional inputs that distinguish the changed
 integration; a name-only smoke cannot prove the rest of the form.
+For CRUD with Create and Update, exercise create, edit and reload persistence.
+For read-only or partial modules, test the requested path with distinguishing
+records. Empty pages and visible filter controls do not prove relation display
+or filtering results.
 
 For selected paths, operate real controls, observe the visible update and verify
 persistence after reload or navigation. Seed prerequisites on the isolated target.

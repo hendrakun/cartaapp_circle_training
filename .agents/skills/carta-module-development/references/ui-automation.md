@@ -5,7 +5,8 @@ outcomes; the executor selects cases and data that demonstrate them.
 
 ## Scripted acceptance
 
-Saved Playwright Test TypeScript cases are the default. Agents run commands and
+Use saved Playwright Test TypeScript cases under the
+[browser delivery rule](verification-strategy.md#browser-journeys). Agents run commands and
 review reports; computer-controlled clicks are optional diagnosis, not a delivery
 gate. Select actors, fixtures, steps and assertions from the approved outcomes.
 Use IDs only when the full-process record has them; standard work needs no

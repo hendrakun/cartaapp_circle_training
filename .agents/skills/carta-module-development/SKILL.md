@@ -57,9 +57,11 @@ Reuse the answer; read its source again only for an unresolved detail or change.
 ## Build and finish
 
 Use [execution](references/execution.md) for implementation, early preview and
-review. Keep one executor for connected work. Generation is optional: read
-[bounded generation](references/bounded.md) only when a new scaffold will save
-work. A generator limitation does not change the requested scope.
+review. Keep one executor for connected work. Prefer
+[bounded generation](references/bounded.md) for supported standard actions when
+it saves work, including their tests. Generation is optional; a limitation does
+not change the requested scope or the saved browser-test requirement in the
+[verification strategy](references/verification-strategy.md#browser-journeys).
 
 Use [verification strategy](references/verification-strategy.md) for checks and
 evidence. Use `$verify-carta-module` for final review. Finish when the requested

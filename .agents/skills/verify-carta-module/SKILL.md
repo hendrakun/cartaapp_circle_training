@@ -57,6 +57,9 @@ not justification for overriding the request or copying an unnecessary control.
 ## Evaluate evidence
 
 Read assertions, not only titles and counts. Apply
+the [saved browser-test requirement](../carta-module-development/references/verification-strategy.md#browser-journeys)
+for module UI delivery: inspect the spec and its run result, not only temporary
+preview scripts. Then apply
 [test ownership](../carta-module-development/references/verification-strategy.md#test-ownership)
 before requesting more tests. Reuse framework behavior and sufficient module
 proof. Tests that replace a schema/control cannot prove that replaced boundary.
