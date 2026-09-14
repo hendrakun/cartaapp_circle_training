@@ -17,8 +17,8 @@ one usable result and its prerequisites; remaining work stays in the work record
 For UI delivery, include API, page, navigation, permissions and development setup
 in that first result. An API-only assignment cannot establish a UI checkpoint.
 Keep useful generated files within task scope instead of deleting and recreating
-them to enforce a layer boundary. Check the first rendered result and test
-assertions before repeating the pattern.
+them to enforce a layer boundary. Review the first page's source wiring and
+non-browser assertions before repeating the pattern. Assign no E2E work.
 
 Full-process work uses the [worksheet state rules](module-execution-worksheet.md#state-and-completion).
 Standard work uses the short record; no worksheet checker is needed. Keep work
@@ -49,8 +49,10 @@ As soon as the first viable schema and page are ready:
    within authority using the existing migration command, not reset/refresh.
 2. Inspect and run the required permission/system seed within authority. Preserve
    existing data; demo records and account changes are not automatically required.
-3. Check that the intended user can reach and use the page. Report its URL,
-   migration/seed result and unfinished work before final verification.
+3. Check service readiness and review the page's route, navigation and access
+   wiring. Report its URL, migration/seed result and unfinished work before
+   final verification. Leave the browser walkthrough to the user; do not claim
+   rendered behavior was verified.
 
 Ask early if the target or write authority is unclear. Never substitute test/E2E
 reset commands for development setup. A remote target is not disposable merely

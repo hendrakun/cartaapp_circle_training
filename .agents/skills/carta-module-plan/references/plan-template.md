@@ -5,7 +5,7 @@ This template is for the full process. Ordinary CRUD uses the
 
 Use `plans/<feature>/NNN-<result>.md`, one plan per complete result.
 Preserve valid numbering on resume. Reference design IDs instead of copying rules.
-The worksheet alone maps acceptance and journeys to tests and results.
+The worksheet alone maps acceptance to non-browser tests and results.
 
 ```markdown
 # Plan NNN: <observable result>
@@ -16,7 +16,7 @@ The worksheet alone maps acceptance and journeys to tests and results.
 - Source: <commit and relevant dirty/untracked input snapshot>
 - Scope: <permitted edits, test target and side effects>
 
-| Needs: api,web,test,browser,storage | Preflight result/evidence | Owner |
+| Needs: api,web,test,storage | Preflight result/evidence | Owner |
 |---|---|---|
 | <selected capabilities and purpose> | `pnpm module:preflight -- --needs <selected>`: <result or PENDING> | <owner> |
 
@@ -49,15 +49,15 @@ The first UI result includes all necessary layers; test setup alone is insuffici
 
 For changed web surfaces, reference `ui-contract.json` from the
 [UI contract](../../web-ui-surfaces/references/ui-contract.md). Record the selected
-component, extension and actual gap once. Use the design's journey IDs; the
-executor returns exact browser test mappings for the parent to merge.
+component, extension and actual gap once. Review field and relation wiring in
+source. Browser journeys and E2E generation are outside module delivery.
 
 ## Test strategy
 
 Name test boundaries and critical expected outcomes, including unchanged data
 on rejected writes. Use the verification strategy for test-first requirements.
-Select required evidence surfaces in the worksheet before assignment. Browser
-checks use changed controls and prove saved results; API checks prove access,
+Select only API/UNIT evidence surfaces in the worksheet before assignment.
+API checks prove access,
 validation and transaction rules. Reuse valid existing coverage.
 
 ## Commands

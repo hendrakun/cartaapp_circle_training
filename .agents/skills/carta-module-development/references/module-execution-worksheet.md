@@ -22,7 +22,8 @@ in that plan. List dependencies by plan ID. Compare coverage with the design
 inventory; keep the inventory there.
 
 List each acceptance ID once in Required evidence with its comma-separated
-surfaces: `API`, `UNIT`, `BROWSER`, `VISUAL`. Use the
+surfaces: `API`, `UNIT`. Browser and visual test surfaces are outside module
+delivery. Record UI source review in the review report. Use the
 [verification strategy](verification-strategy.md#select-proof-by-behavior-and-impact)
 to select proof for all required outcomes.
 
@@ -54,20 +55,12 @@ Coverage rows and plan test maps; compare the result with the design inventory.
 
 ## Browser journeys
 
-Copy design journey IDs into `Journey / Test case`. Each completed journey maps
-to a distinct browser test with the same acceptance links. Use `PENDING` during
-unfinished work. Keep journey tables empty only when the design explains why no
-changed UI workflow needs browser proof.
-
-Record the preserved Playwright JSON path under `- Browser report:`. Run:
-
-```sh
-python3 .agents/skills/carta-module-development/scripts/check_worksheet.py plans/<feature> --browser-report plans/<feature>/reports/<run>/results.json
-```
-
-This check requires exact test references and passing attempts for every selected
-journey. `DONE` checks the worksheet report path. Review assertions, provenance
-and freshness with the evidence recorder.
+Keep legacy journey tables empty in both design and worksheet. State the reason:
+E2E is outside module delivery. Do not create browser mappings or reports or run
+the browser-report checker. On resume, move old browser obligations and their
+history to separately scoped work, without claiming they passed. Preserve
+business requirements and select applicable API/UNIT proof for module delivery.
+Record rendered behavior as unverified in the final review.
 
 ## State and completion
 
@@ -92,7 +85,7 @@ scope. The executor records evidence; the orchestrator records acceptance and
 state. User-selected direct execution uses the same criteria and labels self-review.
 
 `DONE` requires every selected plan verified, all required acceptance passed with
-current evidence, and review of cross-plan effects and complete journeys. Link
+current non-browser evidence, and review of cross-plan effects. Link
 the final report in `Latest review`.
 
 ## Handoff and resume

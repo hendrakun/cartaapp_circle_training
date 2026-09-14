@@ -1,12 +1,13 @@
 # Playwright UI evidence
 
-Use this reference for approved UI acceptance. The design owns the visible
+This reference is for a separate, explicitly requested browser-testing task.
+Never load or execute it as part of Carta module delivery, planning or review.
+The design owns the visible
 outcomes; the executor selects cases and data that demonstrate them.
 
 ## Scripted acceptance
 
-Use saved Playwright Test TypeScript cases under the
-[browser delivery rule](verification-strategy.md#browser-journeys). Agents run commands and
+Use saved Playwright Test TypeScript cases for that separate task. Agents run commands and
 review reports; computer-controlled clicks are optional diagnosis, not a delivery
 gate. Select actors, fixtures, steps and assertions from the approved outcomes.
 Use IDs only when the full-process record has them; standard work needs no
@@ -16,8 +17,7 @@ in browser tests and exhaustive access/state combinations at the API.
 ## Journey and data
 
 Use focused Playwright cases with named steps that map to acceptance IDs.
-Use the [journey selection rule](verification-strategy.md#browser-journeys) and
-worksheet mapping only for the full process. Give each selected journey an independent record and distinct
+Select only the separate task's requested paths. Give each selected journey an independent record and distinct
 test title. Include child navigation when it changes. Exercise those actions through the visible authenticated UI, then
 verify the persisted outcome by reload or navigation. API setup can create
 fixtures and establish authenticated actors; it does not replace the interaction
@@ -107,6 +107,5 @@ When visual quality is required, capture selected Playwright screenshots for
 review; functional assertions alone do not prove layout quality. Use image
 comparison only against an approved baseline.
 
-Use the [verification strategy](verification-strategy.md) for evidence freshness
-and verdicts. A selected browser obligation without executable browser evidence
+Use the separate task's scope for acceptance. A selected browser obligation without executable browser evidence
 remains blocked; backend, lint and type checks do not silently replace it.

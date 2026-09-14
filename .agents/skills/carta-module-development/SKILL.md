@@ -9,6 +9,10 @@ Deliver a usable application result. Preserve requested behavior, meaningful
 display values, access and data safety. Use framework defaults for routine
 choices; optional refinements must not delay a required result.
 
+E2E is excluded from this entire workflow, including custom work and full-process
+review. Do not generate, write, run or repair browser tests or substitute a manual
+journey. Follow the [non-browser boundary](references/verification-strategy.md#browser-journeys).
+
 ## Build on standard behavior
 
 Start with the [standard module base](references/standard-module.md). It owns
@@ -59,9 +63,8 @@ Reuse the answer; read its source again only for an unresolved detail or change.
 Use [execution](references/execution.md) for implementation, early preview and
 review. Keep one executor for connected work. Prefer
 [bounded generation](references/bounded.md) for supported standard actions when
-it saves work, including their tests. Generation is optional; a limitation does
-not change the requested scope or the saved browser-test requirement in the
-[verification strategy](references/verification-strategy.md#browser-journeys).
+it saves work and emits no browser tests. Otherwise use normal source edits.
+Generation is optional and does not change the requested scope.
 
 Use [verification strategy](references/verification-strategy.md) for checks and
 evidence. Use `$verify-carta-module` for final review. Finish when the requested
@@ -77,8 +80,7 @@ development preview, migration/seed status and any remaining gaps.
 - Read [cross-layer contracts](references/contract-rules.md) for changed boundaries.
 - Read [field contracts](references/frontend-field-contract.md) for unresolved
   value shapes; [query cache](references/web-query-cache.md) for changed custom
-  reads or cross-resource invalidation; [UI automation](references/ui-automation.md)
-  when running browser tests.
+  reads or cross-resource invalidation.
 
 Application owners are `apps/api` and `apps/web`. Framework changes and
 production, external or destructive writes need explicit authority. Use current

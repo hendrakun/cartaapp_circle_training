@@ -25,9 +25,9 @@ For a scope with a full contract, read the
 [worksheet contract](../carta-module-development/references/module-execution-worksheet.md).
 Preserve existing useful records without forcing conversion.
 
-Inspect populated list, detail and edit results before auditing evidence tables.
-Use current preserved browser artifacts or a safe focused inspection; report
-when actual rendered output is unavailable. Check:
+Review list, detail and edit source plus current non-browser evidence before
+auditing evidence tables. Do not create, run or repair browser tests or require
+a manual journey. Report rendered behavior as unverified. Check:
 
 - Can the intended user find and complete the requested task?
 - Do fields show meaningful values, including relation names rather than IDs?
@@ -38,7 +38,7 @@ when actual rendered output is unavailable. Check:
 - Are standard actions used without unnecessary custom detail controls?
 - Is the development preview prepared, with migration/seed status and URL?
 
-A screenshot can prove display, not access enforcement or stored effects.
+Source review does not prove actual rendered behavior.
 
 ## Trace material boundaries
 
@@ -57,21 +57,19 @@ not justification for overriding the request or copying an unnecessary control.
 ## Evaluate evidence
 
 Read assertions, not only titles and counts. Apply
-the [saved browser-test requirement](../carta-module-development/references/verification-strategy.md#browser-journeys)
-for module UI delivery: inspect the spec and its run result, not only temporary
-preview scripts. Then apply
+the [non-browser boundary](../carta-module-development/references/verification-strategy.md#browser-journeys).
+Missing E2E is not a defect. Apply
 [test ownership](../carta-module-development/references/verification-strategy.md#test-ownership)
 before requesting more tests. Reuse framework behavior and sufficient module
 proof. Tests that replace a schema/control cannot prove that replaced boundary.
 
 For generated work, apply the
 [generated-evidence limits](../carta-module-development/references/verification-strategy.md#commands-and-environment).
-Inspect current source, not equality with a template. For selected browser tests,
-use [UI automation](../carta-module-development/references/ui-automation.md).
+Inspect current source, not equality with a template.
 Rerun only affected checks when evidence is stale, failed, missing or insufficient.
 
-Only the full process requires inventory/worksheet consistency and its browser
-report check. Run the UI contract checker when a contract exists or custom
+Only the full process requires inventory/worksheet consistency, using API/UNIT
+evidence without browser mappings or reports. Run the UI contract checker when a contract exists or custom
 composition needs that check; standard work needs no new JSON solely for review.
 Static checks cannot establish semantic acceptance or runtime freshness.
 

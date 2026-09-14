@@ -8,6 +8,11 @@ description: Design or revise a Carta module when business behavior, application
 Resolve the requested behavior without inventing business rules. This skill
 designs; it does not edit application source or grant new write authority.
 
+E2E is outside module delivery. Follow the
+[non-browser boundary](../carta-module-development/references/verification-strategy.md#browser-journeys)
+when defining acceptance. UI requirements remain product behavior, not browser
+test assignments or completion gates.
+
 ## Select the record
 
 Start with the [standard module base](../carta-module-development/references/standard-module.md),
@@ -66,7 +71,7 @@ Write the applicable contract sections with stable behavior and acceptance IDs.
 Use tables for standard CRUD actions and acceptance; reserve YAML for custom
 workflows. A routine resource needs no empty workflow sections.
 Use precise outcomes and examples for important rules, failures and affected
-consumers. Identify distinct UI journeys and conditional required inputs in the
+consumers. Identify UI actions and conditional required inputs in the
 module contract before planning checks. Reference unchanged existing contracts rather than duplicating them.
 Reserve interfaces and transaction boundaries for planning. The executor chooses
 routine code and test details.

@@ -31,7 +31,7 @@ Apply [discovery reuse](../carta-module-development/SKILL.md#discovery-reuse).
 Inspect the required owners and consumers, relevant layer contracts,
 and current package scripts/configuration. Record an existing exemplar for
 non-obvious patterns. Separate observed repository facts from proposed technical
-changes. Carta supplies Vitest, Playwright, type checking and linting; select
+changes. Module delivery uses non-browser Vitest, type checking and linting; select
 appropriate checks rather than asking the user to choose a testing stack.
 Resolve exact commands from this checkout and distinguish script inspection
 from a successful execution.
@@ -94,7 +94,8 @@ not a transcript or repeated copy of the design in each file.
 Use the [worksheet contract](../carta-module-development/references/module-execution-worksheet.md)
 for the dependency/status index and acceptance ownership. Map every acceptance
 ID to a primary plan and its required evidence surfaces there. Keep acceptance
-and journey test mappings only in the worksheet. Exact tests can remain `PENDING`
+test mappings only in the worksheet. Exclude E2E generation, execution and browser
+journey mappings, including on resume. Exact tests can remain `PENDING`
 until the executor returns them for the parent to merge. Use
 [verification strategy](../carta-module-development/references/verification-strategy.md)
 to select the smallest sufficient tests and broader checks justified by impact.

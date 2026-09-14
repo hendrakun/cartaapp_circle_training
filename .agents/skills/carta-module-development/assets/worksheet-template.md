@@ -32,7 +32,7 @@
 | Journey | Test case |
 |---|---|
 
-- Browser report: PENDING
+E2E is outside module delivery. Keep this legacy table empty.
 
 ## Acceptance
 

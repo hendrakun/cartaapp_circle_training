@@ -8,6 +8,11 @@ generator internals during module delivery. Preserve useful generated files.
 
 ## Complete module operation
 
+Module delivery must not emit browser files. Inspect the read-only preview
+before application. If it includes E2E and no supported exclusion exists, use
+normal source edits or the route-only operation. Do not modify the generator,
+invent a flag, or generate E2E and then delete it to satisfy this boundary.
+
 Use `kind: "bounded-module"` for a new one-table resource with a generated text
 UUID `id`, system permissions and any supported subset of List, Detail, Create,
 Update and Delete. It generates compatible standard actions beside custom work.
@@ -24,7 +29,7 @@ fields. Actions can share a permission code. Every used code must exist once in
 Relations, dependent input, child resources, scoped access, workflow,
 concurrency, existing-data migration, custom query, report and custom surfaces
 stay manual. Include independent standard actions when generation is useful. An unsupported
-explicit renderer makes its UI and browser proof manual. Unknown actions,
+explicit renderer makes its UI implementation manual. Unknown actions,
 extensions and manifest keys fail.
 
 ## Manifest
@@ -119,12 +124,9 @@ The executor performs authorized development setup under
 The generated API spec covers only selected standard actions. Each action
 proves success plus persistence. Create and update also prove denied access
 and invalid payload rejection. No copy, layout, or dialog assertions exist.
-The slim browser journey covers create, edit, and reload persistence for a
-full list/create/update module. It submits through the form chrome and asserts
-the saved value plus reload persistence. It never asserts one locale copy of
-the submit label. Modules without that full path need separately selected UI
-proof. The executor owns it unless the user explicitly reserves the check.
-Custom behavior needs direct proof.
+The generator can emit a browser journey for list/create/update. That output is
+outside module delivery; follow the exclusion above. Custom behavior needs
+focused non-browser proof, not a manually written browser replacement.
 
 Read [verification-strategy.md](verification-strategy.md) for evidence scope and
 acceptance. The root `verify:module` and `module:evidence` commands are

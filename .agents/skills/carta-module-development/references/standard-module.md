@@ -68,10 +68,10 @@ Continue through all requested workflows before reporting module completion.
 
 ## Verify and hand off
 
-Apply the [verification strategy](verification-strategy.md). Check populated
-list/detail/edit surfaces, requested access and persisted values. Use a compact
-browser path with meaningful module data, plus focused schema/API checks for
-business rules. Standard control tests remain at the framework owner.
+Apply the [verification strategy](verification-strategy.md). Review list/detail/edit
+source, including relation labels and field wiring. Use focused non-browser
+checks for access, persisted values and business rules. Do not create or run E2E
+or require a manual journey. Report actual UI behavior as unverified.
 
 Use `$verify-carta-module` for review against the original request and decisions.
 Keep check output and report failures honestly; documentation shape is not an
