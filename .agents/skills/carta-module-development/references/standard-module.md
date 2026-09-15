@@ -6,19 +6,33 @@ use a different structure when the requested task does not fit CRUD.
 
 ## One work record
 
-Use `plans/<feature>/work.md`, or update an existing suitable document. Keep it
-short enough to use during work. Tables or prose are both valid. Record:
+Use `plans/<feature>/design.md` for new work. Keep an existing suitable record,
+including `work.md`, on resume. Use these five sections in one document:
 
-- **Result:** resources, changed fields, actions, access and requirement sources.
-- **Rules:** module-specific restrictions, important defaults and unresolved decisions.
-- **Work:** affected owners, selected pattern, first usable result and remaining work.
-- **Preview:** development target and authority, migration/seed status and URL.
-- **Checks:** commands, results, relevant source state, review and material gaps.
+1. **Result and scope:** user result, included and excluded work, requirement
+   sources and later decisions.
+2. **Data and access:** records, fields, required values, important defaults,
+   relations, permissions and module-specific constraints.
+3. **Custom behavior:** for each action, state its trigger, inputs, conditions,
+   successful result, stored effects and failure behavior. State shared behavior
+   once. Include relevant loading, result and failure states for custom controls.
+4. **Acceptance and checks:** use a table of required outcome, check and expected
+   result. Select API, unit or live integration proof. Record unresolved decisions
+   and their affected behavior, and live-check authority, target, data and cost or
+   request limit. State that browser and E2E checks are excluded.
+5. **Progress and evidence:** status, implementation owners, selected pattern,
+   work order, next action, development setup and URL, check commands/results,
+   relevant source state, review and remaining gaps.
 
-No separate design, numbered plans, worksheet, obligation/journey IDs, UI JSON
-or recorder JSON is required on this path. Reuse existing useful artifacts
-without copying their content. Update at a usable result, decision, material
-failure or handoff, not after each command.
+Describe custom behavior sufficiently to implement and test it. Reference the
+existing pattern for standard CRUD; ordinary fields need no separate acceptance
+row. Separate user decisions from inferred defaults, and expected results from
+observed evidence. Design is ready when material behavior is settled and each
+custom outcome has a suitable check; name any blocked part explicitly.
+
+No separate implementation plan, worksheet, obligation/journey IDs, UI JSON or
+recorder JSON is required on this path. Update at a usable result, decision,
+material failure or handoff, not after each command.
 
 ## Resolve behavior
 
@@ -51,7 +65,7 @@ Use YAML for custom workflows, not CRUD. Put workflow controls on the detail
 page when they act on that record; let the requested interaction determine
 exceptions. Adding a workflow does not require new document types or a restart.
 
-Use a separate design or plan only when a material decision, consequential
+Use a full design contract or separate plan only when a material decision, consequential
 change or required traceability needs it. Define the affected scope and reference
 the existing base instead of repeating it. The full contract and worksheet are
 available for that scope; custom actions alone do not require them.
@@ -60,6 +74,8 @@ Use the standard API/resource/View path. Keep standard actions in their normal
 locations and add custom controls only for a named user need. A related feature
 can use one executor and one work record; layers are not separate deliverables.
 
+For an uncertain external integration, establish the first working path under
+[execution](execution.md#prepare-and-build) before completing dependent surfaces.
 The first UI checkpoint is a working page with its required schema, permissions,
 navigation and development setup, not an API skeleton. Establish a complete
 relation path before copying it to another resource. Report the URL and remaining

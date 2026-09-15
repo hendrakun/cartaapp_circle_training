@@ -15,18 +15,23 @@ transcript or an instruction to rediscover them. The active assignment contains
 one usable result and its prerequisites; remaining work stays in the work record.
 
 For UI delivery, include API, page, navigation, permissions and development setup
-in that first result. An API-only assignment cannot establish a UI checkpoint.
+in the assignment. An early API integration check can precede the UI checkpoint;
+keep the remaining UI work in the same assignment.
 Keep useful generated files within task scope instead of deleting and recreating
 them to enforce a layer boundary. Review the first page's source wiring and
 non-browser assertions before repeating the pattern. Assign no E2E work.
 
 Full-process work uses the [worksheet state rules](module-execution-worksheet.md#state-and-completion).
-Standard work uses the short record; no worksheet checker is needed. Keep work
+Standard work uses the single design record; no worksheet checker is needed. Keep work
 with an early interface dependency in one plan when a split would block useful
 progress or require a false completion state.
 
 ## Prepare and build
 
+Before implementation, check required configuration presence without exposing
+secrets, database baseline, test commands and setup authority together. Reuse
+current evidence. Finish this check with usable prerequisites or named blockers;
+continue independent work while missing authority is resolved.
 Resolve current package commands and reuse a current preflight. Select only
 needed capabilities with `pnpm module:preflight -- --needs <capabilities>`.
 Establish the intended development target and write authority before setup is
@@ -37,6 +42,12 @@ If existing tables conflict with pending migrations, stop affected writes and
 report the mismatch. Use a confirmed disposable target or an authorized
 reconciliation. Do not drop tables, remove applied migrations or change journal
 entries to make a module check pass.
+
+When the main function depends on an uncertain external integration, establish
+one working path through the application input, provider call and validated
+result before completing dependent surfaces. Use the existing application
+structure and the [external integration checks](verification-strategy.md#external-integrations).
+Record the result and remaining work. This checkpoint does not complete UI delivery.
 
 Before migration generation, check the affected entity import structure and
 existing data. Resolve connected-entity/audit references using the supported

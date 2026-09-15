@@ -22,8 +22,8 @@ document. Stop there for a design-only request; otherwise return to the requesti
 workflow. Custom actions alone do not require the full procedure below.
 
 Use the remaining sections where a consequential change or required traceability
-needs a full contract. State its scope in `plans/<feature>/design.md`; reference
-unaffected behavior from the existing work record.
+needs a full contract. State its scope in the design record; preserve unaffected
+behavior and reference it instead of copying it into a second record.
 The original request and later answers govern over examples.
 An inferred default cannot override explicit requirements or become user-confirmed
 merely because it appears in a design. Ask about material conflicts, not settled

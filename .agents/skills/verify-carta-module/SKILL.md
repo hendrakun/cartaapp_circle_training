@@ -72,6 +72,10 @@ Only the full process requires inventory/worksheet consistency, using API/UNIT
 evidence without browser mappings or reports. Run the UI contract checker when a contract exists or custom
 composition needs that check; standard work needs no new JSON solely for review.
 Static checks cannot establish semantic acceptance or runtime freshness.
+For external integrations, apply the shared
+[external integration checks](../carta-module-development/references/verification-strategy.md#external-integrations).
+Check what the evidence actually reaches; a mocked provider response cannot
+support a live-compatibility claim. Required missing proof prevents completion.
 
 ## Verdict and handoff
 

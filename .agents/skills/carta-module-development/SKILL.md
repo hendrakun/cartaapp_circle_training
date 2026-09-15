@@ -16,14 +16,14 @@ journey. Follow the [non-browser boundary](references/verification-strategy.md#b
 ## Build on standard behavior
 
 Start with the [standard module base](references/standard-module.md). It owns
-the short work record and how to add custom behavior to requested CRUD.
+the single design record and how to add custom behavior to requested CRUD.
 Read it before creating artifacts. A custom action does not switch the whole
 module to another process.
 
 Use `$carta-module-design` for unresolved behavior and `$carta-module-plan` for
 implementation planning. Use the full design/plan/[worksheet](references/module-execution-worksheet.md)
 process only where required traceability or a consequential change needs that
-record. State its scope; keep unaffected work in the existing short record.
+record. State its scope; keep unaffected work in the existing record.
 
 On resume, keep valid documents, decisions and evidence; do not convert their
 format for its own sake. An existing full worksheet can remain the record

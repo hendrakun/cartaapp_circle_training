@@ -15,8 +15,8 @@ new product scope, or implement source changes.
 Start with the [standard module base](../carta-module-development/references/standard-module.md),
 including custom workflows added to it.
 Add exact owners, work order, setup and suitable checks to the existing work
-record. The original request and decisions can be the approved contract; a
-separate design file is not required. Return that short plan without creating
+record. The original request and decisions can establish approval. Keep the
+plan in the standard design record without creating
 numbered plans, a worksheet or UI JSON. A plan-only request stops there.
 Use the remaining procedure only for a scoped full contract or an existing full
 plan. A custom action alone does not require it. Include workflow restrictions

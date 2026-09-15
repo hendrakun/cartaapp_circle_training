@@ -32,11 +32,39 @@ schema/API test only for a module-specific risk not covered by current evidence.
 | Workflow | Legal/illegal transitions and coupled stored effects or rollback. |
 | UI composition | Source review of fields, dependencies, relation labels, routes and standard actions. |
 | Migration | SQL review and relevant existing-data checks on an authorized isolated target. |
+| External integration | Current evidence for the actual provider contract, using a limited live check where needed. |
 
 Source review does not prove rendered behavior. Record that limit without
 starting browser work. Prepare the authorized development migration, seed and
 preview URL as soon as viable under [execution](execution.md#prepare-and-build).
 Do not wait for final test completion to make the preview available.
+
+## External integrations
+
+Before building dependent behavior, identify unverified request and response
+contracts. Use current evidence for the specified provider, model or version,
+input format and options, or run a limited live check through the application
+operation. A compatibility claim or a response invented for a mock does not
+verify the external contract.
+
+Resolve live-check authority early from the request and existing permissions.
+If authority is missing, ask for the specific check, data and cost or request
+limit while continuing independent work. Available credentials alone do not
+grant authority. Use authorized test data, bound time and usage, and stop when
+the required evidence is obtained or the agreed limit is reached. Report failures
+and the next useful check before further paid retries.
+
+Record the target, relevant request options and observed result without secrets
+or sensitive payloads. Where useful, preserve a response with sensitive data
+removed as a fixture for a stable regression test. Use local tests for malformed
+responses, timeouts and error handling; distinguish technical failure from a
+valid negative business result. A live connection check proves compatibility,
+not model accuracy. Check accuracy with representative cases when required by
+the requested outcome.
+
+Keep a required integration with missing evidence visibly unverified. It prevents
+completion: use REWORK for missing proof within authority, or BLOCKED when
+authority or the environment prevents the check.
 
 ## Test ownership
 
