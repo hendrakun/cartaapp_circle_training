@@ -6,23 +6,10 @@ use a different structure when the requested task does not fit CRUD.
 
 ## One work record
 
-Use `plans/<feature>/design.md` for new work. Keep an existing suitable record,
-including `work.md`, on resume. Use these five sections in one document:
-
-1. **Result and scope:** user result, included and excluded work, requirement
-   sources and later decisions.
-2. **Data and access:** records, fields, required values, important defaults,
-   relations, permissions and module-specific constraints.
-3. **Custom behavior:** for each action, state its trigger, inputs, conditions,
-   successful result, stored effects and failure behavior. State shared behavior
-   once. Include relevant loading, result and failure states for custom controls.
-4. **Acceptance and checks:** use a table of required outcome, check and expected
-   result. Select API, unit or live integration proof. Record unresolved decisions
-   and their affected behavior, and live-check authority, target, data and cost or
-   request limit. State that browser and E2E checks are excluded.
-5. **Progress and evidence:** status, implementation owners, selected pattern,
-   work order, next action, development setup and URL, check commands/results,
-   relevant source state, review and remaining gaps.
+Use `plans/<feature>/design.md`. Start from the
+[simplified design template](../assets/simple-design-template.md). Keep its five
+sections and replace the prompts with task facts. Use “None” for an inapplicable
+section; include only useful detail within each section.
 
 Describe custom behavior sufficiently to implement and test it. Reference the
 existing pattern for standard CRUD; ordinary fields need no separate acceptance

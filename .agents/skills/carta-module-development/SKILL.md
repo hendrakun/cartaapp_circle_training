@@ -25,9 +25,8 @@ implementation planning. Use the full design/plan/[worksheet](references/module-
 process only where required traceability or a consequential change needs that
 record. State its scope; keep unaffected work in the existing record.
 
-On resume, keep valid documents, decisions and evidence; do not convert their
-format for its own sake. An existing full worksheet can remain the record
-without a parallel short document. Explicit user-required processes still apply.
+On resume, reuse current decisions and evidence in the selected process.
+Explicit user-required processes still apply.
 
 A build request authorizes normal in-scope implementation and repairs, not new
 product decisions or unrestricted writes. Design-only and plan-only requests
