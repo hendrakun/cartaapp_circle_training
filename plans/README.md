@@ -522,12 +522,12 @@ stashed first (`stash@{0}`: forward-testing trash + seam proof WIP); the
 | Plan | Title | Priority | Effort | Depends on | Status |
 | --- | --- | --- | --- | --- | --- |
 | [026](026-form-write-schema-seam.md) | Check form write schemas against the Hono wire input in defineEntitySchema | P1 | M | — | DONE — 2026-09-15, dual-shape overloads (bare entity + direct), input-direction + phantom-required checks, 10 type-test cases, type-check + 8 spec tests + lint pass; parent review caught and fixed 4 subagent deviations (see plan) |
-| [027](027-migrate-web-schemas-to-seam.md) | Migrate hand-built web schemas onto defineEntitySchema and delete redundant aliases | P1 | S | 026 | PARTIAL — 2026-09-15, roles migrated + green (aliases deleted, 11/11 specs pass); document-types/validation-results STOPPED (exist only in stash, absent at HEAD — correct STOP, nothing restored); users BLOCKED on .passthrough() caveat (see plan "Remaining work" §1-3) |
+| [027](027-migrate-web-schemas-to-seam.md) | Migrate hand-built web schemas onto defineEntitySchema and delete redundant aliases | P1 | S | 026 | SUPERSEDED — 2026-09-15; keep the completed roles migration, but use 029 for all remaining current-tree work; absent document-types/validation-results modules remain absent |
 | [028](028-form-orphan-issue-backstop.md) | Make silent Form validation failures impossible (orphan-issue backstop) | P2 | S | 026 | DONE — 2026-09-15, `orphanValidationIssues` in select.ts + dev-throw/prod-toast+alert in Form.vue, 3 new form.spec tests, full loom suite 57 files/450 tests pass, type-check + lint clean; parent verified no other validateDraftAsync callers affected, prod branch review-only (jsdom runs dev branch) |
 
-Execution order: 026 → 027, then 028 only with Loom authority. 026 is the
-gate (type-check rejects phantom required keys); 027 removes the drift
-points; 028 is defense in depth (runtime visibility net, not the gate).
+Historical execution order: 026 → partial 027, then 028 with Loom authority.
+Plan 029 supersedes the remaining 027 work. Plan 028 is defense in depth
+(runtime visibility net, not the compile-time gate).
 
 ### Findings considered and rejected
 
@@ -538,3 +538,56 @@ points; 028 is defense in depth (runtime visibility net, not the gate).
   type-test, not per module.
 - Docs/"remember to omit" comments: rejected; comments do not fail builds.
 - API entity changes: rejected; entities already own the correct schemas.
+
+## Unified app resource schema seam — 2026-09-15
+
+Planned with `$improve` against commit `59ba2d1` on 2026-09-15. Scope: make
+one Carta web schema seam support Hono and custom resource contracts, migrate
+all current app and generator callers, then remove Loom's no-op schema builder.
+Planning changed only files under `plans/`. The untracked proof source remains
+unchanged for the implementer to fold into permanent tests.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+| --- | --- | --- | --- | --- | --- |
+| [029](029-centralize-app-resource-schema-seam.md) | Make one app schema seam support Hono and custom resource contracts | P1 | L | — | TODO |
+| [030](030-remove-loom-schema-builder.md) | Remove Loom's schema builder and keep generic resource values | P1 | M | 029 | TODO — execution needs explicit Loom framework-package authority |
+
+Execution order: 029 → 030. Plan 029 leaves Loom's old builder only for Loom's
+own callers, while the app boundary test prevents web code from using it. Plan
+030 removes the builder after the app migration is complete.
+
+### Proof status
+
+The prototype proves the core overload and runtime design: Hono CRUD and
+read-only routes, exact record types, required and forbidden write slots,
+custom runtime and type-only contracts, parsed-output write compatibility, and
+users `{ id }` input without `.passthrough()`. Web type-check and focused lint
+passed. The focused test passed with `CHOKIDAR_USEPOLLING=true`; the first
+normal run stopped before collection with `EMFILE: too many open files, watch`.
+Plan 029 moves this proof into permanent tests and adds inferred-custom,
+query, identity, and validator coverage before migration is accepted. The full
+repository migration is planned, not yet implemented or proven.
+
+### Findings
+
+| Finding | Category | Impact | Effort | Risk | Confidence | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| Web code can bypass the Hono contract through Loom's identity-only builder | correctness / architecture | HIGH | L | MED | HIGH | `apps/web/src/framework/hono/entity.ts`; current Loom imports in web schemas, fixtures, and tests |
+| The current Hono write check compares raw Zod input, but Form submits parsed output | correctness | HIGH | M | MED | `apps/web/src/framework/hono/entity.ts:40-56`; `packages/loom/src/components/core/Form.vue:379-381`; passing prototype assertions |
+| App callers, generator output, agent skills, and architecture docs teach two schema paths | DX / tech debt | HIGH | M | LOW | `scripts/scaffold-bounded-module.mjs`; both named skill files; web architecture document |
+| Loom's public `defineSchema` is a no-op after the app seam owns adaptation | tech debt / API | MED | M | MED | `packages/loom/src/resources/defineSchema.ts`; `defineResource` already accepts `WebResourceSchemaBoundary` |
+
+### Approaches considered and rejected
+
+- Put Hono support in Loom: rejected. Loom must provide generic resource
+  contracts. Carta web owns the transport-provider assumption.
+- Keep `defineEntitySchema` or the Loom builder as an alias: rejected. Either
+  name leaves a second path that can bypass the current contract.
+- Add a separate record-only overload: rejected. Conditional Hono members and
+  the explicit custom-contract overload cover read-only resources with the same
+  implementation.
+- Restore absent `document-types` or `validation-results` files: rejected. They
+  are not part of the current tree and this migration must not invent them.
+
+This is a focused migration audit, not a full security, performance, database,
+or product-behavior audit. Those areas are outside Plans 029 and 030.

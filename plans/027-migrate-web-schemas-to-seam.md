@@ -1,5 +1,10 @@
 # Plan 027: Migrate hand-built web schemas onto defineEntitySchema and delete redundant aliases
 
+> **SUPERSEDED 2026-09-15**: Do not execute the remaining work in this plan.
+> Keep the completed roles migration. Use Plan 029 for the current app schema
+> seam and web migration, then Plan 030 to remove Loom's old builder. The
+> execution record below remains as historical evidence.
+
 > **STATUS NOTE (parent, post-execution 2026-09-15): the plan's core premise
 > was STALE. `document-types` and `validation-results` modules exist ONLY in
 > the working-tree stash (`stash@{0}^3`, untracked), NOT at HEAD (`783ac5d`).
