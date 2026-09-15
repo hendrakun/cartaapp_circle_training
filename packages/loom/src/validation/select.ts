@@ -94,15 +94,51 @@ export interface AsyncDraftValidationOptions<TData extends object> extends Draft
   field?: string
   signal: AbortSignal
   settle?: () => void
+  /**
+   * Field keys with a visible input on the calling surface. Form passes its
+   * visible keys so a failed schema issue with no visible input can surface
+   * instead of blocking submit in silence. Omitted callers get no orphan
+   * detection. Required for form surfaces.
+   */
+  visibleKeys?: readonly string[]
 }
 
-export type AsyncDraftValidationResult<TData> = ValidationResult<TData> & { operationalIssues?: ValidationIssue[] }
+export type AsyncDraftValidationResult<TData> = ValidationResult<TData> & { operationalIssues?: ValidationIssue[]; orphanIssues?: ValidationIssue[] }
+
+/**
+ * A failed validation issue whose first path segment names no visible input.
+ * Such an issue can never render on a field, so callers surface it as a
+ * form-level failure instead of leaving submit blocked in silence.
+ */
+export function orphanValidationIssues(
+  issues: readonly ValidationIssue[],
+  visibleKeys: readonly string[],
+): ValidationIssue[] {
+  const visible = new Set(visibleKeys)
+  return issues.filter((issue) => issue.path.length > 0 && !visible.has(String(issue.path[0])))
+}
+
+export function orphanIssueMessage(issue: ValidationIssue): string {
+  return `${issue.path.join('.')}: ${issue.message}`
+}
 
 /** Zod stays sync; custom rules make orchestration async after parsed data exists. */
 export async function validateDraftAsync<TData extends object>(options: AsyncDraftValidationOptions<TData>): Promise<AsyncDraftValidationResult<TData>> {
   options.settle?.()
   const schemaResult = validateDraft(options)
-  if (!schemaResult.success || options.signal.aborted) return schemaResult
+  if (!schemaResult.success) {
+    if (options.visibleKeys === undefined || options.signal.aborted) return schemaResult
+    const orphans = orphanValidationIssues(schemaResult.issues, options.visibleKeys)
+    if (orphans.length === 0) return schemaResult
+    if (process.env.NODE_ENV !== 'production') {
+      const keys = orphans.map((issue) => orphanIssueMessage(issue)).join('; ')
+      throw new Error(
+        `[loom] Form validation failed for fields with no visible input: ${keys}. Add the field, supply the value with initialData/load, or remove the key from the form schema.`,
+      )
+    }
+    return { ...schemaResult, orphanIssues: orphans }
+  }
+  if (options.signal.aborted) return schemaResult
   const matching = validatorsForTrigger(options.validators ?? [], options.trigger)
   const results = await Promise.all(matching.map(async (validator) => {
     try {

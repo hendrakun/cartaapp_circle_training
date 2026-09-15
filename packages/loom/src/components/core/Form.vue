@@ -15,7 +15,8 @@ import { computed, getCurrentInstance, nextTick, onUnmounted, provide, reactive,
 import { toast } from 'vue-sonner'
 import type { FormProps, FormValidationTrigger, RecordLoadContext, SubmitError, ValidationIssue } from '../../contracts'
 import { createBehaviorRuntime, resolveFields, useFrameworkFieldDefaults } from '../../fields'
-import { inferFieldLayers, validateDraftAsync, validatorDefinition, validatorsForTrigger } from '../../validation'
+import { inferFieldLayers } from '../../validation'
+import { orphanIssueMessage, orphanValidationIssues, validateDraftAsync, validatorDefinition, validatorsForTrigger } from '../../validation/select'
 import { useLoader } from '../../query'
 import { useFrameworkAdapters } from '../../adapters/projectAdapters'
 import { useRendererRegistry } from '../../renderers/registry'
@@ -173,8 +174,10 @@ behavior.connect((key, value) => {
 
 const hiddenKeys = computed(() => fields.value.map((field) => field.key).filter((key) => !behavior.visibleKeys.value.includes(key)))
 const visibleFields = computed(() => fields.value.filter((field) => behavior.state(field.key).value.visible))
+const visibleKeys = computed(() => visibleFields.value.map((field) => field.key))
 const dirty = computed(() => (isModelBound ? !shallowEqual(draft, modelBaseline.value) : edited.size > 0))
 const displayedIssues = computed(() => issues.value.filter((issue) => issue.path.length === 0 || submitAttempted.value || touched[String(issue.path[0])]))
+const orphanIssues = computed(() => orphanValidationIssues(issues.value, visibleKeys.value))
 function issueFor(key: string) {
   return displayedIssues.value.find((issue) => issue.path[0] === key)?.message
 }
@@ -298,6 +301,7 @@ async function validate(trigger: FormValidationTrigger = 'submit', field?: strin
       draft: payload,
       validatedDraft,
       hiddenKeys: hiddenKeys.value,
+      visibleKeys: trigger === 'submit' ? visibleKeys.value : undefined,
       validators: props.validators,
       trigger,
       initial: initial.value,
@@ -354,6 +358,11 @@ async function submit() {
 
   const validation = await validate('submit')
   if (!validation.success) {
+    const orphans = orphanValidationIssues(validation.issues, visibleKeys.value)
+    if (orphans.length > 0 && !isDevelopment) {
+      const message = `Validation failed for fields with no visible input: ${orphans.map((issue) => orphanIssueMessage(issue)).join('; ')}`
+      toast.error(message)
+    }
     for (const issue of displayedIssues.value.filter((entry) => entry.path.length === 0)) toast.error(issue.message)
     await focusFirstInvalid()
     return
@@ -404,6 +413,7 @@ defineExpose({ draft, reset, submit, refresh: loaded.refresh, dirty, submitting,
     </template>
 
     <template v-else>
+      <p v-if="orphanIssues.length > 0" id="form-orphan-errors" role="alert" class="rounded-lg bg-error-container px-4 py-3 text-sm leading-5 text-on-error-container">Validation failed for fields with no visible input: {{ orphanIssues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join('; ') }}</p>
       <div class="grid grid-cols-12 gap-x-4 gap-y-5">
       <div
         v-for="field in visibleFields"

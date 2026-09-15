@@ -506,3 +506,35 @@ do not claim a time reduction before the controlled runs are complete.
   first version guess business behavior. Keep those parts in the module plan.
 - Generated source-shape tests repeat renderer logic. Generate direct API and
   browser behavior proof when the standard path can support it.
+
+## Form write-schema seam — 2026-09-15
+
+Planned with the improve skill against commit `783ac5d` on 2026-09-15.
+Scope: web form schemas that hand-build create/update slots around the Hono
+seam. A form used a read/enriched select shape as its base and guessed the
+server-owned omit list; type-check, lint, and the API spec passed, and submit
+failed silently (issues for fields with no visible input render nowhere:
+`packages/loom/src/components/core/Form.vue:177,357`). Plans write new
+implementation; no source was changed during planning. Working tree was
+stashed first (`stash@{0}`: forward-testing trash + seam proof WIP); the
+`document-types` module files it needs live in the stash untracked commit.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+| --- | --- | --- | --- | --- | --- |
+| [026](026-form-write-schema-seam.md) | Check form write schemas against the Hono wire input in defineEntitySchema | P1 | M | — | DONE — 2026-09-15, dual-shape overloads (bare entity + direct), input-direction + phantom-required checks, 10 type-test cases, type-check + 8 spec tests + lint pass; parent review caught and fixed 4 subagent deviations (see plan) |
+| [027](027-migrate-web-schemas-to-seam.md) | Migrate hand-built web schemas onto defineEntitySchema and delete redundant aliases | P1 | S | 026 | PARTIAL — 2026-09-15, roles migrated + green (aliases deleted, 11/11 specs pass); document-types/validation-results STOPPED (exist only in stash, absent at HEAD — correct STOP, nothing restored); users BLOCKED on .passthrough() caveat (see plan "Remaining work" §1-3) |
+| [028](028-form-orphan-issue-backstop.md) | Make silent Form validation failures impossible (orphan-issue backstop) | P2 | S | 026 | DONE — 2026-09-15, `orphanValidationIssues` in select.ts + dev-throw/prod-toast+alert in Form.vue, 3 new form.spec tests, full loom suite 57 files/450 tests pass, type-check + lint clean; parent verified no other validateDraftAsync callers affected, prod branch review-only (jsdom runs dev branch) |
+
+Execution order: 026 → 027, then 028 only with Loom authority. 026 is the
+gate (type-check rejects phantom required keys); 027 removes the drift
+points; 028 is defense in depth (runtime visibility net, not the gate).
+
+### Findings considered and rejected
+
+- Runtime-only Form assert as the primary fix: rejected; the Form submit path
+  runs outside all delivery gates (E2E excluded), so it would not be seen
+  during development. Kept as plan 028 backstop only.
+- Per-module submit specs: rejected; schema shape is proved once at the seam
+  type-test, not per module.
+- Docs/"remember to omit" comments: rejected; comments do not fail builds.
+- API entity changes: rejected; entities already own the correct schemas.
