@@ -269,15 +269,20 @@ Read [packages/sprindle/README.md](packages/sprindle/README.md) for the framewor
 
 Loom provides the shared contracts and components behind common information-system screens such as tables, detail pages, and forms.
 
-A typical resource starts with a schema:
+A Carta resource starts with the app schema seam. It can use a standard Hono
+route contract or an explicit custom resource contract. Loom receives the
+generic schema value and does not know the route source. See the
+[web application architecture](docs/architecture/web-application-architecture.md)
+for details.
 
 ```ts
-const schema = defineSchema({
+import { defineSchema } from '@/framework/schema'
+
+const schema = defineSchema(rpc.roles, {
   identity: 'id',
-  record: { schema: recordSchema },
-  query: { schema: querySchema },
-  create: { schema: createSchema },
-  update: { schema: updateSchema },
+  record: role.schemas.select,
+  create: role.schemas.create,
+  update: role.schemas.update,
 })
 ```
 

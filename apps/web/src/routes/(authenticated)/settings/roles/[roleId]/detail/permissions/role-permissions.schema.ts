@@ -1,5 +1,5 @@
-import { defineSchema } from '@southneuhof/loom'
 import type { WebResourceSchema } from '@southneuhof/loom'
+import { defineSchema } from '@/framework/schema'
 
 export type RolePermission = {
   id: string

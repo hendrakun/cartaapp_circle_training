@@ -1,9 +1,9 @@
-import { defineFields, defineResource, defineSchema } from '../../index'
+import { defineFields, defineResource } from '../../index'
 import type { CollectionResult, WebResourceSchema } from '../index'
 
 type Role = { id: string; name: string }
 type Schema = WebResourceSchema<Role, Record<string, never>, Role, Role, string>
-const schema = defineSchema<Schema>({ identity: 'id' })
+const schema: Schema = { identity: 'id' }
 const fields = defineFields(schema, { name: { label: 'Name' } })
 const roles = defineResource(schema, {
   key: 'roles',

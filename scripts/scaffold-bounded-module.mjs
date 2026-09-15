@@ -528,21 +528,14 @@ export type ${config.symbol} = z.output<typeof ${entity}.schemas.select>
 export type ${config.symbol}Create = z.input<typeof ${entity}.schemas.create>
 export type ${config.symbol}Update = z.input<typeof ${entity}.schemas.update>
 `
-  if (config.identity.key !== 'id') {
-    return `import { defineSchema, fromZod } from '@southneuhof/loom'
-import type { AppResourceContract } from '@/framework/hono'
+  return `import { defineSchema } from '@/framework/schema'
 ${head}
-export const ${plural}Schema = defineSchema<AppResourceContract<typeof rpc['${config.slug}']>>({
+export const ${plural}Schema = defineSchema(rpc['${config.slug}'], {
   identity: ${literal(config.identity.key)},
-  record: { schema: fromZod(${entity}.schemas.select) },
-  create: { schema: fromZod(${entity}.schemas.create) },
-  update: { schema: fromZod(${entity}.schemas.update) },
+  record: ${entity}.schemas.select,
+  create: ${entity}.schemas.create,
+  update: ${entity}.schemas.update,
 })
-`
-  }
-  return `import { defineEntitySchema } from '@/framework/hono'
-${head}
-export const ${plural}Schema = defineEntitySchema(rpc['${config.slug}'], ${entity})
 `
 }
 

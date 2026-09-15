@@ -7,7 +7,6 @@ import { resolveFields } from '../../fields/resolve'
 import { defineFields } from '../../fields/defineFields'
 import { createInputPropsRegistry } from '../../renderers/inputProps'
 import { defineResource } from '../defineResource'
-import { defineSchema } from '../defineSchema'
 import { resourceActionForRoute, resetResourceActionRegistry } from '../routeAccess'
 import { registerResourceRuntime, resetResourceRuntimeForTests } from '../runtime'
 
@@ -15,7 +14,7 @@ type Row = { id: string; name: string }
 type Draft = { name: string }
 type Schema = WebResourceSchema<Row, Record<string, never>, Draft, Draft, string>
 
-const schema = defineSchema<Schema>({ identity: 'id' })
+const schema: Schema = { identity: 'id' }
 const fields = defineFields(schema, {
   name: { label: 'Name', table: { sortable: true }, form: { renderer: 'text' } },
 })
@@ -24,7 +23,7 @@ type AssetRecord = { id: string; imgThumbnail: string | null }
 type AssetDraft = { imgThumbnail?: string | null }
 type AssetSchema = WebResourceSchema<AssetRecord, Record<string, never>, AssetDraft, AssetDraft, string>
 
-const assetSchema = defineSchema<AssetSchema>({ identity: 'id' })
+const assetSchema: AssetSchema = { identity: 'id' }
 const assetFields = defineFields(assetSchema, {
   imgThumbnail: { label: 'Image', form: { renderer: 'image' } },
 })
@@ -33,7 +32,7 @@ type DefaultRecord = { id: string; name: string; active: boolean }
 type DefaultDraft = { name: string; active: boolean }
 type DefaultSchema = WebResourceSchema<DefaultRecord, Record<string, never>, DefaultDraft, DefaultDraft, string>
 
-const defaultSchema = defineSchema<DefaultSchema>({ identity: 'id' })
+const defaultSchema: DefaultSchema = { identity: 'id' }
 const defaultFields = defineFields(defaultSchema, {
   name: { label: 'Name' },
   active: { label: 'Resource active', form: { renderer: 'text' } },

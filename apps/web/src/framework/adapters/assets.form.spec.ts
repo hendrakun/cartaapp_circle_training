@@ -2,10 +2,11 @@ import { describe, expect, it, vi } from 'vitest'
 import { createApp, defineComponent, h, nextTick } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { z } from 'zod/v4'
-import { defineFields, defineResource, defineSchema, Form, FrameworkPlugin, createFrameworkQueryClient, fromZod } from '@southneuhof/loom'
+import { defineFields, defineResource, Form, FrameworkPlugin, createFrameworkQueryClient } from '@southneuhof/loom'
 import { storedAssetInput, storedAssetSchema } from '@southneuhof/api/schema'
 import { assetAdapter } from './assets'
 import { appInputProps } from '../inputs/registry'
+import { defineSchema } from '../schema'
 
 const { uploadFile } = vi.hoisted(() => ({ uploadFile: vi.fn() }))
 vi.mock('./storage', () => ({ uploadFile }))
@@ -42,9 +43,9 @@ const patchSchema = z.object({
 
 const formSchema = defineSchema({
   identity: 'id',
-  record: { schema: fromZod(readSchema) },
-  create: { schema: fromZod(readSchema) },
-  update: { schema: fromZod(readSchema) },
+  record: readSchema,
+  create: readSchema,
+  update: readSchema,
 })
 
 const assetFields = defineFields(formSchema, {

@@ -26,6 +26,7 @@ const removedExports = [
   'defaultCRUDListOnExport',
   'defaultCRUDDetailOnExport',
   ['Resource', 'Capabilities'].join(''),
+  ['define', 'Schema'].join(''),
   ['createHono', 'ResourceOperations'].join(''),
   'FrameworkDefaultsInput',
   'FrameworkRuntime',
@@ -108,6 +109,7 @@ describe('public API surface', () => {
     expect(existsSync(resolve(process.cwd(), 'src/hono'))).toBe(false)
     expect(packageJson).not.toContain('"./hono"')
     expect(packageJson).not.toContain('"hono"')
-    expect(readFileSync(resolve(process.cwd(), 'src/index.ts'), 'utf8')).not.toMatch(/from ['"]hono|export .*hono/i)
+    const name = ['ho', 'no'].join('')
+    expect(readFileSync(resolve(process.cwd(), 'src/index.ts'), 'utf8')).not.toMatch(new RegExp(`from ['"]${name}|export .*${name}`, 'i'))
   })
 })

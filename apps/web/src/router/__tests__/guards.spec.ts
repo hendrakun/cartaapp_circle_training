@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { defineResource, defineSchema, resetResourceActionRegistry } from '@southneuhof/loom'
+import { defineResource, resetResourceActionRegistry } from '@southneuhof/loom'
+import type { WebResourceSchema } from '@southneuhof/loom'
 import { createMemoryHistory, createRouter } from 'vue-router'
+import { defineSchema } from '@/framework/schema'
 
 const authState = { identity: null as null | { userId: string } }
 const loadIdentitySpy = vi.hoisted(() => vi.fn())
@@ -20,6 +22,7 @@ vi.mock('../navigation', () => ({
 import { createAuthGuard, createPermissionGuard } from '../guards'
 
 const next = (() => {}) as any
+const schema = defineSchema<WebResourceSchema<{ id: string }, Record<string, never>, Record<string, never>, Record<string, never>, string>>({ identity: 'id' })
 
 afterEach(() => resetResourceActionRegistry())
 
@@ -131,7 +134,7 @@ describe('permission guard', () => {
   })
 
   it('checks a registered project create action through the access adapter', () => {
-    defineResource(defineSchema({ identity: 'id' }), {
+    defineResource(schema, {
       key: 'project-create-route',
       actions: {
         create: {
@@ -146,11 +149,11 @@ describe('permission guard', () => {
   })
 
   it('checks a registered project update action through the access adapter', () => {
-    defineResource(defineSchema({ identity: 'id' }), {
+    defineResource(schema, {
       key: 'project-update-route',
       actions: {
         update: {
-          run: async (id, input) => ({ id, input }),
+          run: async (id, input) => ({ id: String(id), input }),
           permission: 'update-quality-inspection',
           route: { name: 'project-update-route', params: (id) => ({ id: String(id) }) },
         },
@@ -161,7 +164,7 @@ describe('permission guard', () => {
   })
 
   it('still rejects denied browser access for a registered system create action', () => {
-    defineResource(defineSchema({ identity: 'id' }), {
+    defineResource(schema, {
       key: 'system-create-route',
       actions: {
         create: {
@@ -184,7 +187,7 @@ describe('permission guard', () => {
           path: '/detail/:id',
           name: 'lazy-detail',
           component: async () => {
-            defineResource(defineSchema({ identity: 'id' }), {
+            defineResource(schema, {
               key: 'lazy-roles',
               actions: {
                 detail: {

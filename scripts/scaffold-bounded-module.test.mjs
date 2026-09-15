@@ -140,8 +140,13 @@ test('creates explicit source files and stable absolute output', () => {
   assert.match(seed, /label: sql`excluded\.label`/)
 
   const schema = readFileSync(result.generated.find((path) => path.endsWith('.schema.ts')), 'utf8')
-  assert.match(schema, /import \{ defineEntitySchema \} from '@\/framework\/hono'/)
-  assert.match(schema, /export const testCatalogsSchema = defineEntitySchema\(rpc\['test-catalog'\], testCatalog\)/)
+  assert.match(schema, /import \{ defineSchema \} from '@\/framework\/schema'/)
+  assert.match(schema, /export const testCatalogsSchema = defineSchema\(rpc\['test-catalog'\], \{/)
+  assert.match(schema, /identity: 'id'/)
+  assert.match(schema, /record: testCatalog\.schemas\.select/)
+  assert.match(schema, /create: testCatalog\.schemas\.create/)
+  assert.match(schema, /update: testCatalog\.schemas\.update/)
+  assert.doesNotMatch(schema, new RegExp(['define', 'EntitySchema'].join('') + '|fromZod|@southneuhof/loom.*defineSchema'))
 })
 
 test('validates selected actions with derived identity, labels, and technical reads', () => {

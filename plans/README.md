@@ -549,8 +549,8 @@ unchanged for the implementer to fold into permanent tests.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 | --- | --- | --- | --- | --- | --- |
-| [029](029-centralize-app-resource-schema-seam.md) | Make one app schema seam support Hono and custom resource contracts | P1 | L | — | TODO |
-| [030](030-remove-loom-schema-builder.md) | Remove Loom's schema builder and keep generic resource values | P1 | M | 029 | TODO — execution needs explicit Loom framework-package authority |
+| [029](029-centralize-app-resource-schema-seam.md) | Make one app schema seam support Hono and custom resource contracts | P1 | L | — | COMPLETE — 2026-09-15; reviewed and checked |
+| [030](030-remove-loom-schema-builder.md) | Remove Loom's schema builder and keep generic resource values | P1 | M | 029 | COMPLETE — 2026-09-15; reviewed and checked |
 
 Execution order: 029 → 030. Plan 029 leaves Loom's old builder only for Loom's
 own callers, while the app boundary test prevents web code from using it. Plan

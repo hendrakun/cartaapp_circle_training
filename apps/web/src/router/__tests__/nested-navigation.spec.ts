@@ -9,7 +9,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   createFrameworkQueryClient,
   defineResource,
-  defineSchema,
   registerResourceRuntime,
   resetResourceActionRegistry,
   resetResourceRuntimeForTests,
@@ -19,6 +18,7 @@ import {
 import type { WebResourceSchema } from '@southneuhof/loom'
 import NavigationHeader from '@southneuhof/loom/components/views/NavigationHeader.vue'
 import AppRouterView from '@/components/routing/AppRouterView.vue'
+import { defineSchema } from '@/framework/schema'
 import { applyFileRouteConventions } from '../file-routing/layout-groups'
 import { staticRouteName } from '../file-routing/names'
 import { createPermissionGuard } from '../guards'

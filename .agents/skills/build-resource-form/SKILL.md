@@ -15,9 +15,11 @@ page composition and `docs/ui/forms.md` for an unresolved app form default.
 
 ## Define the value contract
 
-Bind standard API schemas with `defineSchema` and `fromZod(schema)`. Infer parsed
-types. For non-asset fields, add a local form transform only when the control
-and API shapes differ.
+Bind standard resources with app `defineSchema` from `@/framework/schema`.
+Pass raw Zod schemas; the app seam calls `fromZod` and infers parsed types.
+A Hono route or an explicit custom contract supplies the expected types.
+For non-asset fields, add a local form transform only when the control and API
+shapes differ.
 Keep custom action schemas separate from standard CRUD schemas.
 
 For file/image fields in standard or custom actions, read the

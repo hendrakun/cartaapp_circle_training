@@ -1,17 +1,17 @@
-import { defineFields, defineResource, defineSchema } from '../../index'
+import { defineFields, defineResource } from '../../index'
 import type { CollectionResult, ValidationResult, WebResourceCreateOf, WebResourceRecordOf, WebResourceUpdateOf } from '../../contracts'
 
 type Row = { id: string; name: string; status: string }
 type Draft = { name: string; password: string }
 type Update = { name?: string; active: boolean }
 type Selection = { id: string; name: string }
-const schema = defineSchema({
-  identity: 'id',
+const schema = {
+  identity: 'id' as const,
   record: { schema: { validate: (value: unknown): ValidationResult<Row> => ({ success: true, data: value as Row }) } },
   query: { schema: { validate: (value: unknown): ValidationResult<Record<string, never>> => ({ success: true, data: value as Record<string, never> }) } },
   create: { schema: { validate: (value: unknown): ValidationResult<Draft> => ({ success: true, data: value as Draft }) } },
   update: { schema: { validate: (value: unknown): ValidationResult<Update> => ({ success: true, data: value as Update }) } },
-})
+}
 
 const recordShape: WebResourceRecordOf<typeof schema> = { id: '1', name: 'One', status: 'new' }
 const createShape: WebResourceCreateOf<typeof schema> = { name: 'One', password: 'secret' }
@@ -81,12 +81,12 @@ const computedWithoutFormExclusion = defineFields(schema, {
 void computedWithoutFormExclusion
 
 type AssetValue = { kind: 'file'; id: string; url: string; name: string; size?: number; mimeType?: string; updatedAt?: string; metadata?: Record<string, unknown> }
-const builtInSchema = defineSchema({
-  identity: 'id',
+const builtInSchema = {
+  identity: 'id' as const,
   record: { schema: { validate: (value: unknown): ValidationResult<{ id: string; amount: number; image: AssetValue; images: AssetValue[]; document: AssetValue; documents: AssetValue[]; lookupValues: Selection[] }> => ({ success: true, data: value as never }) } },
   create: { schema: { validate: (value: unknown): ValidationResult<{ amount: number; image: AssetValue; images: AssetValue[]; document: AssetValue; documents: AssetValue[]; lookupValues: Selection[] }> => ({ success: true, data: value as never }) } },
   update: { schema: { validate: (value: unknown): ValidationResult<{ amount: number; image: AssetValue; images: AssetValue[]; document: AssetValue; documents: AssetValue[]; lookupValues: Selection[] }> => ({ success: true, data: value as never }) } },
-})
+}
 const builtInFields = defineFields(builtInSchema, {
   amount: {
     form: {

@@ -55,37 +55,45 @@ owns transport adapters, response normalization, and service functions.
 
 ## Unified schema
 
-The framework exposes one schema builder: `defineSchema`. A schema can use
-runtime schemas, typed contract parts, or both.
+Loom owns generic resource contracts and `defineResource`. Carta web owns the
+app schema builder at `@/framework/schema`. Hono types stay in Carta web.
+The builder accepts raw Zod schemas and converts them through Loom's `fromZod`
+bridge.
 
 ```ts
-export const usersSchema = defineSchema<AppResourceContract<typeof rpc.users>>({
+import { defineSchema } from '@/framework/schema'
+
+export const usersSchema = defineSchema(rpc.users, {
   identity: 'id',
-  record: { schema: userRecordSchema },
-  query: { schema: userQuerySchema },
-  create: { schema: createUserSchema, validators: createValidators },
-  update: { schema: updateUserSchema, validators: updateValidators },
+  record: user.schemas.select,
+  create: createUserFormSchema,
+  update: user.schemas.update,
+  validators: { create: createValidators, update: updateValidators },
 })
 ```
 
-For services or plain fetch functions, the schema can infer its types from
-runtime schema values:
+The route requires a record schema. It requires create and update schemas only
+when those route operations exist. A supplied query schema must match the route
+query type. The create and update checks use parsed Zod output, which is the
+value sent by a form. Required raw form keys must still be wire keys.
+
+For a resource without a standard Hono route, use an explicit Loom contract:
 
 ```ts
-export const usersSchema = defineSchema({
+type AuditLogContract = WebResourceSchema<AuditLog, AuditLogQuery, AuditLogCreate, AuditLogUpdate, string>
+
+export const auditLogsSchema = defineSchema<AuditLogContract>({
   identity: 'id',
-  record: { schema: userRecordSchema },
-  query: { schema: userQuerySchema },
-  create: { schema: createUserSchema },
-  update: { schema: updateUserSchema },
+  record: auditLogRecordSchema,
+  query: auditLogQuerySchema,
+  create: auditLogCreateSchema,
+  update: auditLogUpdateSchema,
 })
 ```
 
-For Zod values, use `fromZod(schema)`. The bridge infers the parsed value from
-the schema, including transform output. Do not pass a caller-supplied output
-type. If a form control has a different raw shape, keep that input transform in
-the local form schema. A raw form type is optional and local to a function that
-actually consumes it.
+Local runtime schemas can also infer a custom contract. If a form control has a
+different raw shape, keep its transform in the local form schema. A raw form
+type is optional and local to a function that consumes it.
 
 The schema owns record, query, create, and update validation. It can also own
 transforms and synchronous or asynchronous standard validators. Custom action

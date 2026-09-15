@@ -6,7 +6,7 @@ import type { FrameworkPluginOptions } from '../../../adapters/plugin'
 import type { WebResourceSchema } from '../../../contracts'
 import { defineFields } from '../../../fields'
 import { createFrameworkQueryClient } from '../../../query'
-import { defineResource, defineSchema, resetResourceRuntimeForTests } from '../../../resources'
+import { defineResource, resetResourceRuntimeForTests } from '../../../resources'
 import { createInputPropsRegistry } from '../../../renderers/inputProps'
 import DetailView from '../DetailView.vue'
 import FormView from '../FormView.vue'
@@ -16,7 +16,7 @@ type RecordRow = { id: number; name: string }
 type Draft = { name: string }
 type Schema = WebResourceSchema<RecordRow, Record<string, never>, Draft, Draft, number>
 
-const schema = defineSchema<Schema>({ identity: 'id' })
+const schema: Schema = { identity: 'id' }
 const fields = defineFields(schema, { name: { label: 'Name', form: { renderer: 'text' } } })
 
 afterEach(() => resetResourceRuntimeForTests())
