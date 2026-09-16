@@ -25,13 +25,14 @@ implementation planning. Use the full design/plan/[worksheet](references/module-
 process only where required traceability or a consequential change needs that
 record. State its scope; keep unaffected work in the existing record.
 
-On resume, reuse current decisions and evidence in the selected process.
+On resume, reuse current decisions, approval and evidence in the selected process.
 Explicit user-required processes still apply.
 
-A build request authorizes normal in-scope implementation and repairs, not new
-product decisions or unrestricted writes. Design-only and plan-only requests
-stop at their requested deliverable. Ask only for a material missing decision
-or authority; do not reopen clear requirements because an example differs.
+A build request authorizes design work. Implementation authority begins only
+after the [design approval gate](references/standard-module.md#design-approval-gate).
+Design-only and plan-only requests stop at their requested deliverable. Ask only
+for a material missing decision or authority; do not reopen clear requirements
+because an example differs.
 
 ## Discovery reuse
 

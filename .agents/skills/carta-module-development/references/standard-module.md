@@ -17,6 +17,19 @@ row. Separate user decisions from inferred defaults, and expected results from
 observed evidence. Design is ready when material behavior is settled and each
 custom outcome has a suitable check; name any blocked part explicitly.
 
+## Design approval gate
+
+Every module path uses this gate, including standard, bounded and full-contract
+work. When the design is ready, present the design path and exact revision, ask
+the user whether they approve that design, and stop. Continue to planning,
+generation or implementation only after the user explicitly approves the
+presented revision. A request to build, plan, continue, infer defaults or invoke
+a Carta skill is not design approval. Silence is not approval.
+
+Record the approving reply, revision and scope in the design. Approval of that
+exact unchanged revision survives resume. A material behavior revision returns
+to this gate; technical detail added within the approved behavior does not.
+
 No separate implementation plan, worksheet, obligation/journey IDs, UI JSON or
 recorder JSON is required on this path. Update at a usable result, decision,
 material failure or handoff, not after each command.
@@ -35,10 +48,10 @@ value and loaded edit value. Use the
 Reference unchanged field rules instead of copying them. An ordinary sort or
 label choice needs no separate acceptance case unless the user requires it.
 
-For design-only work, stop once behavior and unresolved decisions are clear.
-For planning, add exact owners, work order, commands and the first usable result
-to the same record. A plan-only request stops there. Otherwise continue under
-[execution](execution.md), without a new approval gate for an authorized build.
+For design-only work, complete the design approval gate and stop. After approval,
+planning adds exact owners, work order, commands and the first usable result to
+the same record. A plan-only request stops there. Otherwise continue under
+[execution](execution.md).
 
 ## Build the usable result
 

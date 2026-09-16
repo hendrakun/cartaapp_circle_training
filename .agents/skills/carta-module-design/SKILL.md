@@ -18,8 +18,9 @@ test assignments or completion gates.
 Start with the [standard module base](../carta-module-development/references/standard-module.md),
 including its rule for adding custom workflows.
 Resolve only material behavior gaps and record the result in the existing work
-document. Stop there for a design-only request; otherwise return to the requesting
-workflow. Custom actions alone do not require the full procedure below.
+document. Complete the standard module's design approval gate before a
+design-only handoff or return to the requesting workflow. Custom actions alone
+do not require the full procedure below.
 
 Use the remaining sections where a consequential change or required traceability
 needs a full contract. State its scope in the design record; preserve unaffected
@@ -86,13 +87,13 @@ Complete the source and workflow consistency checks in the
 [module contract](references/module-contract.md#authority-and-scope) before declaring
 readiness. Check both source coverage and agreement between the design's rules.
 
-The user request and confirmed decisions can establish approval. Record their
-source and scope. For a material product decision not yet authorized, present
-the proposed behavior and exact design revision for approval. Visual composition
-and routine technical choices within the requested result need no separate gate. Approval of unchanged decisions survives a revision; approval is
-not inferred from silence. Unresolved material decisions leave the design in
-`DRAFT` or `BLOCKED`, with their impact visible. A user can instead explicitly
-exclude the affected behavior from this delivery.
+After the design is ready, present its path and exact revision and explicitly
+ask the user to approve it. Stop until the user replies. Record the approval
+source and scope. Visual composition and routine technical choices within the
+approved result need no separate gate. Approval is not inferred from the build
+request, earlier requirement answers or silence. Unresolved material decisions
+leave the design in `DRAFT` or `BLOCKED`, with their impact visible. A user can
+instead explicitly exclude the affected behavior from this delivery.
 
 ## Completion and handoff
 

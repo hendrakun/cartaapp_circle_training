@@ -6,6 +6,7 @@
 - Included: <Required work>
 - Excluded: <Explicit scope limits>
 - Requirement source: <Original request and later decisions>
+- Design approval: <PENDING, or approving user reply, revision and scope>
 
 ## Data and access
 

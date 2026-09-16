@@ -95,6 +95,10 @@ generation succeeds and reports the browser fixture as manual.
 
 ## Check and apply once
 
+Complete the [design approval gate](standard-module.md#design-approval-gate)
+before creating the manifest or running either command below. The generator
+path does not bypass design approval.
+
 The two public complete-module commands are:
 
 ```sh
