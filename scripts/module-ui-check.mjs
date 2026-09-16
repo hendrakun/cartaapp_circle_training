@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Check declared Vue surfaces. Semantic acceptance remains with the reviewer.
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { createRequire } from 'node:module'
-import { basename, resolve } from 'node:path'
+import { basename, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const require = createRequire(new URL('../apps/web/package.json', import.meta.url))
@@ -47,9 +47,24 @@ function registered(source, tag) {
   return found
 }
 
-export function checkUiContract(contract, { root = process.cwd(), read = path => readFileSync(resolve(root, path), 'utf8') } = {}) {
+export function checkUiContract(contract, options) {
+  return checkSurfaces(contract, options)
+}
+
+export function checkUiSources(paths, { root = process.cwd() } = {}) {
+  function collect(path) {
+    if (statSync(resolve(root, path)).isDirectory()) {
+      return readdirSync(resolve(root, path)).sort().flatMap(name => collect(join(path, name)))
+    }
+    return path.endsWith('.vue') ? [path] : []
+  }
+  const surfaces = [...new Set(paths.flatMap(collect))].map(file => ({ file }))
+  return checkSurfaces({ surfaces }, { root }, false)
+}
+
+function checkSurfaces(contract, { root = process.cwd(), read = path => readFileSync(resolve(root, path), 'utf8') } = {}, declared = true) {
   const errors = [], review = []
-  if (!Array.isArray(contract.surfaces) || !contract.surfaces.length) return { errors: ['Declare at least one changed surface.'], review }
+  if (!Array.isArray(contract.surfaces) || !contract.surfaces.length) return { errors: ['Select at least one Vue surface.'], review }
   const globals = new Set()
   for (const global of contract.globals ?? []) {
     if (!global.tag || !global.registration || !registered(read(global.registration), global.tag)) errors.push(`Global ${global.tag}: no literal component registration in ${global.registration}`)
@@ -61,9 +76,11 @@ export function checkUiContract(contract, { root = process.cwd(), read = path =>
     if (!label || files.has(label)) { errors.push(`Missing or duplicate surface: ${label}`); continue }
     files.add(label)
     const routeKind = routeKinds[basename(label)]
-    if (routeKind && surface.kind !== routeKind) errors.push(`${label}: route convention requires kind ${routeKind}; record composition exceptions in gap`)
-    if (!(surface.kind in views) && surface.kind !== 'custom') errors.push(`${label}: kind must be list, detail, create, update or custom`)
-    if (surface.kind === 'custom' && !surface.gap?.trim()) errors.push(`${label}: custom surface needs a specific framework gap`)
+    if (declared) {
+      if (routeKind && surface.kind !== routeKind) errors.push(`${label}: route convention requires kind ${routeKind}; record composition exceptions in gap`)
+      if (!(surface.kind in views) && surface.kind !== 'custom') errors.push(`${label}: kind must be list, detail, create, update or custom`)
+      if (surface.kind === 'custom' && !surface.gap?.trim()) errors.push(`${label}: custom surface needs a specific framework gap`)
+    }
     try {
       const { descriptor, errors: parseErrors } = parse(read(label), { filename: resolve(root, label) })
       if (parseErrors.length) throw new Error(parseErrors.map(String).join('; '))
@@ -87,6 +104,10 @@ export function checkUiContract(contract, { root = process.cwd(), read = path =>
         }
         for (const prop of node.props ?? []) if (prop.type === 7 && prop.name === 'slot' && prop.arg?.isStatic) slots.add(prop.arg.content)
       })
+      if (!declared) {
+        if (slots.has('create-action')) review.push(`${label}: Create override needs source review against the requested interaction`)
+        continue
+      }
       if (!Array.isArray(surface.components) || !surface.components.length) errors.push(`${label}: declare the selected framework components`)
       const expectedView = views[surface.kind]
       const selected = surface.components ?? []
@@ -117,14 +138,16 @@ export function checkUiContract(contract, { root = process.cwd(), read = path =>
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   if (!process.argv[2] || process.argv[2] === '--help') {
-    console.log('Usage: node scripts/module-ui-check.mjs <ui-contract.json> [repository-root]\nChecks declared surfaces only; review gaps, globals, dynamic components and omitted files.')
+    console.log('Usage: node scripts/module-ui-check.mjs --sources <Vue file or directory>...\n       node scripts/module-ui-check.mjs <ui-contract.json> [repository-root]\nSource mode checks bindings and native controls. Contract mode also checks declared composition. Review design, fields, globals and dynamic components in source.')
     process.exitCode = process.argv[2] ? 0 : 1
   } else {
     try {
-      const result = checkUiContract(JSON.parse(readFileSync(process.argv[2], 'utf8')), { root: resolve(process.argv[3] ?? '.') })
+      const result = process.argv[2] === '--sources'
+        ? checkUiSources(process.argv.slice(3))
+        : checkUiContract(JSON.parse(readFileSync(process.argv[2], 'utf8')), { root: resolve(process.argv[3] ?? '.') })
       for (const error of result.errors) console.error(`FAIL: ${error}`)
       for (const item of result.review) console.log(`REVIEW: ${item}`)
-      if (!result.errors.length) console.log(result.review.length ? 'REVIEW_REQUIRED: resolve each exception in the acceptance review' : 'PASS: declared template checks; runtime and acceptance NOT_REVIEWED')
+      if (!result.errors.length) console.log(result.review.length ? 'REVIEW_REQUIRED: resolve each exception in the acceptance review' : 'PASS: selected template checks; design, runtime and acceptance NOT_REVIEWED')
       process.exitCode = result.errors.length ? 1 : result.review.length ? 2 : 0
     } catch (error) { console.error(`FAIL: ${error.message}`); process.exitCode = 1 }
   }

@@ -20,13 +20,11 @@ collections.
 
 ## Standard resource path
 
-Follow the [standard action placement rule](../SKILL.md#framework-first-composition).
-Existing customized pages are not default templates.
+Follow [action placement](../../../../DESIGN.md#actions-and-forms).
 
 Resource actions are independent. Expose the actions required by the task;
-a resource does not need all CRUD actions. Use `FormView` for independent form
-pages and `DialogForm` for input within the current interaction. Choose from the
-required navigation and retained context, whether the action is standard or custom.
+a resource does not need all CRUD actions. Select the form surface from the
+design rules for the required navigation and retained context.
 Preserve existing route access unless it changes within the user request.
 
 Use the module schema, one field catalog, and the app Hono adapter:
@@ -125,10 +123,7 @@ presentation. Use the app routing Tabs component for route navigation.
 
 ## Collection content
 
-Choose columns that help users identify, compare, and act on records. Keep the
-primary name or reference easy to find; show status and relevant dates next.
-Use detail pages for long prose and secondary audit fields. Use cards when
-images or summaries aid scanning; do not add a view switch without that need.
+Select collection content from [DESIGN.md](../../../../DESIGN.md#page-structure).
 
 Keep search, filters, sorting, and paging in the collection query. Preserve
 unrelated query keys when one filter changes and reset the page to one. A

@@ -5,6 +5,9 @@ description: Build or review Carta form values, validation, relation sources, de
 
 # Build resource forms
 
+Read [DESIGN.md](../../../DESIGN.md) before selecting form layout or controls,
+including when this skill is used directly for a custom action.
+
 Apply [discovery reuse](../carta-module-development/SKILL.md#discovery-reuse).
 Trace the changed value through its API schema, resource and route; reuse
 current pattern decisions from the plan. Read the field contract in
@@ -60,16 +63,12 @@ Use the registered renderer, then an existing composite. Use `table`/`TableInput
 for form-owned row arrays. If those cannot express one domain value, use the
 [custom field contract](references/custom-field-contract.md).
 
-Group fields by the user's task. Put prerequisite fields before dependent
-fields. The outer form owns label, required state, error, help, and grid span.
-Use the app's language and domain terms; preserve legacy copy only when the
-request makes it authoritative. Add help for non-obvious format or consequence.
+The outer form owns label, required state, error, help, and grid span.
 
 Apply the [framework-first composition rule](../web-ui-surfaces/SKILL.md#framework-first-composition)
-once per form pattern. Use `FormView` for an independent page and `DialogForm` for
-a contextual form. Pass the standard action bag directly. Keep final form actions together
-at the bottom; use the app submit default unless a specific workflow label is
-clearer. Let the form own draft, validation, pending state, and ordinary close
+once per form pattern. Select the form surface from
+[DESIGN.md](../../../DESIGN.md#actions-and-forms).
+Pass the standard action bag directly. Let the form own draft, validation, pending state, and ordinary close
 behavior instead of adding parallel state in the route.
 
 ## Configure relation sources

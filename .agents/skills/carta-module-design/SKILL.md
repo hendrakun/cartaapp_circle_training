@@ -37,6 +37,10 @@ compatible decisions and approval. A supplied complete design needs a readiness
 review, not a repeat interview. For a change to an existing module, establish
 current behavior and the intended difference separately.
 
+For a web result, read [DESIGN.md](../../../DESIGN.md) before choosing page
+structure. Use its conventions for routine visual decisions. Record only
+required differences in the feature design.
+
 Apply [discovery reuse](../carta-module-development/SKILL.md#discovery-reuse).
 Read [context-discovery.md](references/context-discovery.md) to establish the
 application context and affected owners. Finish this work when every in-scope

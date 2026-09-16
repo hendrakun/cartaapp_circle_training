@@ -10,16 +10,12 @@ standard empty state is the application empty state.
 
 A custom collection slot receives only ready, non-empty records. It changes
 record presentation and does not replace loading, error, or empty content.
-Start card collections with `gap-2`; adjust for content and available width.
 
 ## Table and card views
 
-Use `Tabs` to switch between presentations of the same loaded records. Its
-standard design is the compact segmented control. Use stable string values,
-parent-owned state, and these labels:
-
-- `Table`
-- `Cards`
+Read [DESIGN.md](../../DESIGN.md#page-structure) before adding a presentation
+switch, and use its [labels and spacing](../../DESIGN.md#text-and-spacing).
+Framework `Tabs` uses stable string values and parent-owned state.
 
 The presentation switch does not start another loader or own route query
 state.

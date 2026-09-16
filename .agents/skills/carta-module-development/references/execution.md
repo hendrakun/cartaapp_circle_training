@@ -15,7 +15,10 @@ transcript or an instruction to rediscover them. The active assignment contains
 one usable result and its prerequisites; remaining work stays in the work record.
 
 For UI delivery, include API, page, navigation, permissions and development setup
-in the assignment. An early API integration check can precede the UI checkpoint;
+in the assignment. Include [DESIGN.md](../../../../DESIGN.md) and any approved
+exceptions as required inputs for the executor and reviewer. On resume, check
+whether these inputs changed before reusing earlier UI decisions.
+An early API integration check can precede the UI checkpoint;
 keep the remaining UI work in the same assignment.
 Review the first page's source wiring and
 non-browser assertions before repeating the pattern. Assign no E2E work.

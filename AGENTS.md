@@ -11,5 +11,6 @@
 - Use `$carta-audit` for a Sprindle plus Loom framework audit.
 - Use `$carta-module-development` for cross-layer module delivery; `$carta-module-design` for module behavior and `$carta-module-plan` for planning an approved design.
 - Use `$api-conventions` for `apps/api` changes and `$web-ui-surfaces` for `apps/web` UI changes.
+- Read [DESIGN.md](DESIGN.md) before you design, build, or review an `apps/web` page.
 - Use `$verify-carta-module` to verify a completed module.
 - Report failed checks, blocked work, and unverified results.

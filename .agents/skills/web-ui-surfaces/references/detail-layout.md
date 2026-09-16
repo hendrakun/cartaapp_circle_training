@@ -1,13 +1,9 @@
 # Workflow detail layout
 
-Start with `DetailView` for record display. Extend its supported controls and
-`value:<key>` slots; place related sections beside it. Several sections alone
-do not require a custom record shell. Use `Detail` within custom composition
-only for a named requirement that `DetailView` and adjacent sections cannot meet.
-Use the registered file renderer or `FileComponent` for attachments. Keep the
-record summary first. A main/sidebar grid is useful
-when short workflow controls sit beside long content; a single column is also
-valid. Do not duplicate the same attachments or fields in several sections.
+Read [DESIGN.md](../../../../DESIGN.md#page-structure) for detail composition.
+`DetailView` exposes controls and `value:<key>` slots. Check these extension
+points before selecting the lower-level `Detail` component. Use the
+[field contract](fields.md) to configure attachment display.
 Use the [file-routing convention](file-routing.md) when a detail page owns
 child routes, tabs, or Back behavior.
 
@@ -27,13 +23,13 @@ Refresh related resources only when their displayed data changed.
 
 ## Actions
 
-Follow the [standard action placement rule](../SKILL.md#framework-first-composition).
-Group workflow actions by purpose and show only actions allowed for the current record. Use server
+Follow [action placement](../../../../DESIGN.md#actions-and-forms).
+Show only actions allowed for the current record. Use server
 capabilities for record decisions, and repeat authorization on submit.
 
-Use `DialogForm` for a short contextual action. Each action has its own input
+Each action has its own input
 schema and field set. If the clicked action fixes a value, do not ask for that
-value again. Use `FormView` for an independent or long form.
+value again.
 
 Keep load and write failures visible
 through the existing error formatter. A custom body must supply loading,

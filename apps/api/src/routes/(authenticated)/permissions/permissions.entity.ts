@@ -1,6 +1,6 @@
 import { createEntity } from '@southneuhof/sprindle/entity'
 import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
-import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
+import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-orm/zod'
 import { users } from '../users/users.entity'
 
 const auditFields = {

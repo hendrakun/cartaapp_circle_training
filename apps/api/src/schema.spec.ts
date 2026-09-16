@@ -1,6 +1,18 @@
 import { describe, expect, it } from 'vitest'
+import { pgTable, text } from 'drizzle-orm/pg-core'
+import { createSelectSchema } from 'drizzle-orm/zod'
 import { z } from 'zod/v4'
 import { selectionQuery, selectionValues, storedAssetInput, storedAssetSchema, uploadKey } from './schema'
+
+describe('Drizzle schema compatibility', () => {
+  it('keeps PostgreSQL array columns as arrays', () => {
+    const records = pgTable('schema_compatibility_records', {
+      values: text('values').array().notNull(),
+    })
+
+    expect(createSelectSchema(records).parse({ values: ['one'] })).toEqual({ values: ['one'] })
+  })
+})
 
 describe('uploadKey', () => {
   it('accepts uploaded object keys with or without an extension', () => {

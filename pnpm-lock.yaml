@@ -139,9 +139,6 @@ importers:
       drizzle-orm:
         specifier: 1.0.0-rc.4
         version: 1.0.0-rc.4(@opentelemetry/api@1.9.1)(@sinclair/typebox@0.34.49)(@types/pg@8.20.0)(pg@8.22.0)(zod@4.5.1)
-      drizzle-zod:
-        specifier: ^0.8.3
-        version: 0.8.3(drizzle-orm@1.0.0-rc.4(@opentelemetry/api@1.9.1)(@sinclair/typebox@0.34.49)(@types/pg@8.20.0)(pg@8.22.0)(zod@4.5.1))(zod@4.5.1)
       hono:
         specifier: ^4.12.27
         version: 4.12.27
@@ -3175,12 +3172,6 @@ packages:
         optional: true
       zod:
         optional: true
-
-  drizzle-zod@0.8.3:
-    resolution: {integrity: sha512-66yVOuvGhKJnTdiqj1/Xaaz9/qzOdRJADpDa68enqS6g3t0kpNkwNYjUuaeXgZfO/UWuIM9HIhSlJ6C5ZraMww==}
-    peerDependencies:
-      drizzle-orm: '>=0.36.0'
-      zod: ^3.25.0 || ^4.0.0
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -7685,11 +7676,6 @@ snapshots:
       '@sinclair/typebox': 0.34.49
       '@types/pg': 8.20.0
       pg: 8.22.0
-      zod: 4.5.1
-
-  drizzle-zod@0.8.3(drizzle-orm@1.0.0-rc.4(@opentelemetry/api@1.9.1)(@sinclair/typebox@0.34.49)(@types/pg@8.20.0)(pg@8.22.0)(zod@4.5.1))(zod@4.5.1):
-    dependencies:
-      drizzle-orm: 1.0.0-rc.4(@opentelemetry/api@1.9.1)(@sinclair/typebox@0.34.49)(@types/pg@8.20.0)(pg@8.22.0)(zod@4.5.1)
       zod: 4.5.1
 
   dunder-proto@1.0.1:

@@ -54,9 +54,13 @@ Inspect module-specific restrictions, coupled writes and failure effects where
 applicable. Use the relevant layer skill for unresolved contracts, not a new
 whole-repository discovery pass.
 
-For relation work, inspect the
-[complete field pattern](../web-ui-surfaces/references/fields.md).
-Use [UI review](../web-ui-surfaces/references/verification.md) for custom composition.
+For every web result, apply [UI review](../web-ui-surfaces/references/verification.md),
+including standard Views and custom actions. Compare composition with
+[DESIGN.md](../../../DESIGN.md) and inspect the
+[complete field pattern](../web-ui-surfaces/references/fields.md) for all visible
+fields. A missing component import, raw asset JSON, or an unsupported custom
+control requires `REWORK`. An unexplained difference from the app design also
+requires `REWORK`; a passing static check does not approve that difference.
 Check scope, unrelated work and unauthorized writes. Existing example code is
 not justification for overriding the request or copying an unnecessary control.
 

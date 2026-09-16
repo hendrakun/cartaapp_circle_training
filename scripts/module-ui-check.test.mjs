@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert'
 import { test } from 'node:test'
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -22,6 +22,29 @@ test('requires rendered framework imports and resolves capitalized native names'
   ]) assert.ok(check(source).errors.length, source)
   assert.deepEqual(check(page.replace('<Button>Close</Button>', '<button>Close</button>')).errors, [])
   assert.deepEqual(check(page.replaceAll('RecordView>', 'record-view>')).errors, [])
+})
+
+test('source CLI checks nested pages without a contract and detects missing imports', t => {
+  const root = mkdtempSync(join(tmpdir(), 'carta-ui-sources-'))
+  t.after(() => rmSync(root, { recursive: true, force: true }))
+  mkdirSync(join(root, 'detail'))
+  writeFileSync(join(root, 'detail.route.vue'), page)
+  const child = join(root, 'detail', 'index.route.vue')
+  const run = (...paths) => spawnSync(process.execPath,
+    [fileURLToPath(new URL('./module-ui-check.mjs', import.meta.url)), '--sources', ...paths], { encoding: 'utf8' })
+  writeFileSync(child, page)
+  assert.equal(run(root).status, 0)
+  writeFileSync(child, page.replace(', Button', ''))
+  const broken = run(root)
+  assert.equal(broken.status, 1)
+  assert.match(broken.stderr, /detail\/index\.route\.vue:1: unresolved component <Button>/)
+  writeFileSync(child, page.replace('<Button>Close</Button>', '<input type="file">'))
+  const raw = run(root)
+  assert.equal(raw.status, 2)
+  assert.match(raw.stdout, /native <input>/)
+  assert.equal(run(child).status, 2)
+  assert.equal(run().status, 1)
+  assert.equal(run(join(root, 'missing.vue')).status, 1)
 })
 
 test('native interactive controls need source review with file and line', () => {

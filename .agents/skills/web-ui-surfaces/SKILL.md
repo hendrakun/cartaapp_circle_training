@@ -5,9 +5,8 @@ description: Build or review Carta web pages, nested file routes, app navigation
 
 # Web UI surfaces
 
-Use Carta's page shells and controls as the starting point. Adapt content,
-density, and layout to the user's task. Consistency comes from shared controls,
-clear hierarchy, and predictable behavior, not identical pages.
+Read [DESIGN.md](../../../DESIGN.md) before selecting page structure or controls.
+It owns app layout and display conventions, including custom action pages.
 
 ## Find the current boundary
 
@@ -16,12 +15,16 @@ Start with the changed route/resource or generated source and the applicable
 reference below. Reuse the plan's verified adapter and component choices.
 Inspect an export or one nearby example only for an unresolved contract.
 Before writing each new interaction pattern, identify its View or form, input
-renderers, value contract and action owner. Discovery is complete when every
-required interaction has a supported path or a named framework gap. Keep these
+renderers, display renderers, value contract, action owner, and visible parent.
+Read [Fields](references/fields.md) for every resource display and
+[File routing](references/file-routing.md) for every child section.
+Discovery is complete when each visible field has a supported display path,
+and each interaction has a supported component and route placement or a named
+framework gap. Keep these
 decisions in the existing work record and reuse them for matching interactions.
 
 Read `docs/architecture/web-application-architecture.md` when ownership or app
-integration is unclear; use `docs/ui/README.md` to locate a missing visual rule.
+integration is unclear; use `docs/ui/README.md` for technical UI references.
 Inspect `apps/web/src/main.ts`, app defaults or the authenticated layout only
 when changing their setup or resolving a registration/default problem. Read
 the navigation manifest when adding an entry. Keep framework changes within scope.
@@ -36,10 +39,8 @@ keep custom code limited to the unmet requirement.
 
 Select in order: standard View/action, supported slot or adjacent section,
 lower-level framework component, then local code for a named unmet requirement.
-Keep standard Create controls unless the requested interaction needs an override.
-Keep standard Edit/Delete in list row actions. Use a plain `DetailView` for
-standard record details. Its controls slot is for requested workflow actions.
-The existing Roles detail customization is not the standard CRUD template.
+Apply [action placement](../../../DESIGN.md#actions-and-forms). Check existing
+examples against the design rules before reusing their composition.
 Import template components or identify their runtime registration; a test stub
 or type declaration does not register a component.
 

@@ -9,7 +9,7 @@ import {
   createInsertSchema,
   createSelectSchema,
   createUpdateSchema,
-} from "drizzle-zod";
+} from "drizzle-orm/zod";
 
 export const users = pgTable("users", {
   id: text("id")

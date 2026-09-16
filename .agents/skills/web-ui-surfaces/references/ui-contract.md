@@ -1,6 +1,7 @@
 # UI contract check
 
-Use this optional static check for the full process, an existing contract or
+Use [source mode](verification.md) for every changed web surface. Use this
+additional contract mode for the full process, an existing contract or
 custom composition that needs it. Ordinary standard Views need no JSON record;
 inspect their actual output and composition. When selected, record
 `plans/<feature>/ui-contract.json`. Paths are repository-relative. Select current
@@ -35,10 +36,10 @@ current source. Standard use needs no explanation.
 
 A requested standard Create override adds
 `"extensions": [{"slot": "create-action", "reason": "<required interaction>"}]`.
-An unused exception fails. Use framework default action labels unless the product
-explicitly requires different text. Inspect label props or the app dictionary
-before replacing a control. A mock label or plan action name does not require exact copy. Cite the explicit
-text requirement when a control override exists only to change its label.
+An unused exception fails. Check action text against
+[DESIGN.md](../../../../DESIGN.md#text-and-spacing). Inspect label props or the
+app dictionary before replacing a control. Cite the requirement when a control
+override exists only to change its label.
 
 Run from the repository root and preserve the command result:
 

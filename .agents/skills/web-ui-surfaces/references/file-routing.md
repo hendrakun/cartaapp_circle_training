@@ -7,6 +7,12 @@ check its route pattern against this convention before copying it.
 
 ## Place the page
 
+Select the visible section arrangement from [DESIGN.md](../../../../DESIGN.md)
+first. A route file below `detail/` retains its parent, but a named child does
+not appear on bare-parent entry by file placement alone. An `index.route.vue`
+is the default child. Routing `Tabs` selects its first available child. The
+router supports these mechanisms; it does not choose the app's section layout.
+
 A folder adds URL segments. Its `index.route.vue` is a replaceable default
 page. A route file beside a matching folder retains that page as a parent.
 Use `AppRouterView` in retained Carta record pages for the existing identity

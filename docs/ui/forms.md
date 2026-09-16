@@ -5,13 +5,9 @@ selection.
 
 ## Standard form path
 
-Use `FormView` for every independent form page, including import and workflow
-forms. It supplies the standard navigation header and form layout. Use `Form`
-or `DialogForm` only inside a surface that is not an independent page.
-
-The form action region is bottom-right. Its standard submit label is `Submit`.
-`Form`, `FormView`, `DialogForm`, and form composites use the framework UI
-default unless an action-specific label makes the result clearer.
+Select the form surface and action placement from
+[DESIGN.md](../../DESIGN.md#actions-and-forms). The View supplies its navigation
+header. Framework forms use the app dictionary for default action text.
 
 ## Field defaults
 
@@ -34,7 +30,7 @@ and grid span. A nested input or custom field renders the control only. This
 keeps one visible label for one field.
 
 Use disabled, hidden, and validation states to communicate field dependencies.
-Instructional prose follows the interface-text rule in [README.md](README.md).
+Instructional prose follows [DESIGN.md](../../DESIGN.md#text-and-spacing).
 
 ## Select a field implementation
 
@@ -51,6 +47,5 @@ After selecting a custom field, read the local
 
 ## Custom form pages
 
-Keep the standard page shell and field-label ownership for a custom body.
-Compose the needed layout inside it; choose action text and alignment that keep
-the next step clear at the available width.
+Apply [DESIGN.md](../../DESIGN.md#actions-and-forms) to custom form pages.
+The outer form retains field-label ownership when its body uses custom slots.

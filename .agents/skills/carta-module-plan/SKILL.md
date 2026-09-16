@@ -48,6 +48,8 @@ method exports, URL parameters, inherited scopes, and affected SDK consumers.
 Keep database domains separate from HTTP routing.
 
 For web work, apply `$web-ui-surfaces` and, for forms, `$build-resource-form`.
+Read [DESIGN.md](../../../DESIGN.md) before selecting the UI structure. Link its
+applicable sections in the existing plan; record only required exceptions.
 Select supported interaction patterns before choosing custom routes or controls.
 Map each required UI action to its entry point, inputs, access/state conditions
 and visible result in the plan's existing owner rows. Reference the design's

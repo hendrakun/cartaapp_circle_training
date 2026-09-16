@@ -61,9 +61,9 @@ in the first implementation; a preview must not expose prohibited operations.
 
 For custom actions, read the [workflow reference](../../carta-module-design/references/custom-workflows.md).
 Add only the required states, conditions, effects and checks to the same record.
-Use YAML for custom workflows, not CRUD. Put workflow controls on the detail
-page when they act on that record; let the requested interaction determine
-exceptions. Adding a workflow does not require new document types or a restart.
+Use YAML for custom workflows, not CRUD. Select control placement from
+[DESIGN.md](../../../../DESIGN.md#actions-and-forms). Adding a workflow does not
+require new document types or a restart.
 
 Use a full design contract or separate plan only when a material decision, consequential
 change or required traceability needs it. Define the affected scope and reference

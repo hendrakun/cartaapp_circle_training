@@ -438,7 +438,7 @@ function renderEntity(config) {
 
   return `import { createEntity } from '@southneuhof/sprindle/entity'
 import { ${imports.join(', ')} } from 'drizzle-orm/pg-core'
-import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
+import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-orm/zod'
 
 export const ${plural} = pgTable(${literal(config.table)}, {
   ${identity}

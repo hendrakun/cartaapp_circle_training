@@ -1,5 +1,16 @@
 # Display fields
 
+Before selecting display settings, read `apps/web/src/configs/defaults.ts` and
+`apps/web/src/framework/fields/renderers.ts`. Use `apps/web/src/main.ts` to
+confirm registration when needed. These files own the current formats and
+renderer keys. A form renderer does not configure table or detail display.
+
+For each visible field, trace the returned value through its app default,
+shared `display` settings, and any `table` or `detail` override. Finish when
+each selected field produces readable output on both surfaces where it appears.
+For assets, check empty, single, and multiple values as applicable. For states,
+check each label and colour. Reuse the registered renderer before adding a slot.
+
 A relation is complete when the user can select its label, save its identity,
 see its name in list and detail, and load that selection on edit. Treat these as
 one implementation result. Verify with a real named record before reusing the

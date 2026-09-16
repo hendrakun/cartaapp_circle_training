@@ -49,7 +49,6 @@
     "@southneuhof/sprindle": "workspace:*",
     "better-auth": "^1.6.23",
     "drizzle-orm": "1.0.0-rc.4",
-    "drizzle-zod": "^0.8.3",
     "hono": "^4.12.27",
     "pdf-lib": "^1.17.1",
     "pg": "^8.22.0",

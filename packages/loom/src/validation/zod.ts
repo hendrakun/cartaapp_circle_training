@@ -8,7 +8,7 @@
  *
  * Two Zod dialects reach this bridge. Classic `zod/v3` backs the browser-safe
  * schema manifest; the `zod/v4` subpath backs the API entity modules, whose
- * `drizzle-zod` schemas the browser imports directly. They emit unrelated
+ * Drizzle schemas the browser imports directly. They emit unrelated
  * types, so every signature here is structural rather than nominal, and the
  * metadata readers normalize the internal shape each dialect records.
  */
