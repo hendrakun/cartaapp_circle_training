@@ -4,7 +4,7 @@ The approved design owns business behavior. The layer skills own code and UI
 patterns. Use this file to check the boundaries between them.
 
 - **Scope:** Select list, detail, create, update and delete independently.
-  Implement the actions the product needs. A generator does not define scope.
+  Implement the actions the product needs.
 - **Names:** Keep persisted fields, API schemas, actions and resource fields
   aligned. Use the same domain labels across pages, validation and workflows.
 - **Values:** Read [frontend-field-contract.md](frontend-field-contract.md) for

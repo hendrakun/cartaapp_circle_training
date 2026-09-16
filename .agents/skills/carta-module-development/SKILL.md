@@ -61,10 +61,8 @@ Reuse the answer; read its source again only for an unresolved detail or change.
 ## Build and finish
 
 Use [execution](references/execution.md) for implementation, early preview and
-review. Keep one executor for connected work. Prefer
-[bounded generation](references/bounded.md) for supported standard actions when
-it saves work and emits no browser tests. Otherwise use normal source edits.
-Generation is optional and does not change the requested scope.
+review. Keep one executor for connected work. Implement the module with normal
+source edits and the repository's existing framework patterns.
 
 Use [verification strategy](references/verification-strategy.md) for checks and
 evidence. Use `$verify-carta-module` for final review. Finish when the requested

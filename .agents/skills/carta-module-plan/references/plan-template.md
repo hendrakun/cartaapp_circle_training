@@ -30,11 +30,9 @@ transaction boundaries and interfaces between plans. Name existing examples and
 applicable layer contracts. State migration and consumer update order when needed.
 Leave routine code and test details to the executor.
 
-When generation is selected, reference its manifest and current `--check` output. Use that
-output for generated owners; list the manual remainder here. Record each
-selected pattern once with an exact file and symbol, source revision, why it
-fits, and the manual remainder. The executor should receive the decision, not
-an instruction to rediscover it.
+Record each selected pattern once with an exact file and symbol, source revision,
+why it fits, and the manual remainder. The executor should receive the decision,
+not an instruction to rediscover it.
 
 ## Work order
 
@@ -50,7 +48,7 @@ The first UI result includes all necessary layers; test setup alone is insuffici
 For changed web surfaces, reference `ui-contract.json` from the
 [UI contract](../../web-ui-surfaces/references/ui-contract.md). Record the selected
 component, extension and actual gap once. Review field and relation wiring in
-source. Browser journeys and E2E generation are outside module delivery.
+source. Browser journeys and E2E work are outside module delivery.
 
 ## Test strategy
 

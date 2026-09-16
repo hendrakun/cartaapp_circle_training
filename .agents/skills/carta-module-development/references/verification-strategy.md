@@ -7,7 +7,7 @@ are not completion gates.
 ## Browser journeys
 
 E2E is outside Carta module delivery. This applies to design, planning,
-generation, implementation, review, full-process work and resumed work, for
+implementation, review, full-process work and resumed work, for
 standard CRUD and custom workflows alike. Do not generate, write, run or repair
 browser tests. Do not prepare browser test environments, collect browser reports,
 assign journey IDs, or require a manual browser walkthrough as a substitute.
@@ -91,10 +91,7 @@ For regressions, demonstrate the intended failure when practical.
 
 ## Commands and environment
 
-Inspect current scripts and focused selectors once. Generated API evidence
-proves only its actual assertions. A generated browser journey is outside this
-workflow; do not create or run it. Use normal source edits if a generator would
-emit browser files and has no supported way to exclude them.
+Inspect current scripts and focused selectors once.
 
 Use guarded isolated API test targets, never a development database for test
 reset. Serialize checks that share mutable data and memory-heavy type checks.

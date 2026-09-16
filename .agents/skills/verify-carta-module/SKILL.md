@@ -69,9 +69,6 @@ Missing E2E is not a defect. Apply
 before requesting more tests. Reuse framework behavior and sufficient module
 proof. Tests that replace a schema/control cannot prove that replaced boundary.
 
-For generated work, apply the
-[generated-evidence limits](../carta-module-development/references/verification-strategy.md#commands-and-environment).
-Inspect current source, not equality with a template.
 Rerun only affected checks when evidence is stale, failed, missing or insufficient.
 
 Only the full process requires inventory/worksheet consistency, using API/UNIT

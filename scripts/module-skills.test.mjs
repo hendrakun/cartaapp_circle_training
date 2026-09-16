@@ -55,24 +55,9 @@ test('root module command aliases resolve to actual local helper scripts', () =>
   assert.deepEqual(Object.keys(scripts).filter(name => scripts[name].includes('scaffold-bounded-module.mjs')), ['scaffold:bounded-module'])
 })
 
-test('bounded example selects compatible standard actions beside manual work', () => {
-  const bounded = readFileSync(join(skillsRoot, 'carta-module-development/references/bounded.md'), 'utf8')
-  const example = JSON.parse(bounded.match(/```json\n([\s\S]+?)\n```/)[1])
-  assert.deepEqual(Object.keys(example.actions).sort(), ['create', 'list', 'update'])
-})
-
-test('active module guidance uses the one public generator', () => {
+test('active module guidance has no source-generator path', () => {
   const text = active.flatMap(name => markdownFiles(join(skillsRoot, name))).map(file => readFileSync(file, 'utf8')).join('\n')
-  assert.doesNotMatch(text, /scaffold_bounded\.py|integrate:bounded-module|integrate-bounded-module\.mjs/)
-})
-
-test('generated evidence has one strategy owner and one verifier pointer', () => {
-  const strategy = readFileSync(join(skillsRoot, 'carta-module-development/references/verification-strategy.md'), 'utf8')
-  const verifier = readFileSync(join(skillsRoot, 'verify-carta-module/SKILL.md'), 'utf8')
-  assert.ok(verifier.includes('verification-strategy.md#commands-and-environment'))
-  const combined = `${strategy}\n${verifier}`
-  assert.equal(combined.match(/Generated API evidence/g)?.length, 1)
-  assert.equal(combined.match(/A generated browser journey/g)?.length, 1)
+  assert.doesNotMatch(text, /scaffold[:_-]bounded|bounded\.md|module\.json|source generator|route-only operation/i)
 })
 
 test('API test entrypoints require the explicit test environment and migrations run the preflight first', () => {

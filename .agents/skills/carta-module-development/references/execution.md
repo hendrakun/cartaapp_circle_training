@@ -17,8 +17,7 @@ one usable result and its prerequisites; remaining work stays in the work record
 For UI delivery, include API, page, navigation, permissions and development setup
 in the assignment. An early API integration check can precede the UI checkpoint;
 keep the remaining UI work in the same assignment.
-Keep useful generated files within task scope instead of deleting and recreating
-them to enforce a layer boundary. Review the first page's source wiring and
+Review the first page's source wiring and
 non-browser assertions before repeating the pattern. Assign no E2E work.
 
 Full-process work uses the [worksheet state rules](module-execution-worksheet.md#state-and-completion).
@@ -70,8 +69,6 @@ reset commands for development setup. A remote target is not disposable merely
 because its configuration is available. Once applied to any target, keep migration
 history intact; use a new migration for subsequent changes.
 
-Generation is optional under [bounded generation](bounded.md). If a known
-restriction blocks it, preserve the worktree and use normal source edits.
 After route changes, use the current supported route/type-generation command
 before interpreting stale route names as application type errors. Resolve a
 missing command once; do not repeatedly clear caches or rewrite declarations.

@@ -19,11 +19,11 @@ custom outcome has a suitable check; name any blocked part explicitly.
 
 ## Design approval gate
 
-Every module path uses this gate, including standard, bounded and full-contract
-work. When the design is ready, present the design path and exact revision, ask
-the user whether they approve that design, and stop. Continue to planning,
-generation or implementation only after the user explicitly approves the
-presented revision. A request to build, plan, continue, infer defaults or invoke
+Every module path uses this gate, including standard and full-contract work.
+When the design is ready, present the design path and exact revision, ask
+the user whether they approve that design, and stop. Continue to planning or
+implementation only after the user explicitly approves the presented revision.
+A request to build, plan, continue, infer defaults or invoke
 a Carta skill is not design approval. Silence is not approval.
 
 Record the approving reply, revision and scope in the design. Approval of that

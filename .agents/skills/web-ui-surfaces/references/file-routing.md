@@ -78,6 +78,3 @@ Back targets. Reuse existing non-browser checks for changed routing code.
 Do not repeat framework navigation or page-lifetime tests for a normal module.
 API checks own access enforcement. Source review does not prove visible behavior;
 report that limit without starting browser tests or a manual journey.
-
-For optional file creation, use the shared generator’s
-[route-only operation](../../carta-module-development/references/bounded.md#route-only-operation).

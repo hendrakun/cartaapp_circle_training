@@ -38,10 +38,6 @@ appropriate checks rather than asking the user to choose a testing stack.
 Resolve exact commands from this checkout and distinguish script inspection
 from a successful execution.
 
-Use the [generation contract](../carta-module-development/references/bounded.md)
-only when a scaffold saves work. If selected, record the preview and manual
-owners. Otherwise plan normal edits without a manifest.
-
 Technical discovery ends when each requested action has an exact owner, a
 supported implementation path or named gap, and a suitable check. Record each
 pattern decision with an exact source pointer once in the owners table.
@@ -96,7 +92,7 @@ not a transcript or repeated copy of the design in each file.
 Use the [worksheet contract](../carta-module-development/references/module-execution-worksheet.md)
 for the dependency/status index and acceptance ownership. Map every acceptance
 ID to a primary plan and its required evidence surfaces there. Keep acceptance
-test mappings only in the worksheet. Exclude E2E generation, execution and browser
+test mappings only in the worksheet. Exclude E2E work and browser
 journey mappings, including on resume. Exact tests can remain `PENDING`
 until the executor returns them for the parent to merge. Use
 [verification strategy](../carta-module-development/references/verification-strategy.md)
