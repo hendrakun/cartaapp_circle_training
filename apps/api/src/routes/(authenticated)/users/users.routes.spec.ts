@@ -104,6 +104,18 @@ describe('user credential creation route', () => {
     }
   })
 
+  it('rejects invalid status codes without changing the user', async () => {
+    const sessionState = await session(true, ['create-users', 'update-users'])
+    const response = await app.request(`/users/update/${sessionState.userId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Cookie: sessionState.cookie },
+      body: JSON.stringify({ statusCode: 'inactive' }),
+    })
+
+    expect(response.status).toBe(400)
+    expect((await getDb().select({ statusCode: users.statusCode }).from(users).where(eq(users.id, sessionState.userId))).at(0)?.statusCode).toBe('active')
+  })
+
   it('deletes sessions when an active user is disabled', async () => {
     const sessionState = await session(true, ['create-users', 'update-users'])
     const before = await getDb().select({ id: sessions.id }).from(sessions).where(eq(sessions.userId, sessionState.userId))
@@ -111,7 +123,7 @@ describe('user credential creation route', () => {
     const response = await app.request(`/users/update/${sessionState.userId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', Cookie: sessionState.cookie },
-      body: JSON.stringify({ statusCode: 'inactive' }),
+      body: JSON.stringify({ statusCode: 'non_active' }),
     })
     expect(response.status).toBe(200)
     expect(await getDb().select({ id: sessions.id }).from(sessions).where(eq(sessions.userId, sessionState.userId))).toHaveLength(0)

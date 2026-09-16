@@ -19,6 +19,6 @@ export const PATCH = update({
       }
       return saved[0]
     })
-    return updated
+    return updated ? user.schemas.select.parse(updated) : undefined
   },
 })

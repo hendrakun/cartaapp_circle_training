@@ -10,7 +10,7 @@ function id(prefix: string) {
   return `auth-route-test-${prefix}-${crypto.randomUUID()}`
 }
 
-async function credentialUser(statusCode: 'active' | 'inactive') {
+async function credentialUser(statusCode: 'active' | 'non_active') {
   const db = getDb()
   const userId = id(statusCode)
   const email = `${userId}@example.invalid`
@@ -30,7 +30,7 @@ describe('authentication session admission', () => {
 
   it('creates sessions for active credentials and rejects inactive credentials', async () => {
     const active = await credentialUser('active')
-    const inactive = await credentialUser('inactive')
+    const inactive = await credentialUser('non_active')
     const origin = 'http://frontend.example:4173'
     const signIn = (email: string) => app.request('/api/auth/sign-in/email', {
       method: 'POST',

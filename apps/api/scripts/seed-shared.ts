@@ -21,10 +21,10 @@ export async function seedPublicIntakeUser(): Promise<string> {
     id: PUBLIC_INTAKE_USER_ID,
     name: 'Public Intake',
     email: 'public-intake@system.invalid',
-    statusCode: 'inactive',
+    statusCode: 'non_active',
   }).onConflictDoUpdate({
     target: users.id,
-    set: { name: 'Public Intake', email: 'public-intake@system.invalid', statusCode: 'inactive' },
+    set: { name: 'Public Intake', email: 'public-intake@system.invalid', statusCode: 'non_active' },
   })
   await db.delete(accounts).where(eq(accounts.userId, PUBLIC_INTAKE_USER_ID))
   await db.delete(roleAssignments).where(eq(roleAssignments.userId, PUBLIC_INTAKE_USER_ID))

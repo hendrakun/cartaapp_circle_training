@@ -6,7 +6,7 @@
 import { computed, watchEffect } from 'vue'
 import { useRoute, useRouter, type RouteRecordNormalized } from 'vue-router'
 import { useResourceRuntime } from '@southneuhof/loom'
-import { Card } from '@southneuhof/loom/components/base'
+import Card from '@southneuhof/loom/components/base/Card.vue'
 import type { RouteTab } from '@/router/tabs'
 
 const props = defineProps<{
