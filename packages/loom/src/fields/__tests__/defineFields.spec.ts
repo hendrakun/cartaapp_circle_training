@@ -6,19 +6,18 @@ import { resolveFrameworkFieldDefaults } from '../defaults'
 import { defineFields } from '../defineFields'
 import { resolveFields } from '../resolve'
 import { defineResource } from '../../resources/defineResource'
-import { defineSchema } from '../../resources/defineSchema'
 import { registerResourceRuntime, resetResourceRuntimeForTests } from '../../resources/runtime'
 
 type Row = { id: string; name: string; status: string }
 type Draft = { name: string }
 
 function schema() {
-  return defineSchema({
-    identity: 'id',
+  return {
+    identity: 'id' as const,
     record: { schema: { validate: (value: unknown): ValidationResult<Row> => ({ success: true, data: value as Row }) } },
     create: { schema: { validate: (value: unknown): ValidationResult<Draft> => ({ success: true, data: value as Draft }) } },
     update: { schema: { validate: (value: unknown): ValidationResult<Draft> => ({ success: true, data: value as Draft }) } },
-  })
+  }
 }
 
 function setupRuntime() {

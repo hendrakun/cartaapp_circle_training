@@ -20,6 +20,11 @@ collections.
 
 ## Standard resource path
 
+Standard detail pages use the direct DetailView prop bag without custom Edit or
+Delete controls. List row actions are the normal location. Use a detail controls
+slot only for a named workflow need; permission to delete does not require a
+second delete control. Existing customized pages are not default templates.
+
 Resource actions are independent. Expose the actions required by the task;
 a resource does not need all CRUD actions. Use `FormView` for independent form
 pages and `DialogForm` for input within the current interaction. Choose from the
@@ -112,6 +117,10 @@ authority. API authorization still runs on submit. Each delete action declares i
 permission or explicit `null`; each destructive control confirms the action.
 
 ## Filters and tabs
+
+`ListView` uses the `filters` prop for its Filter button and popover. The
+`#filters` slot renders a separate section; it does not enable that button.
+Choose the supported surface before writing the browser interaction.
 
 Follow `docs/ui/collections.md`. Keep query state route-local. Use
 `ChipFilter` for a collection query and state its optional or required

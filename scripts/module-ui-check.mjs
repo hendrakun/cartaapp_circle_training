@@ -10,8 +10,24 @@ const { parse, compileScript } = require('vue/compiler-sfc')
 const ts = require('typescript')
 const routeKinds = { 'detail.route.vue': 'detail', 'create.route.vue': 'create', 'edit.route.vue': 'update' }
 const views = { list: 'ListView', detail: 'DetailView', create: 'FormView', update: 'FormView' }
+// Native elements that can replace a shared control. Other native elements
+// (layout, text, option) add no item.
+const nativeControls = new Set(['button', 'input', 'select', 'textarea'])
 const normalize = name => name.replace(/-/g, '').toLowerCase()
 const builtins = new Set(['component', 'slot', 'template', 'transition', 'transitiongroup', 'keepalive', 'teleport', 'suspense', 'routerlink', 'routerview'])
+
+// A literal type="hidden" input carries state, not an interaction, so it
+// adds no item. Any other type source (absent, dynamic, spread) can render
+// a visible control, so it needs review.
+function hiddenInput(node) {
+  const type = (node.props ?? []).find(prop =>
+    (prop.type === 6 && prop.name?.toLowerCase() === 'type')
+    || (prop.type === 7 && prop.name === 'bind' && prop.arg?.content === 'type'))
+  if (!type) return false
+  return type.type === 6
+    && typeof type.value?.content === 'string'
+    && type.value.content.toLowerCase() === 'hidden'
+}
 
 function walk(node, visit) {
   visit(node)
@@ -57,6 +73,11 @@ export function checkUiContract(contract, { root = process.cwd(), read = path =>
       const tags = new Set(), slots = new Set()
       walk(descriptor.template.ast, node => {
         if (node.type !== 1) return
+        if (node.tagType === 0 && nativeControls.has(node.tag.toLowerCase())) {
+          if (!(node.tag.toLowerCase() === 'input' && hiddenInput(node))) {
+            review.push(`${label}:${node.loc.start.line}: native <${node.tag.toLowerCase()}> needs source review against the shared controls`)
+          }
+        }
         if (node.tagType === 1) {
           tags.add(node.tag)
           const name = normalize(node.tag)

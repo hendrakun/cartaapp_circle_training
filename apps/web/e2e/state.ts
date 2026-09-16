@@ -19,6 +19,12 @@ export function isE2eIteration() {
   return iteration
 }
 
+export function requiredE2eValue(name: 'E2E_API_URL' | 'E2E_WEB_URL'): string {
+  const value = process.env[name]?.trim()
+  if (!value) throw new Error(`${name} is missing. Start tests through Playwright so apps/api/.env and apps/web/.env supply it.`)
+  return value
+}
+
 function prepareE2eState() {
   execFileSync('pnpm', ['--filter', '@southneuhof/api', 'e2e:prepare'], {
     cwd: repoRoot,

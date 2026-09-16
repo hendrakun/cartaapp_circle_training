@@ -7,12 +7,14 @@ import re
 
 
 def table(text, columns):
-    """Read a Markdown table by its exact header; reject malformed rows."""
+    """Read all Markdown tables with this header; reject malformed rows."""
     lines = text.splitlines()
+    rows = []
+    found = False
     for index, line in enumerate(lines):
         if cells(line) != columns:
             continue
-        rows = []
+        found = True
         for line in lines[index + 2:]:
             if not line.strip().startswith('|'):
                 break
@@ -20,6 +22,7 @@ def table(text, columns):
             if len(values) != len(columns):
                 raise ValueError(f'malformed row: {line}')
             rows.append(dict(zip(columns, values)))
+    if found:
         return rows
     raise ValueError(f'missing table: {" / ".join(columns)}')
 
@@ -80,17 +83,25 @@ def check(folder):
         evidence_keys.add(key)
         cases.setdefault(row['Acceptance'], []).append(row)
     declared = re.findall(r'^id:\s*(A-\d+)\s*$', design, re.MULTILINE)
+    crud_acceptance = ['ID', 'Rule references', 'Given', 'Action and input',
+                       'Expected result and stored/unchanged values', 'Required visible result']
+    if any(cells(line) == crud_acceptance for line in design.splitlines()):
+        declared.extend(row['ID'] for row in table(design, crud_acceptance))
     if len(declared) != len(set(declared)):
         errors.append('duplicate acceptance record IDs in design')
     if not expected or not declared or not plan_map:
         errors.append('design inventory, acceptance records and plans must be nonempty')
-    defined_rules = set(re.findall(r'^id:\s*((?:B|T|I)-\d+)\s*$', design, re.MULTILINE))
+    rule_definitions = re.findall(r'^id:\s*((?:B|T|I)-\d+)\s*$', design, re.MULTILINE)
     for columns in [
+        ['ID', 'Action', 'Access and scope', 'Inputs', 'Rules or exceptions', 'Expected result', 'Acceptance IDs'],
         ['Transition ID', 'From state', 'Action', 'Condition', 'To state', 'Effect references'],
         ['Invariant ID', 'Condition that must remain true'],
     ]:
         if any(cells(line) == columns for line in design.splitlines()):
-            defined_rules.update(row[columns[0]] for row in table(design, columns))
+            rule_definitions.extend(row[columns[0]] for row in table(design, columns))
+    if len(rule_definitions) != len(set(rule_definitions)):
+        errors.append('duplicate rule IDs in design')
+    defined_rules = set(rule_definitions)
     referenced_rules = set().union(*(rule_ids(row['Rule references']) for row in inventory))
     if defined_rules != referenced_rules:
         errors.append('defined rules and inventory rule references differ')

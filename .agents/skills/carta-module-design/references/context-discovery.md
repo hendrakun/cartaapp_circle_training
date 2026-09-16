@@ -27,6 +27,10 @@ Include reporting, background work, files or external systems only when this
 change touches them. Follow ownership and consumer references, not just the
 feature name. Read a sibling to learn a pattern, not to infer business policy.
 
+Stop when each requested journey
+has a known data origin, actor, observable effect and affected consumer, or a
+specific unresolved business decision. Leave code pattern selection to planning.
+
 Use this compact map in the design's Context section:
 
 | Owner / consumer | Role in this change | Current contract and source | Intended difference / unresolved gap |

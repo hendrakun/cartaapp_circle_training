@@ -7,7 +7,6 @@ import { resolveFields } from '../../fields/resolve'
 import { defineFields } from '../../fields/defineFields'
 import { createInputPropsRegistry } from '../../renderers/inputProps'
 import { defineResource } from '../defineResource'
-import { defineSchema } from '../defineSchema'
 import { resourceActionForRoute, resetResourceActionRegistry } from '../routeAccess'
 import { registerResourceRuntime, resetResourceRuntimeForTests } from '../runtime'
 
@@ -15,7 +14,7 @@ type Row = { id: string; name: string }
 type Draft = { name: string }
 type Schema = WebResourceSchema<Row, Record<string, never>, Draft, Draft, string>
 
-const schema = defineSchema<Schema>({ identity: 'id' })
+const schema: Schema = { identity: 'id' }
 const fields = defineFields(schema, {
   name: { label: 'Name', table: { sortable: true }, form: { renderer: 'text' } },
 })
@@ -24,7 +23,7 @@ type AssetRecord = { id: string; imgThumbnail: string | null }
 type AssetDraft = { imgThumbnail?: string | null }
 type AssetSchema = WebResourceSchema<AssetRecord, Record<string, never>, AssetDraft, AssetDraft, string>
 
-const assetSchema = defineSchema<AssetSchema>({ identity: 'id' })
+const assetSchema: AssetSchema = { identity: 'id' }
 const assetFields = defineFields(assetSchema, {
   imgThumbnail: { label: 'Image', form: { renderer: 'image' } },
 })
@@ -33,7 +32,7 @@ type DefaultRecord = { id: string; name: string; active: boolean }
 type DefaultDraft = { name: string; active: boolean }
 type DefaultSchema = WebResourceSchema<DefaultRecord, Record<string, never>, DefaultDraft, DefaultDraft, string>
 
-const defaultSchema = defineSchema<DefaultSchema>({ identity: 'id' })
+const defaultSchema: DefaultSchema = { identity: 'id' }
 const defaultFields = defineFields(defaultSchema, {
   name: { label: 'Name' },
   active: { label: 'Resource active', form: { renderer: 'text' } },
@@ -304,6 +303,54 @@ describe('action resources', () => {
     })
 
     expect(value.create().defaultTo?.({ id: '2', name: 'Two' })).toEqual(list)
+    expect(value.update({ id: '1' }).defaultTo).toBeUndefined()
+  })
+
+  it('falls back to the list route when no detail action exists', () => {
+    registerResourceRuntime({
+      queryClient: createFrameworkQueryClient(),
+      adapters: resolveFrameworkAdapters(),
+      fieldDefaults: resolveFrameworkFieldDefaults(),
+    })
+    const value = defineResource(schema, {
+      key: 'records-list-fallback',
+      actions: {
+        list: {
+          run: async () => ({ data: [] }),
+          route: { name: 'records-list' },
+        },
+        create: {
+          run: async (input) => ({ id: '2', ...input }),
+        },
+        update: {
+          run: async (id, input) => ({ id, name: input.name }),
+        },
+      },
+    })
+
+    expect(value.create().defaultTo?.({ id: '2', name: 'Two' })).toEqual({ name: 'records-list' })
+    expect(value.update({ id: '1' }).defaultTo?.({ id: '1', name: 'One' })).toEqual({ name: 'records-list' })
+  })
+
+  it('stays on the page when neither detail nor list routes exist', () => {
+    registerResourceRuntime({
+      queryClient: createFrameworkQueryClient(),
+      adapters: resolveFrameworkAdapters(),
+      fieldDefaults: resolveFrameworkFieldDefaults(),
+    })
+    const value = defineResource(schema, {
+      key: 'records-no-fallback',
+      actions: {
+        create: {
+          run: async (input) => ({ id: '2', ...input }),
+        },
+        update: {
+          run: async (id, input) => ({ id, name: input.name }),
+        },
+      },
+    })
+
+    expect(value.create().defaultTo).toBeUndefined()
     expect(value.update({ id: '1' }).defaultTo).toBeUndefined()
   })
 

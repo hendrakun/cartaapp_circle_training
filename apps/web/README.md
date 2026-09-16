@@ -1,7 +1,10 @@
 # Carta Web
 
 Carta template admin: dashboard plus settings users/roles/permissions.
-Runs on port 5181 against the API at `VITE_API_URL` (port 5180).
+Run `pnpm setup:local` from the repository root, then edit `apps/web/.env`.
+Check readiness with `pnpm module:preflight -- --needs web,browser`.
+Change `WEB_PORT` and `VITE_API_URL` only in `apps/web/.env`; the sample values
+in `.env.example` are templates. The API port and URLs live in `apps/api/.env`.
 
 The accepted direction for the next web architecture is documented in
 [`docs/architecture/web-application-architecture.md`](../../docs/architecture/web-application-architecture.md).
@@ -56,7 +59,7 @@ Or run the web app directly from `apps/web` with the package scripts defined in 
 
 - `dev` - start Vite dev server
 - `build` - build for production
-- `preview` - preview production build on port `3100`
+- `preview` - preview production build with the port from `apps/web/.env`
 - `test` - run unit tests with Vitest (`jsdom`)
 - `test:unit` - same as `test`
 - `type-check` - run type checking via `vue-tsc`

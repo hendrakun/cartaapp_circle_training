@@ -5,77 +5,82 @@ description: Build or resume a Carta application module spanning data, API, reso
 
 # Carta module development
 
-Deliver the requested module without restarting settled work. This router owns
-stage selection, continuity and completion; the routed skills own design,
-planning, implementation contracts and acceptance review.
+Deliver a usable application result. Preserve requested behavior, meaningful
+display values, access and data safety. Use framework defaults for routine
+choices; optional refinements must not delay a required result.
 
-## Resume the right stage
+E2E is excluded from this entire workflow, including custom work and full-process
+review. Do not generate, write, run or repair browser tests or substitute a manual
+journey. Follow the [non-browser boundary](references/verification-strategy.md#browser-journeys).
 
-Inspect the request, supplied artifacts, existing feature folder and relevant
-working tree. Judge an artifact by its content, approval and currentness, not
-its filename. Use one feature folder for a coherent journey; separate unrelated
-requests. Keep one short plan for a small result; split only for a real dependency
-or separate outcome. Record continuity with the
-[worksheet contract](references/module-execution-worksheet.md).
+## Build on standard behavior
 
-| Strongest usable input | Next action |
-|---|---|
-| Intent or draft with material gaps | Use `$carta-module-design`. |
-| Approved behavioral contract | Use `$carta-module-plan`. |
-| Usable plan and authority to implement | Execute the unfinished work. |
-| Partial implementation | Reconcile the design, plan, code and current evidence, then resume. |
-| Implemented result | Use `$verify-carta-module`. |
+Start with the [standard module base](references/standard-module.md). It owns
+the single design record and how to add custom behavior to requested CRUD.
+Read it before creating artifacts. A custom action does not switch the whole
+module to another process.
 
-Design-only and plan-only requests stop at their requested deliverable. Existing
-approval is not a reason to repeat an interview. A material conflict goes back
-to the owner of that decision; unaffected work remains valid.
+Use `$carta-module-design` for unresolved behavior and `$carta-module-plan` for
+implementation planning. Use the full design/plan/[worksheet](references/module-execution-worksheet.md)
+process only where required traceability or a consequential change needs that
+record. State its scope; keep unaffected work in the existing record.
 
-## Start from the Carta application
+On resume, reuse current decisions and evidence in the selected process.
+Explicit user-required processes still apply.
 
-Treat `apps/api` and `apps/web` as the application owners. Reuse their entities, file routes, app adapters, navigation and design tokens. Inspect current public
-framework exports before using an example from another app. A completed app
-can show a useful interaction; its domain, permission model, helper files and
-old framework API are not prerequisites for a new Carta app.
+A build request authorizes normal in-scope implementation and repairs, not new
+product decisions or unrestricted writes. Design-only and plan-only requests
+stop at their requested deliverable. Ask only for a material missing decision
+or authority; do not reopen clear requirements because an example differs.
 
-For a first module, establish its actor, data owner, action and visible result,
-then build that complete path. Add child resources, reports or workflow services
-when the behavior needs them. Keep domain logic in its module and use existing
-framework contracts directly. A forwarding function or copied type needs a
-purpose beyond renaming an existing API.
+## Discovery reuse
 
-## Implement and verify
+Before broad technical discovery, separate explicit requirements, delegated
+defaults and material questions. Inspect only the owner needed to resolve a
+question, then ask it. Exclude options that contradict the request. Report the
+intended result and next action before starting a repository survey.
 
-Use [execution.md](references/execution.md) when implementation is authorized.
-Assess uncertainty, dependency impact, risk and generator eligibility separately.
-A known relation does not require a heavier interview, and a small resource can
-still have an unresolved business rule. For selected route files at any supported application route depth, use the
-[route-only operation](references/bounded.md#route-only-operation).
-For a new full-CRUD resource with no
-special behavior, check [bounded.md](references/bounded.md) for generator limits;
-generator ineligibility does not change the approved scope.
+Start with the requested change, current owners and one applicable pattern.
+Read further for a named missing fact, changed input or observed failure.
+Inspect the smallest owner and necessary direct callers; batch independent
+lookups. Use history only when current source cannot resolve the question.
+An example supplies implementation facts, not authority to change the request.
 
-Delegate implementation by default under the
-[assignment and recovery rules](references/execution.md#assignment).
-The parent owns scope, coordination and acceptance. Use direct execution when
-the user requests it or delegation is unavailable; state the reason.
+After initial owner reads, report the known path, unresolved facts and next
+change. If discovery continues for ten further files or five minutes without
+a change, name what prevents progress. This is a communication checkpoint,
+not a file budget or permission to skip necessary inspection.
 
-Use [verification-strategy.md](references/verification-strategy.md) to select
-checks and collect final evidence. Invoke `$verify-carta-module` for final
-acceptance. Complete when all required outcomes have current sufficient evidence,
-review passes and the worksheet is updated. Preserve incomplete work as such.
+Pass decisions, reasons and exact source pointers on handoff. Reuse them while
+current. A new stage or worker is not a reason to repeat discovery. Keep these
+facts in the existing work record, not a separate discovery log.
+Delegate discovery only for a named gap, with an answer and stopping condition.
+Reuse the answer; read its source again only for an unresolved detail or change.
+
+## Build and finish
+
+Use [execution](references/execution.md) for implementation, early preview and
+review. Keep one executor for connected work. Prefer
+[bounded generation](references/bounded.md) for supported standard actions when
+it saves work and emits no browser tests. Otherwise use normal source edits.
+Generation is optional and does not change the requested scope.
+
+Use [verification strategy](references/verification-strategy.md) for checks and
+evidence. Use `$verify-carta-module` for final review. Finish when the requested
+result works, required checks are sufficient, and the work record reports the
+development preview, migration/seed status and any remaining gaps.
 
 ## Layer contracts
 
-- Use `$api-conventions` for `apps/api` edits.
-- Use `$web-ui-surfaces` for web routes and surfaces; use `$build-resource-form`
-  when forms are involved.
-- Read [contract-rules.md](references/contract-rules.md) for cross-layer changes.
-- Read [frontend-field-contract.md](references/frontend-field-contract.md) for
-  web resource and form fields, and [web-query-cache.md](references/web-query-cache.md)
-  for custom server reads or cross-resource invalidation.
-- Read [ui-automation.md](references/ui-automation.md) for UI acceptance.
+- Use `$api-conventions` for API edits and `$web-ui-surfaces` for web surfaces.
+- Use `$build-resource-form` for forms. For a relation, read the complete
+  [display and form pattern](../web-ui-surfaces/references/fields.md), not just
+  the lookup configuration.
+- Read [cross-layer contracts](references/contract-rules.md) for changed boundaries.
+- Read [field contracts](references/frontend-field-contract.md) for unresolved
+  value shapes; [query cache](references/web-query-cache.md) for changed custom
+  reads or cross-resource invalidation.
 
-Use Carta's standard `pnpm`, Vitest and Playwright infrastructure and current
-package scripts. Keep application changes in their owners; framework package
-changes and production/external/destructive writes require explicit authority.
-Report incomplete checks, blockers and unverified outcomes as such.
+Application owners are `apps/api` and `apps/web`. Framework changes and
+production, external or destructive writes need explicit authority. Use current
+package commands and preserve unrelated work.

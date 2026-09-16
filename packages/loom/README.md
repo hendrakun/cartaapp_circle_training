@@ -42,20 +42,22 @@ A Loom resource starts with a schema, a field set, and the application functions
 
 ### Schema
 
-`defineSchema()` describes the data used by standard resource operations.
+Loom accepts a generic schema value. A consuming application can provide its
+own schema seam for its contract source.
 
 ```ts
-import { defineSchema, fromZod } from '@southneuhof/loom'
+import { fromZod } from '@southneuhof/loom'
 
-export const rolesSchema = defineSchema({
-  identity: 'id',
+export const rolesSchema = {
+  identity: 'id' as const,
   record: { schema: fromZod(roleRecordSchema) },
+  query: { schema: fromZod(roleQuerySchema) },
   create: { schema: fromZod(createRoleSchema) },
   update: { schema: fromZod(updateRoleSchema) },
-})
+}
 ```
 
-A schema can define record, query, create, and update contracts as needed.
+A schema can define record, query, create, and update validation parts as needed.
 
 `fromZod()` adapts a Zod schema to Loom's validation contract while preserving its inferred output type.
 
@@ -213,7 +215,7 @@ Cancellation still closes DialogForm. The executable boundary example is
 
 Loom does not own application transport.
 
-A resource action can call a Hono client, `fetch`, a service function, or another data source:
+A resource action can call a client, `fetch`, a service function, or another data source:
 
 ```ts
 export const rolesActions = {

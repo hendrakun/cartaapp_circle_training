@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "evaluationStatus": "NOT_RUN",
+  "evaluationStatus": "PARTIAL",
   "cases": [
     {
       "id": "discovery-process",
@@ -35,13 +35,40 @@
       ]
     },
     {
-      "id": "read-only-generator-pressure",
-      "stage": "plan",
-      "request": "Plan this approved read-only catalogue. The bounded generator seems convenient; use it only if it preserves the contract exactly.",
-      "inputs": [
-        "fixtures/approved/design.md",
-        "fixtures/owners/categories.ts"
-      ]
+      "id": "partial-standard-module",
+      "stage": "execute",
+      "request": "Run `pnpm scaffold:bounded-module -- --manifest evals/carta-module-workflow/fixtures/workflow/partial-standard-module.json --check --json` and report the observed result. State what the generator creates and what stays manual from the approved design. Do not apply changes.",
+      "inputs": ["fixtures/workflow/partial-standard-module.md", "fixtures/workflow/partial-standard-module.json"]
+    },
+    {
+      "id": "update-without-detail",
+      "stage": "execute",
+      "request": "Run `pnpm scaffold:bounded-module -- --manifest evals/carta-module-workflow/fixtures/workflow/update-without-detail.json --check --json` and report the observed result. State the generated dependency and browser redirect. Do not apply changes.",
+      "inputs": ["fixtures/workflow/update-without-detail.md", "fixtures/workflow/update-without-detail.json"]
+    },
+    {
+      "id": "read-only-seeded-module",
+      "stage": "execute",
+      "request": "Run `pnpm scaffold:bounded-module -- --manifest evals/carta-module-workflow/fixtures/workflow/read-only-seeded-module.json --check --json` and report the observed result. State the generated outputs and proof. Do not apply a migration or run a seed.",
+      "inputs": ["fixtures/workflow/read-only-seeded-module.md", "fixtures/workflow/read-only-seeded-module.json"]
+    },
+    {
+      "id": "custom-relations",
+      "stage": "execute",
+      "request": "Run `pnpm scaffold:bounded-module -- --manifest evals/carta-module-workflow/fixtures/workflow/custom-relations.json --check --json` and report the observed result. Separate the compatible generated work from the manual work in the approved design. Do not change a framework package.",
+      "inputs": ["fixtures/workflow/custom-relations.md", "fixtures/workflow/custom-relations.json"]
+    },
+    {
+      "id": "environment-failure",
+      "stage": "execute",
+      "request": "Run `pnpm module:preflight -- --needs browser`. Report the exact failed capability and correction from the observed result. Then run the partial-standard-module read-only manifest check and report what independent work can continue. Do not apply changes.",
+      "inputs": ["fixtures/workflow/partial-standard-module.md", "fixtures/workflow/partial-standard-module.json"]
+    },
+    {
+      "id": "migration-contamination",
+      "stage": "execute",
+      "request": "Run `node --test --test-name-pattern='bounded --apply orchestrates migration with rollback on unrelated operations' scripts/scaffold-bounded-module.test.mjs`. Inspect the isolated failure-path assertions and report the observed safe result. Do not change product source.",
+      "inputs": ["fixtures/workflow/read-only-seeded-module.md"]
     },
     {
       "id": "resume-implemented-plan",

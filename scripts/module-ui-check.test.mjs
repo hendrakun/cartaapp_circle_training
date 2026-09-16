@@ -13,6 +13,7 @@ const check = (source, selected = contract) => checkUiContract(selected, { read:
 
 test('requires rendered framework imports and resolves capitalized native names', () => {
   assert.deepEqual(check(page).errors, [])
+  assert.deepEqual(check(page).review, [])
   for (const source of [
     page.replace(', Button', ''),
     page.replaceAll('<RecordView>', '<section>').replaceAll('</RecordView>', '</section>'),
@@ -21,6 +22,49 @@ test('requires rendered framework imports and resolves capitalized native names'
   ]) assert.ok(check(source).errors.length, source)
   assert.deepEqual(check(page.replace('<Button>Close</Button>', '<button>Close</button>')).errors, [])
   assert.deepEqual(check(page.replaceAll('RecordView>', 'record-view>')).errors, [])
+})
+
+test('native interactive controls need source review with file and line', () => {
+  const raw = {
+    button: page.replace('<Button>Close</Button>', '<button>Close</button>'),
+    input: page.replace('<Button>Close</Button>', '<input type="text" value="Close">'),
+    select: page.replace('<Button>Close</Button>', '<select><option>Close</option></select>'),
+    textarea: page.replace('<Button>Close</Button>', '<textarea>Close</textarea>'),
+  }
+  for (const [tag, source] of Object.entries(raw)) {
+    const result = check(source)
+    assert.deepEqual(result.errors, [], tag)
+    assert.equal(result.review.length, 1, tag)
+    assert.match(result.review[0], new RegExp(`^page\\.vue:1: native <${tag}> needs source review`))
+  }
+  // A gap explains the requirement but the reviewer still resolves the item.
+  const selected = structuredClone(contract)
+  selected.surfaces[0].gap = 'A requirement for review'
+  const gapped = check(raw.button, selected)
+  assert.deepEqual(gapped.errors, [])
+  assert.equal(gapped.review.length, 2)
+  assert.ok(gapped.review.some(item => item.includes('native <button> needs source review')))
+})
+
+test('hidden inputs and layout elements stay silent', () => {
+  const silent = [
+    page,
+    page.replace('<Button>Close</Button>', '<input type="hidden" value="token">'),
+    page.replace('<Button>Close</Button>', '<INPUT TYPE="HIDDEN" value="token">'),
+    page.replace('<Button>Close</Button>', '<section><div><span>Close</span></div></section>'),
+  ]
+  for (const source of silent) assert.deepEqual(check(source).review, [], source)
+  const needsReview = [
+    page.replace('<Button>Close</Button>', '<input value="Close">'),
+    page.replace('<Button>Close</Button>', '<input :type="kind" value="Close">'),
+    page.replace('<Button>Close</Button>', '<input v-bind="fields" value="Close">'),
+  ]
+  for (const source of needsReview) {
+    const result = check(source)
+    assert.deepEqual(result.errors, [], source)
+    assert.equal(result.review.length, 1, source)
+    assert.match(result.review[0], /^page\.vue:1: native <input> needs source review/)
+  }
 })
 
 test('requires a concrete Create override and rejects unused exceptions', () => {
@@ -70,6 +114,26 @@ test('CLI keeps an exception separate from a passing check', t => {
   assert.equal(run().status, 2)
   selected.surfaces[0].components[0].name = 'MissingView'
   assert.equal(run().status, 1)
+})
+
+test('CLI reports exit 2 for a raw control and keeps 0/1 meanings', t => {
+  const root = mkdtempSync(join(tmpdir(), 'carta-ui-check-cli-'))
+  t.after(() => rmSync(root, { recursive: true, force: true }))
+  const manifest = join(root, 'ui-contract.json')
+  writeFileSync(manifest, JSON.stringify(contract))
+  const run = (source) => {
+    writeFileSync(join(root, 'page.vue'), source)
+    return spawnSync(process.execPath, [fileURLToPath(new URL('./module-ui-check.mjs', import.meta.url)), manifest, root], { encoding: 'utf8' })
+  }
+  const clean = run(page)
+  assert.equal(clean.status, 0)
+  assert.match(clean.stdout, /PASS/)
+  const raw = run(page.replace('<Button>Close</Button>', '<button>Close</button>'))
+  assert.equal(raw.status, 2)
+  assert.match(raw.stdout, /REVIEW: page\.vue:1: native <button> needs source review/)
+  const broken = run(page.replace(', Button', ''))
+  assert.equal(broken.status, 1)
+  assert.match(broken.stderr, /FAIL/)
 })
 
 

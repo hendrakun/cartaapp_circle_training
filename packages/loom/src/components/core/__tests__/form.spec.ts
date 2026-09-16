@@ -972,4 +972,50 @@ describe('Form core', () => {
     expect(view.text()).not.toContain('Terlambat')
     view.unmount()
   })
+
+  it('rejects submit with the orphan-field error when a required key has no visible input', async () => {
+    const submit = vi.fn(async () => undefined)
+    const view = mountCore(Form, {
+      fields: { name: { label: 'Name' } },
+      schema: fromZod(z.object({ name: z.string(), createdByUserId: z.string() })),
+      initialData: { name: 'Admin' },
+      submit,
+    })
+    await flush()
+
+    await expect(view.exposed().submit()).rejects.toThrow('no visible input')
+    await expect(view.exposed().submit()).rejects.toThrow('createdByUserId')
+    expect(submit).not.toHaveBeenCalled()
+    view.unmount()
+  })
+
+  it('submits when the unrendered required value is supplied with initialData', async () => {
+    const submit = vi.fn(async () => undefined)
+    const view = mountCore(Form, {
+      fields: { name: { label: 'Name' } },
+      schema: fromZod(z.object({ name: z.string(), projectId: z.string() })),
+      initialData: { name: 'Admin', projectId: 'project-1' },
+      submit,
+    })
+    await flush()
+
+    await expect(view.exposed().submit()).resolves.toBeUndefined()
+    expect(submit).toHaveBeenCalledWith({ name: 'Admin', projectId: 'project-1' })
+    view.unmount()
+  })
+
+  it('reports a nested orphan path', async () => {
+    const submit = vi.fn(async () => undefined)
+    const view = mountCore(Form, {
+      fields: { name: { label: 'Name' } },
+      schema: fromZod(z.object({ name: z.string(), address: z.object({ city: z.string() }).optional() })),
+      initialData: { name: 'Admin', address: {} },
+      submit,
+    })
+    await flush()
+
+    await expect(view.exposed().submit()).rejects.toThrow('address.city')
+    expect(submit).not.toHaveBeenCalled()
+    view.unmount()
+  })
 })

@@ -17,7 +17,7 @@
 - Depends on: 016
 - Category: migration, DX, test reliability
 - Planned at: commit `7eb093d`, 2026-09-12
-- Status: TODO — plan only
+- Status: IMPLEMENTED — 2026-09-12, checks summary below; orchestrator review pending, nothing committed
 
 The user selected this migration. Execute it after plan 016. Keep unrelated
 work. The setup command can create missing local environment files because the
@@ -274,14 +274,65 @@ and rerun before module development.
 
 ## Done criteria
 
-- [ ] One idempotent command creates only missing local environment files.
-- [ ] One read-only command checks selected module prerequisites before work starts.
-- [ ] Test and E2E database targets are explicit and distinct from development.
-- [ ] E2E storage has an explicit guarded target and no hard-coded default.
-- [ ] Every failure names its purpose and an exact correction command.
-- [ ] No secret is printed and no existing `.env` file is changed.
-- [ ] Preflight performs no install, migration, seed, reset, upload, list, or delete.
+- [x] One idempotent command creates only missing local environment files.
+- [x] One read-only command checks selected module prerequisites before work starts.
+- [x] Test and E2E database targets are explicit and distinct from development.
+- [x] E2E storage has an explicit guarded target and no hard-coded default.
+- [x] Every failure names its purpose and an exact correction command.
+- [x] No secret is printed and no existing `.env` file is changed.
+- [x] Preflight performs no install, migration, seed, reset, upload, list, or delete.
 - [ ] Tool tests and one real API/E2E integration check pass.
+
+## Implementation record — 2026-09-12
+
+Drift: `git diff --stat 7eb093d..HEAD -- scripts apps/api/scripts package.json
+README.md` and the wider variant plus `git status --short` showed only plan 016
+changes (all uncommitted, none in `scripts/`, `apps/api/scripts/`, or
+`package.json`). No safety contract changed, so execution proceeded. All plan
+016 dirty work is preserved uncommitted; no commit, push, or PR was made.
+
+Steps:
+
+1. Added `apps/api/.env.e2e.example` (exact 4 lines from the plan) and removed
+   hard-coded DB/bucket defaults from `apps/api/scripts/e2e-target.ts`. The
+   guard now requires `CARTA_DATABASE_PURPOSE`, `CARTA_E2E_DATABASE_NAME`, and
+   `S3_BUCKET` from effective config and keeps the connected-DB plus storage
+   checks. `apps/api/scripts/test-target.mjs` now exports `databaseIdentity`
+   for reuse (no duplicated rule copies in new code paths beyond the script's
+   own file-bound target check).
+2. Added `scripts/local-environment.mjs` (`setup` plus `preflight`, `--help`,
+   bounded `--needs`, per-line `STATUS PURPOSE CHECK CORRECTION`, secret
+   redaction, short probes, socket/pool/client close).
+3. Added `scripts/local-environment.test.mjs` (temp dirs plus injected probes;
+   6 tests, no real PG/Chromium/S3).
+4. Added `setup:local` and `module:preflight` root aliases and concise setup
+   guidance in the root plus app READMEs.
+
+Checks (evidence kept in ignored `.local/`, redacted):
+
+- `node --test scripts/local-environment.test.mjs`: 6 pass.
+- `pnpm test:module-tooling`: 72 node tests pass, 2 python tests pass.
+- `pnpm setup:local` twice: first run created 4 files with a fresh secret,
+  second run kept all 4 files with identical SHA-256 checksums.
+- `pnpm module:preflight -- --needs api,web,test,browser,storage`: complete
+  `SCOPE` plus `STATUS PURPOSE CHECK CORRECTION` result, modified nothing.
+  Each capability alone plus `--needs=...` and default scope also verified.
+  Unknown and duplicate `--needs` values fail.
+- `vitest run apps/api/scripts/e2e-target.spec.ts`: 10 pass without a DB
+  (guard-only spec, run with disposable `.env` files).
+- `vitest run apps/api/src/storage/s3.spec.ts`: 3 pass as the one real API
+  integration check available without services.
+- Blocked, not weakened: PostgreSQL is not installed here (`ECONNREFUSED`
+  on 5432, no `postgres`/`psql`/`initdb`, no docker/colima), so `test` and
+  `browser` database connections FAIL with exact corrections; S3 is absent
+  (port 9000 closed), so `storage` FAILs after one head-only attempt; no API
+  or web server was running, so those port checks FAIL. The full
+  `test:focused` migration path and a live Playwright E2E case cannot pass on
+  this host — recorded as FAIL with corrections, not worked around. The Done
+  integration box stays open until those run where services exist.
+- Secret grep: generated `BETTER_AUTH_SECRET` hex absent from captured
+  preflight output; no `DATABASE_URL` credentials, `demo-password`, or
+  `example-` secret markers in the evidence file.
 
 ## STOP conditions
 

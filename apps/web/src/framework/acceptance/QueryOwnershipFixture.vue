@@ -15,8 +15,9 @@
  *    fields that need neither.
  */
 import { ref } from 'vue'
-import { defineFields, defineResource, defineSchema, Form, Table } from '@southneuhof/loom'
+import { defineFields, defineResource, Form, Table } from '@southneuhof/loom'
 import type { FieldsInput, WebResourceSchema } from '@southneuhof/loom'
+import { defineSchema } from '@/framework/schema'
 
 interface Row extends Record<string, unknown> {
   id: string

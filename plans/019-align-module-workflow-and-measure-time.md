@@ -19,7 +19,45 @@
 - Depends on: 016, 017, and 018
 - Category: migration, skills, evaluation, DX
 - Planned at: commit `7eb093d`, 2026-09-12
-- Status: TODO — plan only
+- Status: IMPLEMENTED — 2026-09-13, controlled trials green; release repairs committed
+- Status note 2026-09-13: controlled trials ran in disposable worktrees
+  (baseline `7eb093d`, candidate `2d66df8` then `b5f7d0d`). Baseline Trial B
+  `PASS`; candidate Trial A and B journeys green after the generator
+  assertion fix (static title plus cell; list chrome for empty state), with
+  API 1/1 PASS each and the custom Detail proof green. Independent
+  `$verify-carta-module` verdicts: baseline Trial B `PASS`; candidate trials
+  `REWORK` on technical repairs only — all four closed (specs regenerated
+  from the committed fix and rerun green; stale integration absence
+  repaired; `CommandPalette` membership assertion; full web `vue-tsc` pass).
+  No speed claim is made: correctness differed during measurement. See
+  `evals/carta-module-workflow/plan-019-result.md`.
+
+## Implementation record — 2026-09-13
+
+Required skill inputs read before the first skill edit:
+
+- `/Users/gamer/.codex/skills/.system/skill-creator/SKILL.md`
+- `/Users/gamer/.agents/skills/writing-for-agents/SKILL.md`
+- `/Users/gamer/.agents/skills/writing-for-agents/SKILL-MECHANICS.md`
+
+Implementation commit: `29e4abe` (`Align module workflow with bounded generation`).
+
+Focused contract tests passed 22/22. All three changed skills passed
+`quick_validate.py`. The full module tooling suite passed 88 Node tests and 2
+Python tests.
+
+Independent review returned `REWORK`: scan command fences for retired commands,
+keep evidence sufficiency in one reference, replace exact prose checks with
+decision checks, and make the six evaluation cases run observable commands in
+isolated fixtures.
+
+The controlled run then met a stop condition. The documented command
+`pnpm scaffold:bounded-module -- --manifest <path> --check` fails with `Unknown
+argument: --`; omitting the first `--` passes. Generator changes are outside this
+plan. Both trial variants were also blocked before runtime proof because isolated
+API, test and browser targets were unavailable. See
+`evals/carta-module-workflow/plan-019-result.md`. No time comparison or speed
+claim is valid.
 
 The user selected this migration and required `$skill-creator` and
 `$writing-for-agents`. Execute it after the commands in plans 016-018 exist and
@@ -190,12 +228,15 @@ empty and broad worker delays. Do not add a new gate between each generated file
 
 ### 2. Make the bounded reference the single written contract
 
-Rewrite the complete-module part of `bounded.md` around plan 018. Include:
+Rewrite the complete-module part of `bounded.md` around plan 018 plus the plan
+018 addendum (2026-09-13). Include:
 
 - exact supported action, field, permission, seed, and test rules;
 - one current manifest example with a partial action set;
 - the two public commands;
 - the Update-without-Detail hydration rule;
+- the framework form redirect rule (Detail, else List) and the matching
+  browser-journey assertion;
 - Drizzle generation and no-apply rule;
 - exact seed and no-run rule;
 - API test and conditional browser test behavior;
@@ -263,12 +304,16 @@ If a conditional pointer changes another skill, run the validator for it too.
 ### 5. Revise the current evaluation cases
 
 Keep the existing evaluation directory and format. Replace old generator-pressure
-expectations with cases that require these decisions:
+expectations with cases that require these decisions. Browser-journey cases use
+the current framework form redirect (Detail when Detail exists, else List when
+List exists; see plan 018 addendum 2026-09-13). A case that asserts a
+stay-on-page journey or an explicit `goto` between submit and the redirect
+assertion fails.
 
 | Case | Required result |
 | --- | --- |
 | `partial-standard-module` | Generate List/Create/Update; leave custom Detail manual. |
-| `update-without-detail` | Generate technical read hydration with Update permission, but no Detail surface or permission. |
+| `update-without-detail` | Generate technical read hydration with Update permission, but no Detail surface or permission. The browser journey expects the List redirect after submit. |
 | `read-only-seeded-module` | Generate List/Detail, migration, exact seed, API proof, and browser read journey. |
 | `custom-relations` | Generate independent standard parts; leave relation, child write, scope, and custom browser proof manual. |
 | `environment-failure` | Run selected preflight first, report exact failed capability and correction, continue independent manifest work. |
@@ -284,6 +329,8 @@ Update `grading.md` with hard failures:
 - executes a seed;
 - overwrites generated source;
 - creates an omitted action surface or permission;
+- asserts a stay-on-page journey or an explicit `goto` between submit and the
+  framework redirect assertion;
 - changes a framework package for an unsupported custom case;
 - calls an unguarded database or storage write;
 - marks manual custom behavior as verified.
@@ -302,7 +349,9 @@ It must use exact seed data and standard fields.
 
 Trial B: a mixed module with standard List, Create, and Update plus a custom
 Detail page. The custom page has one simple extra read-only section. It must not
-need a framework change, relation, storage, or workflow engine.
+need a framework change, relation, storage, or workflow engine. The trial
+expects the List redirect after submit because the standard resource has no
+Detail action (see plan 018 addendum 2026-09-13).
 
 Use `7eb093d` as the baseline checkout.
 Use the completed plans 016-019 as the candidate checkout. Prepare equivalent

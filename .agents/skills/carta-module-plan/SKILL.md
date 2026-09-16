@@ -12,18 +12,37 @@ new product scope, or implement source changes.
 
 ## Confirm authority and current context
 
+Start with the [standard module base](../carta-module-development/references/standard-module.md),
+including custom workflows added to it.
+Add exact owners, work order, setup and suitable checks to the existing work
+record. The original request and decisions can establish approval. Keep the
+plan in the standard design record without creating
+numbered plans, a worksheet or UI JSON. A plan-only request stops there.
+Use the remaining procedure only for a scoped full contract or an existing full
+plan. A custom action alone does not require it. Include workflow restrictions
+on standard actions in the first result; keep later workflow work explicit.
+
 Read the design and its approval source. Use the shared
 [module contract](../carta-module-design/references/module-contract.md) to assess
 readiness without requiring a rewrite into a particular layout. Keep an
 existing plan that already meets the same bar.
 
-Inspect the actual affected owners and consumers, relevant layer contracts,
+Apply [discovery reuse](../carta-module-development/SKILL.md#discovery-reuse).
+Inspect the required owners and consumers, relevant layer contracts,
 and current package scripts/configuration. Record an existing exemplar for
 non-obvious patterns. Separate observed repository facts from proposed technical
-changes. Carta supplies Vitest, Playwright, type checking and linting; select
+changes. Module delivery uses non-browser Vitest, type checking and linting; select
 appropriate checks rather than asking the user to choose a testing stack.
 Resolve exact commands from this checkout and distinguish script inspection
 from a successful execution.
+
+Use the [generation contract](../carta-module-development/references/bounded.md)
+only when a scaffold saves work. If selected, record the preview and manual
+owners. Otherwise plan normal edits without a manifest.
+
+Technical discovery ends when each requested action has an exact owner, a
+supported implementation path or named gap, and a suitable check. Record each
+pattern decision with an exact source pointer once in the owners table.
 
 For backend routes, read the
 [file-routing contract](../api-conventions/references/file-routing.md). Name the
@@ -56,15 +75,16 @@ called a complete application workflow.
 
 ## Organize the work
 
-Put test environment preparation first: isolated database, browser, storage and
-ports needed by the selected checks. Use existing setup within task authority.
-Name any blocked check and its missing prerequisite.
+Put environment preparation first. Record selected capabilities and the
+`module:preflight` result in the plan's environment row. Use existing setup within
+task authority. Name any blocked check and its missing prerequisite.
+Include development migration, required seed and preview under the
+[execution setup rule](../carta-module-development/references/execution.md#prepare-and-build);
+test setup does not replace them.
 
-Make the first implementation result a complete path through the most uncertain
-integration. Include API, UI and persistence where the approved path uses them.
-Prove its result before adding dependent actions. Keep the path and its tests
-in one assignment. Split further work only
-for a separate result, dependency, independent owner or risk boundary.
+Select the first result under the
+[assignment rule](../carta-module-development/references/execution.md#assignment).
+Use the worksheet's plan dependency rule to separate plans from assignments.
 
 Use [plan-template.md](references/plan-template.md) for numbered plans at
 `plans/<feature>/001-<result>.md`. Preserve existing numbering on resume. The
@@ -74,14 +94,16 @@ not a transcript or repeated copy of the design in each file.
 Use the [worksheet contract](../carta-module-development/references/module-execution-worksheet.md)
 for the dependency/status index and acceptance ownership. Map every acceptance
 ID to a primary plan and its required evidence surfaces there. Keep acceptance
-and journey test mappings only in the worksheet. Exact tests can remain `PENDING`
+test mappings only in the worksheet. Exclude E2E generation, execution and browser
+journey mappings, including on resume. Exact tests can remain `PENDING`
 until the executor returns them for the parent to merge. Use
 [verification strategy](../carta-module-development/references/verification-strategy.md)
 to select the smallest sufficient tests and broader checks justified by impact.
 
 State affected owners, intended changes, required interfaces, transaction
 boundaries and test strategy. Resolve commands and working directories from the
-checkout; let the executor add selectors for new tests. Specify critical expected
+checkout; let the executor add selectors for new tests. Name one exemplar file
+per layer with its path and symbol in the owners table. Specify critical expected
 outcomes; let the executor choose test names, fixtures and routine code details.
 Include code excerpts only to explain a fragile interface.
 

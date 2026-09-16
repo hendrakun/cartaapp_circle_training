@@ -1,11 +1,7 @@
-import { sql } from "drizzle-orm";
-import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { hashPassword } from "better-auth/crypto";
-import { closeDb, getDb } from "../db";
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { closeDb } from "../db";
 import { app as rawApp } from "../app";
-import { getAuth } from "../routes/auth/auth";
-import { accounts } from "../routes/auth/auth.entity";
-import { users } from "../routes/(authenticated)/users/users.entity";
+import { cleanupSessions, createSystemSession } from "../testing/session";
 import {
   createPresignedDownload,
   createPresignedUpload,
@@ -50,67 +46,6 @@ function request(body: unknown, cookie = sessionCookie) {
   return routeRequest("/files/presigned-url", "POST", body, cookie);
 }
 
-async function resetSchema() {
-  await getDb().execute(
-    sql.raw(`
-    drop table if exists sessions cascade;
-    drop table if exists accounts cascade;
-    drop table if exists verifications cascade;
-    drop table if exists users cascade;
-
-    create table users (
-      id text primary key,
-      name text not null,
-      email text not null unique,
-      username text unique,
-      email_verified boolean not null default false,
-      image text,
-      img_photo_user text,
-      status_code text not null default 'active',
-      employee_id text,
-      failed_attempt_count integer not null default 0,
-      last_login_at timestamp,
-      password_changed_at timestamp,
-      created_at timestamp not null default now(),
-      updated_at timestamp not null default now()
-    );
-    create table sessions (
-      id text primary key,
-      expires_at timestamp not null,
-      token text not null unique,
-      created_at timestamp not null default now(),
-      updated_at timestamp not null default now(),
-      ip_address text,
-      user_agent text,
-      user_id text not null references users(id) on delete cascade
-    );
-    create table accounts (
-      id text primary key,
-      account_id text not null,
-      provider_id text not null,
-      user_id text not null references users(id) on delete cascade,
-      access_token text,
-      refresh_token text,
-      id_token text,
-      access_token_expires_at timestamp,
-      refresh_token_expires_at timestamp,
-      scope text,
-      password text,
-      created_at timestamp not null default now(),
-      updated_at timestamp not null default now()
-    );
-    create table verifications (
-      id text primary key,
-      identifier text not null,
-      value text not null,
-      expires_at timestamp not null,
-      created_at timestamp not null default now(),
-      updated_at timestamp not null default now()
-    );
-  `),
-  );
-}
-
 describe("file upload presign route", () => {
   beforeEach(async () => {
     signer.mockReset();
@@ -131,32 +66,10 @@ describe("file upload presign route", () => {
       CommonPrefixes: [],
       Contents: [],
     });
-    await resetSchema();
-
-    await getDb()
-      .insert(users)
-      .values({
-        id: "user-files",
-        name: "File User",
-        email: "files@example.com",
-      });
-    await getDb()
-      .insert(accounts)
-      .values({
-        id: "account-files",
-        accountId: "user-files",
-        providerId: "credential",
-        userId: "user-files",
-        password: await hashPassword("demo-password"),
-      });
-
-    const signedIn = await getAuth().api.signInEmail({
-      body: { email: "files@example.com", password: "demo-password" },
-      returnHeaders: true,
-    });
-    sessionCookie = signedIn.headers.get("set-cookie")?.split(";")[0] ?? "";
+    sessionCookie = (await createSystemSession([], "files")).cookie;
   });
 
+  afterEach(() => cleanupSessions());
   afterAll(() => closeDb());
 
   it("requires an authenticated session", async () => {

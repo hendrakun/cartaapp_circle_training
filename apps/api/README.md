@@ -2,7 +2,11 @@
 
 ## Environment
 
-Copy `.env.example` to `.env` and configure the database and auth settings. Copy `.env.example` to `.env`. The API trusts `APP_ORIGIN` only. API port 5180, database `carta`, admin seed via `CARTA_ADMIN_EMAIL` and `CARTA_ADMIN_PASSWORD`.
+Run `pnpm setup:local` from the repository root, then configure the database
+and auth settings in the created files. `apps/api/.env` holds development,
+`apps/api/.env.test` holds the isolated Vitest target, and `apps/api/.env.e2e`
+holds E2E database and bucket overrides. Check readiness with
+`pnpm module:preflight -- --needs api,test,browser,storage`. The API trusts `APP_ORIGIN` only. Change `API_PORT` and the related API URLs only in `apps/api/.env`; the sample values in `.env.example` are templates. The database is `carta`, admin seed via `CARTA_ADMIN_EMAIL` and `CARTA_ADMIN_PASSWORD`.
 
 Auth is served at `/api/auth/*`. All routes except `/health`, `/openapi.json`, and `/api/auth/*` require a valid Better Auth session cookie.
 

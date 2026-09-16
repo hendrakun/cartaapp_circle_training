@@ -22,12 +22,24 @@ function replaceOnce(source, anchor, replacement, name) {
 
 function insertBeforeArrayEnd(source, startMarker, lines, name) {
   const start = source.indexOf(startMarker)
-  const end = source.indexOf('] as const', start)
-  if (start < 0 || end < 0 || source.indexOf(startMarker, start + 1) >= 0) {
+  const arrayOpen = source.indexOf('[', start)
+  if (start < 0 || arrayOpen < 0 || source.indexOf(startMarker, start + 1) >= 0) {
     throw new Error(`${name} section is missing or ambiguous.`)
   }
+  let depth = 0
+  let end = -1
+  for (let index = arrayOpen; index < source.length; index += 1) {
+    const character = source[index]
+    if (character === '[') depth += 1
+    else if (character === ']') {
+      depth -= 1
+      if (depth === 0) { end = index; break }
+    }
+  }
+  if (end < 0) throw new Error(`${name} section is missing or ambiguous.`)
   const before = source.slice(0, end)
-  return `${before}${before.endsWith('\n') ? '' : '\n'}${lines}\n${source.slice(end)}`
+  const needsSeparator = /[^\s,\[]$/.test(before.replace(/\s+$/, ''))
+  return `${before}${needsSeparator ? ',' : ''}${before.endsWith('\n') ? '' : '\n'}${lines}\n${source.slice(end)}`
 }
 
 function insertDomains(source, config) {
@@ -48,14 +60,25 @@ function stringPattern(value) {
 function insertCatalog(source, config) {
   const startMarker = 'export const authorizationModules = ['
   const start = source.indexOf(startMarker)
-  const end = source.indexOf('] as const', start)
-  if (start < 0 || end < 0 || source.indexOf(startMarker, start + 1) >= 0) {
+  const arrayOpen = source.indexOf('[', start)
+  if (start < 0 || arrayOpen < 0 || source.indexOf(startMarker, start + 1) >= 0) {
     throw new Error('Current authorizationModules definitions are missing or ambiguous.')
   }
-  const codes = moduleMetadata(config).permissions
+  let depth = 0
+  let end = -1
+  for (let index = arrayOpen; index < source.length; index += 1) {
+    const character = source[index]
+    if (character === '[') depth += 1
+    else if (character === ']') {
+      depth -= 1
+      if (depth === 0) { end = index; break }
+    }
+  }
+  if (end < 0) throw new Error('Current authorizationModules definitions are missing or ambiguous.')
+  const codes = [...new Set(Object.values(config.actions).map((action) => action.permission))]
   const section = source.slice(start, end)
-  const states = Object.entries(codes).map(([action, code]) => {
-    const entry = config.permissions.entries[action]
+  const states = codes.map((code) => {
+    const entry = config.permissions[code]
     const token = stringPattern(code)
     const count = [...section.matchAll(new RegExp(`code:\\s*${token}`, 'g'))].length
     const exact = new RegExp(`\\{\\s*code:\\s*${token},\\s*name:\\s*${stringPattern(entry.name)},\\s*description:\\s*${stringPattern(entry.description)},\\s*targetType:\\s*['"]global['"],\\s*active:\\s*true\\s*\\}`)
@@ -67,11 +90,11 @@ function insertCatalog(source, config) {
   if (states.some(Boolean)) throw new Error(`permissions for "${config.slug}" are incomplete.`)
   const moduleCount = [...section.matchAll(new RegExp(`code:\\s*${stringPattern(config.slug)}`, 'g'))].length
   if (moduleCount) throw new Error(`authorization module "${config.slug}" has different metadata.`)
-  const permissions = Object.entries(codes).map(([action, code]) => {
-    const entry = config.permissions.entries[action]
+  const permissions = codes.map((code) => {
+    const entry = config.permissions[code]
     return `      { code: ${quoted(code)}, name: ${quoted(entry.name)}, description: ${quoted(entry.description)}, targetType: 'global', active: true },`
   }).join('\n')
-  const definition = `  {\n    code: ${quoted(config.slug)},\n    name: ${quoted(config.permissions.moduleName)},\n    active: true,\n    permissions: [\n${permissions}\n    ],\n  },`
+  const definition = `  {\n    code: ${quoted(config.slug)},\n    name: ${quoted(config.title)},\n    active: true,\n    permissions: [\n${permissions}\n    ],\n  },`
   return insertBeforeArrayEnd(source, startMarker, definition, 'authorization modules')
 }
 
@@ -102,7 +125,7 @@ function insertNavigation(source, config) {
   }
   const group = source.slice(groupStart, groupEnd)
   const marker = `to: { name: '${metadata.routes.list}' }`
-  const desired = `      { to: { name: '${metadata.routes.list}' }, permission: '${metadata.permissions.list}', title: ${quoted(config.navigation.title)}, icon: ${quoted(config.navigation.icon)} },`
+  const desired = `      { to: { name: '${metadata.routes.list}' }, permission: '${config.actions.list.permission}', title: ${quoted(config.navigation.title)}, icon: ${quoted(config.navigation.icon)} },`
   if (count(group, marker) > 1) throw new Error(`navigation route "${metadata.routes.list}" is duplicated.`)
   if (group.includes(marker)) {
     if (!group.includes(desired)) throw new Error(`navigation route "${metadata.routes.list}" has different metadata.`)
@@ -111,14 +134,8 @@ function insertNavigation(source, config) {
   const anchorMarker = `to: { name: '${config.navigation.anchor}' }`
   if (count(group, anchorMarker) !== 1) throw new Error(`navigation anchor "${config.navigation.anchor}" is missing or ambiguous.`)
   const anchor = group.indexOf(anchorMarker)
-  const lineStart = group.lastIndexOf('\n', anchor) + 1
   const lineEnd = group.indexOf('\n', anchor)
-  const separator = config.navigation.separator && !group.includes(`{ separator: ${quoted(config.navigation.separator)} }`)
-    ? `      { separator: ${quoted(config.navigation.separator)} },\n`
-    : ''
-  const updated = config.navigation.position === 'before'
-    ? `${group.slice(0, lineStart)}${separator}${desired}\n${group.slice(lineStart)}`
-    : `${group.slice(0, lineEnd + 1)}${separator}${desired}\n${group.slice(lineEnd + 1)}`
+  const updated = `${group.slice(0, lineEnd + 1)}${desired}\n${group.slice(lineEnd + 1)}`
   return source.slice(0, groupStart) + updated + source.slice(groupEnd)
 }
 
@@ -157,6 +174,7 @@ function parseArgs(argv) {
   let json = false
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index]
+    if (argument === '--') continue
     if (argument === '--manifest' || argument === '--root') {
       const value = argv[++index]
       if (!value || value.startsWith('--')) throw new Error(`${argument} requires a path.`)

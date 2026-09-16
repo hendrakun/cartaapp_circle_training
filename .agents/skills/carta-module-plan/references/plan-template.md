@@ -1,8 +1,11 @@
 # Module implementation plan
 
+This template is for the full process. Ordinary CRUD uses the
+[standard work record](../../carta-module-development/references/standard-module.md).
+
 Use `plans/<feature>/NNN-<result>.md`, one plan per complete result.
 Preserve valid numbering on resume. Reference design IDs instead of copying rules.
-The worksheet alone maps acceptance and journeys to tests and results.
+The worksheet alone maps acceptance to non-browser tests and results.
 
 ```markdown
 # Plan NNN: <observable result>
@@ -12,6 +15,10 @@ The worksheet alone maps acceptance and journeys to tests and results.
 - Depends on: <plan IDs and required interfaces, or NONE>
 - Source: <commit and relevant dirty/untracked input snapshot>
 - Scope: <permitted edits, test target and side effects>
+
+| Needs: api,web,test,storage | Preflight result/evidence | Owner |
+|---|---|---|
+| <selected capabilities and purpose> | `pnpm module:preflight -- --needs <selected>`: <result or PENDING> | <owner> |
 
 ## Owners and interfaces
 
@@ -23,26 +30,34 @@ transaction boundaries and interfaces between plans. Name existing examples and
 applicable layer contracts. State migration and consumer update order when needed.
 Leave routine code and test details to the executor.
 
+When generation is selected, reference its manifest and current `--check` output. Use that
+output for generated owners; list the manual remainder here. Record each
+selected pattern once with an exact file and symbol, source revision, why it
+fits, and the manual remainder. The executor should receive the decision, not
+an instruction to rediscover it.
+
 ## Work order
 
-Check the required isolated test environment before implementation. Start with
-one complete path through the most uncertain integration. Include API, UI and
-persistence where the approved path uses them. Prove its result before dependent
-actions. Name remaining results and their dependencies.
+Name the first result and subsequent assignments under the
+[assignment rule](../../carta-module-development/references/execution.md#assignment).
+Record plan dependencies under the worksheet contract. Include environment
+preparation and the check that ends each assignment.
+Include the development migration, required seed and preview URL checkpoint.
+The first UI result includes all necessary layers; test setup alone is insufficient.
 
 ## UI contract
 
 For changed web surfaces, reference `ui-contract.json` from the
 [UI contract](../../web-ui-surfaces/references/ui-contract.md). Record the selected
-component, extension and actual gap once. Use the design's journey IDs; the
-executor returns exact browser test mappings for the parent to merge.
+component, extension and actual gap once. Review field and relation wiring in
+source. Browser journeys and E2E generation are outside module delivery.
 
 ## Test strategy
 
 Name test boundaries and critical expected outcomes, including unchanged data
 on rejected writes. Use the verification strategy for test-first requirements.
-Select required evidence surfaces in the worksheet before assignment. Browser
-checks use changed controls and prove saved results; API checks prove access,
+Select only API/UNIT evidence surfaces in the worksheet before assignment.
+API checks prove access,
 validation and transaction rules. Reuse valid existing coverage.
 
 ## Commands

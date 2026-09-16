@@ -1,0 +1,25 @@
+{
+  "kind": "bounded-module",
+  "slug": "service-levels-seeded",
+  "table": "service_levels_seeded",
+  "symbol": "ServiceLevelSeeded",
+  "title": "Service Levels",
+  "singular": "Service Level",
+  "fields": [
+    { "key": "name", "type": "text", "label": "Name", "required": true },
+    { "key": "active", "type": "boolean", "label": "Active", "default": true }
+  ],
+  "actions": {
+    "list": { "fields": ["name", "active"], "permission": "list-service-levels-seeded" },
+    "detail": { "fields": ["name", "active"], "permission": "detail-service-levels-seeded" }
+  },
+  "permissions": {
+    "list-service-levels-seeded": { "name": "List service levels", "description": "List service levels." },
+    "detail-service-levels-seeded": { "name": "View service level", "description": "View a service level." }
+  },
+  "navigation": { "group": "settings", "after": "settings-roles", "title": "Service Levels", "icon": "folder" },
+  "seed": {
+    "records": [{ "id": "standard", "name": "Standard", "active": true }],
+    "updateFields": ["name", "active"]
+  }
+}

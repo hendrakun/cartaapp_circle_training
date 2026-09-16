@@ -1,0 +1,27 @@
+{
+  "kind": "bounded-module",
+  "slug": "service-levels-partial",
+  "table": "service_levels_partial",
+  "symbol": "ServiceLevelPartial",
+  "title": "Service Levels",
+  "singular": "Service Level",
+  "fields": [
+    { "key": "name", "type": "text", "label": "Name", "required": true },
+    { "key": "active", "type": "boolean", "label": "Active", "default": true }
+  ],
+  "actions": {
+    "list": { "fields": ["name", "active"], "permission": "list-service-levels-partial" },
+    "create": { "fields": ["name", "active"], "permission": "create-service-levels-partial" },
+    "update": { "fields": ["name", "active"], "permission": "update-service-levels-partial" }
+  },
+  "permissions": {
+    "list-service-levels-partial": { "name": "List service levels", "description": "List service levels." },
+    "create-service-levels-partial": { "name": "Create service levels", "description": "Create service levels." },
+    "update-service-levels-partial": { "name": "Update service levels", "description": "Update service levels." }
+  },
+  "navigation": { "group": "settings", "after": "settings-roles", "title": "Service Levels", "icon": "folder" },
+  "test": {
+    "record": { "name": "Standard", "active": true },
+    "update": { "name": "Priority" }
+  }
+}

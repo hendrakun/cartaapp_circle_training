@@ -4,7 +4,7 @@ import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { test } from 'node:test'
-import { integrate } from './integrate-bounded-module.mjs'
+import { integrate, execute } from './integrate-bounded-module.mjs'
 
 const temporaryDirectories = []
 
@@ -15,25 +15,31 @@ function config() {
     table: 'test_catalog',
     symbol: 'TestCatalog',
     title: 'Test Catalog',
-    identity: { key: 'id', type: 'text', primary: true, generated: 'uuid' },
-    fields: [{ key: 'label', type: 'text', label: 'Label', required: true, renderer: 'text' }],
-    labels: {
-      listTitle: 'Test Catalog',
-      detailTitle: 'Detail Test Catalog',
-      createTitle: 'Add Test Catalog',
-      editTitle: 'Edit Test Catalog',
-      submitLabel: 'Submit',
+    singular: 'Test Catalog',
+    fields: [
+      { key: 'label', type: 'text', label: 'Label', required: true },
+      { key: 'enabled', type: 'boolean', label: 'Enabled', default: true },
+    ],
+    actions: {
+      list: { fields: ['label', 'enabled'], permission: 'list-test-catalog' },
+      detail: { fields: ['label', 'enabled'], permission: 'detail-test-catalog' },
+      create: { fields: ['label', 'enabled'], permission: 'create-test-catalog' },
+      update: { fields: ['label', 'enabled'], permission: 'update-test-catalog' },
+      delete: { permission: 'delete-test-catalog' },
     },
-    permissions: {
-      moduleName: 'Test Catalog',
-      realm: 'system',
-      entries: Object.fromEntries(['list', 'detail', 'create', 'update', 'delete'].map((action) => [action, {
-        name: `${action} test catalog`,
-        description: `${action} test catalog records.`,
-      }])),
+    permissions: Object.fromEntries(['list', 'detail', 'create', 'update', 'delete'].map((action) => [`${action}-test-catalog`, {
+      name: `${action} test catalog`,
+      description: `${action} test catalog records.`,
+    }])),
+    navigation: { group: 'settings', after: 'settings-roles', title: 'Test Catalog', icon: 'folder' },
+    seed: {
+      records: [{ id: 'test-catalog-1', label: 'One', enabled: true }],
+      updateFields: ['label', 'enabled'],
     },
-    navigation: { group: 'settings', after: 'settings-roles', title: 'Test Catalog', icon: 'folder', separator: 'Test' },
-    seed: { records: [{ id: 'test-catalog-1', label: 'One' }], updateFields: ['label'] },
+    test: {
+      record: { label: 'One', enabled: true },
+      update: { label: 'Two' },
+    },
   }
 }
 
@@ -77,7 +83,7 @@ test('integrates all owner files, reports paths, and is idempotent', () => {
   assert.equal((domains.match(/testCatalogs/g) ?? []).length, 2)
   const navigation = readFileSync(join(root, 'apps/web/src/manifest/navigation.ts'), 'utf8')
   assert.equal((navigation.match(/settings-test-catalog/g) ?? []).length, 1)
-  assert.equal((navigation.match(/separator: 'Test'/g) ?? []).length, 1)
+  assert.ok(!navigation.includes("{ separator: '"))
   const seed = readFileSync(join(root, 'apps/api/scripts/seed.ts'), 'utf8')
   assert.match(seed, /seedTestCatalog/)
   assert.equal((seed.match(/seedTestCatalog/g) ?? []).length, 2)
@@ -113,7 +119,7 @@ export type PermissionCode = (typeof authorizationModules)[number]['permissions'
   assert.match(catalog, /targetType: 'global'/)
 })
 
-test('places an entry after its anchor inside an existing separator', () => {
+test('places an entry after its anchor without adding a separator', () => {
   const root = fixture()
   const navigationPath = join(root, 'apps/web/src/manifest/navigation.ts')
   const navigation = `export const navigation = defineNavigation([
@@ -133,8 +139,9 @@ test('places an entry after its anchor inside an existing separator', () => {
   const anchor = updated.indexOf('settings-roles')
   const entry = updated.indexOf('settings-test-catalog')
 
-  assert.ok(separator < anchor && anchor < entry)
+  assert.ok(separator >= 0 && separator < anchor && anchor < entry)
   assert.equal((updated.match(/separator: 'Test'/g) ?? []).length, 1)
+  assert.equal((updated.match(/settings-test-catalog/g) ?? []).length, 1)
 })
 
 test('fails closed on a missing anchor without writing partial changes', () => {
@@ -151,6 +158,17 @@ test('fails closed on a missing anchor without writing partial changes', () => {
 
   assert.throws(() => integrate(config(), { root, apply: true }), /navigation anchor.*missing or ambiguous/)
   for (const [path, contents] of before) assert.equal(readFileSync(join(root, path), 'utf8'), contents)
+})
+
+test('accepts the pnpm lone separator before flags', () => {
+  assert.throws(
+    () => execute(['--', '--manifest', join('no-such-dir', 'missing.json'), '--check'], { root: tmpdir(), cwd: tmpdir() }),
+    (error) => {
+      assert.match(error.message, /ENOENT/)
+      assert.doesNotMatch(error.message, /Unknown argument/)
+      return true
+    },
+  )
 })
 
 test('refuses duplicate domain registrations', () => {

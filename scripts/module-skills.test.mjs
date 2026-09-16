@@ -18,7 +18,6 @@ function prose(text) {
     return fence === null
   }).join('\n')
 }
-
 test('active module skills have unique discoverable identities and real local reference targets', () => {
   const failures = []
   for (const name of active) {
@@ -48,10 +47,32 @@ test('retired discovery skills and calls are absent from the active module workf
 
 test('root module command aliases resolve to actual local helper scripts', () => {
   const scripts = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).scripts
-  for (const name of ['scaffold:bounded-module', 'integrate:bounded-module', 'verify:module', 'module:evidence']) {
+  for (const name of ['scaffold:bounded-module', 'verify:module', 'module:evidence']) {
     assert.match(scripts[name], /^node scripts\/[\w-]+\.mjs$/)
     assert.ok(existsSync(join(root, scripts[name].slice(5))), name)
   }
+  assert.ok(!Object.hasOwn(scripts, 'integrate:bounded-module'), 'integrate:bounded-module alias is removed')
+  assert.deepEqual(Object.keys(scripts).filter(name => scripts[name].includes('scaffold-bounded-module.mjs')), ['scaffold:bounded-module'])
+})
+
+test('bounded example selects compatible standard actions beside manual work', () => {
+  const bounded = readFileSync(join(skillsRoot, 'carta-module-development/references/bounded.md'), 'utf8')
+  const example = JSON.parse(bounded.match(/```json\n([\s\S]+?)\n```/)[1])
+  assert.deepEqual(Object.keys(example.actions).sort(), ['create', 'list', 'update'])
+})
+
+test('active module guidance uses the one public generator', () => {
+  const text = active.flatMap(name => markdownFiles(join(skillsRoot, name))).map(file => readFileSync(file, 'utf8')).join('\n')
+  assert.doesNotMatch(text, /scaffold_bounded\.py|integrate:bounded-module|integrate-bounded-module\.mjs/)
+})
+
+test('generated evidence has one strategy owner and one verifier pointer', () => {
+  const strategy = readFileSync(join(skillsRoot, 'carta-module-development/references/verification-strategy.md'), 'utf8')
+  const verifier = readFileSync(join(skillsRoot, 'verify-carta-module/SKILL.md'), 'utf8')
+  assert.ok(verifier.includes('verification-strategy.md#commands-and-environment'))
+  const combined = `${strategy}\n${verifier}`
+  assert.equal(combined.match(/Generated API evidence/g)?.length, 1)
+  assert.equal(combined.match(/A generated browser journey/g)?.length, 1)
 })
 
 test('API test entrypoints require the explicit test environment and migrations run the preflight first', () => {

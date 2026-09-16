@@ -1,12 +1,12 @@
 import { sql } from 'drizzle-orm'
 import { getDb } from '../src/db'
 
-export const E2E_DATABASE_NAME = process.env.CARTA_E2E_DATABASE_NAME ?? 'carta_e2e'
-export const E2E_BUCKET_NAME = 'carta-e2e'
 export const E2E_DATABASE_PURPOSE = 'e2e'
 
-function expectedE2eDatabaseName() {
-  return process.env.CARTA_E2E_DATABASE_NAME ?? E2E_DATABASE_NAME
+function requiredE2eValue(name: 'CARTA_DATABASE_PURPOSE' | 'CARTA_E2E_DATABASE_NAME' | 'S3_BUCKET') {
+  const value = process.env[name]?.trim()
+  if (!value) throw new Error(`E2E config requires ${name}. Set it in apps/api/.env.e2e.`)
+  return value
 }
 
 type E2eTarget = {
@@ -16,12 +16,16 @@ type E2eTarget = {
 }
 
 export function assertE2eStorageTarget(bucket: string | undefined = process.env.S3_BUCKET): asserts bucket is string {
-  if (bucket !== E2E_BUCKET_NAME) throw new Error('E2E storage guard refused the configured bucket.')
+  const required = requiredE2eValue('S3_BUCKET')
+  if (bucket !== required) throw new Error('E2E storage guard refused the configured bucket.')
 }
 
 export function assertE2eTarget(target: E2eTarget) {
+  requiredE2eValue('CARTA_DATABASE_PURPOSE')
+  requiredE2eValue('CARTA_E2E_DATABASE_NAME')
+  requiredE2eValue('S3_BUCKET')
   if (target.purpose !== E2E_DATABASE_PURPOSE) throw new Error('E2E database guard requires CARTA_DATABASE_PURPOSE=e2e.')
-  if (target.databaseName !== expectedE2eDatabaseName()) throw new Error('E2E database guard refused the connected database.')
+  if (target.databaseName !== requiredE2eValue('CARTA_E2E_DATABASE_NAME')) throw new Error('E2E database guard refused the connected database.')
   assertE2eStorageTarget(target.bucket)
 }
 

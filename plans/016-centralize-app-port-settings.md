@@ -17,7 +17,7 @@
 - Depends on: None
 - Category: migration, configuration, DX
 - Planned at: commit `7eb093d`, 2026-09-12
-- Status: TODO — plan only
+- Status: IMPLEMENTED — 2026-09-12, review verdict below; `plans/README.md` row not yet updated
 
 The user selected this migration. Execute it only when implementation is
 requested. Keep unrelated work. Do not change framework packages, apply a
@@ -196,13 +196,70 @@ Playwright config check above and record the command output.
 
 ## Done criteria
 
-- [ ] A port change needs edits only in `apps/api/.env` and `apps/web/.env`.
-- [ ] API and web commands use their app-owned port variables.
-- [ ] Playwright reads the two app environments and accepts no port alias.
-- [ ] E2E specs and fixtures have no hard-coded local URL fallback.
-- [ ] Web preview has no separate port setting.
-- [ ] Example files remain templates and actual `.env` files remain untracked.
-- [ ] Web type-check, build, Playwright list, search, and diff checks pass.
+- [x] A port change needs edits only in `apps/api/.env` and `apps/web/.env`.
+- [x] API and web commands use their app-owned port variables.
+- [x] Playwright reads the two app environments and accepts no port alias.
+- [x] E2E specs and fixtures have no hard-coded local URL fallback.
+- [x] Web preview has no separate port setting.
+- [x] Example files remain templates and actual `.env` files remain untracked.
+- [x] Web type-check, build, Playwright list, search, and diff checks pass.
+
+## Implementation record — 2026-09-12
+
+Drift: `git diff --stat 7eb093d..HEAD -- apps/api apps/web package.json
+README.md` showed only the unrelated Loom/asset spec additions
+(`apps/api/src/schema.spec.ts`, `apps/api/src/storage/assets.spec.ts`,
+`apps/web/src/framework/adapters/assets.form.spec.ts`); all in-scope files
+matched the plan's current-state references. `git status --short` was clean
+before edits.
+
+Steps:
+
+1. `apps/web/vite.config.ts` parses `WEB_PORT` only from the web app
+   environment, requires 1–65535 for `serve` (except Vitest), and supplies it
+   to both `server` and `preview`. Removed `process.env.WEB_PORT` precedence
+   and the `5181` fallback. `apps/web/package.json` preview is `vite preview`.
+2. `apps/web/playwright.config.ts` reads `apps/api/.env` (`API_PORT`,
+   `BETTER_AUTH_URL`, `APP_ORIGIN`) and `apps/web/.env` (`WEB_PORT`,
+   `VITE_API_URL`); rejects the four port aliases and a conflicting inherited
+   `E2E_API_URL`/`E2E_WEB_URL`; checks the three URL/port relations; derives
+   `E2E_API_URL`/`E2E_WEB_URL` from the app-owned URLs; passes exact values to
+   both child servers with no `--port` flag on the web command.
+   `apps/web/e2e/state.ts` adds `requiredE2eValue`; specs and fixtures use it
+   and read admin credentials only from `apps/api/.env`.
+3. Root and app READMEs point port changes at the two app `.env` files and call
+   the sample numbers templates. Both `.env.example` files carry a template
+   header. The remaining `localhost:5180/5181` matches are those sample blocks;
+   the remaining alias-name match is the explicit rejection list in
+   `playwright.config.ts`.
+
+Checks:
+
+- `pnpm --filter @southneuhof/framework-web type-check`: exit 0 after
+  `pnpm --filter @southneuhof/api routes:build` restored the private route
+  artifact. The pre-existing failure without that artifact (`rpc unknown`,
+  missing `routes-contract`) reproduces on the clean tree and is unrelated.
+- `pnpm --filter @southneuhof/framework-web build-only`: exit 0.
+- `pnpm --filter @southneuhof/framework-web test:e2e -- --list` with
+  `.env.example` copies as disposable `.env` files: 9 tests in 4 files, no
+  server start. Missing `WEB_PORT` fails with `WEB_PORT is missing in
+  .../apps/web/.env`. Mismatched `BETTER_AUTH_URL` port fails with
+  `BETTER_AUTH_URL port must equal API_PORT`. Disposable `.env` files removed.
+- `pnpm test:module-tooling`: 66 node tests pass, 2 python tests pass.
+- `git diff --check`: exit 0. Actual `.env` files remain absent/untracked.
+- Not run: one existing E2E case (needs plan 017 target; plan step defers it);
+  plan 019 workflow checks (plan 019 not yet present).
+
+## Review verdict: APPROVE with one note
+
+Scope is clean: 12 files, all in the plan's permitted list
+(`apps/web/vite.config.ts`, `apps/web/playwright.config.ts`,
+`apps/web/e2e/{state.ts,fixtures.ts,auth.spec.ts,fast-auth.spec.ts}`,
+`apps/web/package.json`, both `.env.example` files, root and app READMEs, this
+plan). No commit, push, or PR made. Vite `serve` and `preview` fail loudly
+without a valid `WEB_PORT`; Vitest loads without one. The plan's search regex
+still matches the README sample block and the config's own rejection list by
+design; neither is a runtime fallback, test fallback, or command-line port.
 
 ## STOP conditions
 

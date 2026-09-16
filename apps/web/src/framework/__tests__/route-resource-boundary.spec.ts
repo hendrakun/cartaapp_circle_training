@@ -6,6 +6,9 @@ import { fileURLToPath } from 'node:url'
 const appRoot = join(dirname(fileURLToPath(import.meta.url)), '../..')
 const routesRoot = join(appRoot, 'routes/(authenticated)')
 const retiredResourcesRoot = join(appRoot, 'framework/adapters/resources')
+const forbiddenBuilderImport = /import\s*\{[^}]*\bdefineSchema\b[^}]*\}\s*from\s*['"]@southneuhof\/loom['"]/
+const oldName = ['define', 'EntitySchema'].join('')
+const forbiddenOldBuilderUse = new RegExp(`import\\s*\\{[^}]*\\b${oldName}\\b[^}]*\\}\\s*from|\\b${oldName}\\s*\\(`)
 
 function collectFiles(directory: string): string[] {
   return readdirSync(directory).flatMap((entry) => {
@@ -26,6 +29,24 @@ function generatedRouteNames(): Set<string> {
 }
 
 describe('route-owned resource boundaries', () => {
+  it('uses only the app schema builder in app source', () => {
+    const files = collectFiles(appRoot).filter((path) => path !== fileURLToPath(import.meta.url))
+    const offenders = files.filter((path) => {
+      const source = readFileSync(path, 'utf8')
+      return forbiddenOldBuilderUse.test(source) || forbiddenBuilderImport.test(source)
+    })
+    expect(offenders.map((path) => relative(appRoot, path))).toEqual([])
+  })
+
+  it('detects an old builder import', () => {
+    const name = 'defineSchema'
+    const source = ['import { ', name, ' } from ', "'@southneuhof/loom'"].join('')
+    expect(forbiddenBuilderImport.test(source)).toBe(true)
+    expect(forbiddenOldBuilderUse.test(`import { ${oldName} } from '@/framework/hono'`)).toBe(true)
+    expect(forbiddenOldBuilderUse.test(`${oldName}(route, schema)`)).toBe(true)
+    expect(forbiddenOldBuilderUse.test(`// ${oldName} is an old name.`)).toBe(false)
+  })
+
   it('keeps each migrated resource and operation at its canonical route owner', () => {
     const required = [
       'settings/roles/roles.resource.ts',

@@ -5,9 +5,11 @@ description: Build or review Carta backend file routes, inherited scopes, entiti
 
 # API conventions
 
+Apply [discovery reuse](../carta-module-development/SKILL.md#discovery-reuse).
 Read the approved behavior and affected owners in `apps/api/src`. For route
 changes, read [file routing](references/file-routing.md) before choosing files
-or hooks. Check current exports in `packages/sprindle/docs/reference.md`.
+or hooks. Check `packages/sprindle/docs/reference.md` for an unresolved export
+or callback contract; reuse current pattern decisions from the plan.
 
 | Work | Read |
 |---|---|
@@ -18,9 +20,11 @@ or hooks. Check current exports in `packages/sprindle/docs/reference.md`.
 ## Access
 
 The root scope resolves identity; the `(authenticated)` scope requires a session.
-Use `requirePermission` from `src/identity.ts` for each protected operation.
-Authentication alone does not grant operation permission. Public placement needs
-an explicit product requirement.
+Use `requirePermission` from `src/identity.ts` when the approved operation requires
+a permission. If the requirement permits all signed-in users to read records,
+the authenticated scope is sufficient for those reads. Do not copy a stricter
+read guard from an example. Authentication does not grant other permissions.
+Public placement needs an explicit product requirement.
 
 Define exact codes in `src/authorization/catalog.ts`. Standard verbs are `view`,
 `list`, `detail`, `create`, `update`, and `delete`, followed by the module code.

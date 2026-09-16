@@ -18,7 +18,8 @@
 - Depends on: 016 and 017
 - Category: migration, generation, DX, correctness
 - Planned at: commit `7eb093d`, 2026-09-12
-- Status: TODO — plan only
+- Status: IMPLEMENTED — 2026-09-13, checks summary below; orchestrator review pending, nothing committed
+- Addendum: 2026-09-13 — Loom `formDefaultTo` falls back to List when Detail is absent; generator alignment is uncommitted (see Addendum below)
 
 The user selected this migration. Extend the current bounded generator. Do not
 create another generator or another skill. Generated files are normal editable
@@ -409,19 +410,189 @@ command summary under ignored `.local` evidence.
 
 ## Done criteria
 
-- [ ] One public command supports `--check` and `--apply`.
-- [ ] The manifest selects exact standard actions; omitted actions emit no product
+- [x] One public command supports `--check` and `--apply`.
+- [x] The manifest selects exact standard actions; omitted actions emit no product
   surface or permission.
-- [ ] Update without Detail has only the technical read support that it needs.
-- [ ] Generated source is ordinary editable source and existing paths are refused.
-- [ ] Drizzle creates one reviewed migration and the command never applies it.
-- [ ] Seed data is exact, optional, registered, and never run by the generator.
-- [ ] One generated API spec proves permission, validation, persistence, and
+- [x] Update without Detail has only the technical read support that it needs.
+- [x] Generated source is ordinary editable source and existing paths are refused.
+- [x] Drizzle creates one reviewed migration and the command never applies it.
+- [x] Seed data is exact, optional, registered, and never run by the generator.
+- [x] One generated API spec proves permission, validation, persistence, and
   unchanged rejected writes for applicable actions.
-- [ ] One generated browser journey exists only for a stable standard path.
-- [ ] Custom detail, relations, children, scope, workflow, concurrency, existing
+- [x] One generated browser journey exists only for a stable standard path.
+- [x] Custom detail, relations, children, scope, workflow, concurrency, existing
   data changes, custom queries, and reports are clearly manual.
-- [ ] Tooling, type, diff, disposable API, and disposable browser checks pass.
+- [x] Tooling, type, and diff checks pass; disposable `--check`/`--apply` plus
+  preflight pass; live migration, seed, API-spec, and browser runs pass on
+  the gamingmachine disposable copy (see Implementation record steps 7-8).
+
+## Implementation record — 2026-09-13
+
+Drift at start (plan STOP check): `git diff --stat 7eb093d -- scripts
+package.json apps/api apps/web .agents/skills/carta-module-development`
+showed only plans 016/017 work (preserved uncommitted) plus unrelated asset
+spec additions (`apps/api/src/schema.spec.ts`,
+`apps/api/src/storage/assets.spec.ts`,
+`apps/web/src/framework/adapters/assets.form.spec.ts`). Drift at end differs only
+by the plan-permitted 018 generator, alias, wrapper, README, and skill-reference
+changes. No STOP: migration attribution stayed exact, Drizzle differences were
+gated rather than hidden, and no `packages/*` file changed.
+
+Unrelated in-scope drift from before 018 start is preserved, not owned by 018:
+`execution.md` (1 line), `frontend-field-contract.md` (18 lines), and the three
+asset spec files above. None is a generator or framework-action contract change.
+
+Steps (all work uncommitted; no commit, push, PR, or reset):
+
+1. Validator replaced with the v1 shape (`kind/slug/table/symbol/title/
+   singular/fields/actions/permissions/navigation/seed/test`). It derives
+   identity, labels, route names, redirects, `technicalDependencies`, and
+   `unsupported`; table-driven tests cover List only, List+Detail,
+   Create+List, Update without Detail, full actions, shared permission, and
+   standard actions beside a custom Detail omission.
+2. Rendering restricted to selected actions (`filesFor` selected-only):
+   `redirect` required only when neither Detail nor List exists, forbidden
+   otherwise; deleted `renderRouteTest`/`renderResourceTest` (auth/shape
+   smoke specs); `integrate-bounded-module.mjs` fixed to v1 (flat used
+   permissions via `Object.entries(config.actions)`, no separator,
+   `position: 'after'`); scope kept internal (no `integrate:bounded-module`
+   alias; `package.json` line removed; module stays importable);
+   `verify-module.mjs` selected-only (no deleted-spec expectations;
+   `verificationCommands` emits the focused `<slug>.routes.spec.ts` command
+   plus `test:e2e -- <slug>.spec.ts` only when the browser file generates),
+   with route-map fixture/helpers updated.
+3. Drizzle helpers added with mocked tests: `checkMigrationAttribution`
+   (pre-existing entity/migration dirty guard), `parseDrizzleExplain`
+   (creation-only gate), `selectNewMigration` (one-new-directory proof),
+   `checkMigrationSql` (table-name presence; no `DROP`/`ALTER`/`RENAME` or
+   other-table `CREATE TABLE`), `rollbackInvocation` (only this invocation's
+   files plus exact owner bytes; reports remainders). Unrelated operations,
+   command failure, and SQL mismatch roll back and stop.
+4. API spec generation: `renderApiSpec` emits
+   `apps/api/src/routes/(authenticated)/<slug>/<slug>.routes.spec.ts` using
+   `createSystemSession`, `getDb`, the generated entity, `testId`,
+   `cleanupSessions`, and `closeDb`; invalid payload derives from the first
+   required field, else a wrong JSON type; write-denied and invalid writes
+   assert stored values unchanged.
+ 5. Browser journey: `browserManualReason` plus `renderBrowserSpec` emit
+    `apps/web/e2e/<slug>.spec.ts` with `./fixtures` plus `fastAuth`,
+    role/label selectors, and no CSS classes or fixed waits; omitted with a
+    manual reason for custom Detail/renderers, non-standard interactions,
+    or missing Create plus seed. The generated journey stays on the Create
+    and Update pages after submit (no redirect, same as hand-written
+    modules): it waits for the POST/PATCH response before navigating, so the
+    navigation cannot abort the in-flight request. It never asserts the
+    success toast (proven to never paint after a real save while the form
+    stays mounted). The delete step targets the UPDATED value when an Update
+    ran (the journey renamed the row); the journey deletes what it created,
+    so a same-valued leftover from a red run fails loudly instead of passing
+    on the wrong row.
+6. Single public CLI: `pnpm scaffold:bounded-module -- --manifest <path>
+   --check` (read-only detailed preview via `describeBoundedModule`) and
+   `--apply` (transactional `applyBoundedModule`: validate, destination
+   check, git-dirty entity/migration guard, owner-anchor dry run, owner-byte
+   snapshot, file writes, `--explain` gate, `generate --name <slug>`, one-new-
+   migration SQL gate, owner integration; rollback on explain/generate/SQL
+   mismatch; db:migrate never runs). `--config` stays a deprecated alias with
+   mismatch rejection; `--check`+`--apply` rejected as exclusive. Python
+   wrapper deleted
+   (`.agents/skills/carta-module-development/scripts/scaffold_bounded.py`);
+   wrapper tests replaced by node-CLI equivalents. Short pointers added to
+   root `README.md` and `apps/api/AGENTS.md`; manifest rules live only in
+   `.agents/skills/carta-module-development/references/bounded.md` (rewritten
+   to v1) plus `--help`. `route-only` operation unchanged for current
+   consumers.
+ 7. Disposable-copy proof (no tracked file touched; nothing copied back;
+    redacted static evidence at ignored `.local/018-disposable-proof.md`;
+    live gamingmachine proof below): rsync
+    copy without `.git`/`node_modules`/build output/actual `.env` files,
+    node_modules symlinked, `.env.example` templates copied. Manifest with
+    List+Create+Update+Delete, no Detail, slug `service-levels`.
+    `--check` exit 0 (17 generated paths; technical dependency
+    `detail detail/[id]/+server.ts (update-service-levels)`; table
+    `service_levels`, columns `id, name, active`; seed registered; both proof
+    specs listed; manual work none). `--apply` exit 0: migration directory
+    `apps/api/drizzle/20260913055607_service-levels`, SQL only
+    `CREATE TABLE "service_levels" ("id" text PRIMARY KEY, "name" text NOT
+    NULL, "active" boolean DEFAULT true NOT NULL)`. Update page hydrates via
+    `load` through `api.detail` (`edit.route.vue`); no Detail page/route/
+    permission (`rg detail-service-levels` no match; spec asserts no
+    `settings-service-levels-detail` route; technical
+    `detail/[id]/+server.ts` authorizes `update-service-levels`). Plan 017
+    preflight in the copy: `api`/`web` FAIL on template `BETTER_AUTH_SECRET`
+    placeholder (by design), `test`/browser DB FAIL (no PostgreSQL),
+    `storage` bucket FAIL (no S3); test-target, e2e-target, and chromium
+    checks PASS.
+8. Live gamingmachine proof on disposable copy `018-live6` (everything
+    disposable there; only `carta_api_test`+`carta_e2e` DBs and `carta-e2e`
+    bucket used): copied the fixed generator over, `--check` exit 0,
+    `--apply` exit 0, `e2e:prepare` exit 0, then
+    `E2E_ITERATION=1 SKIP_E2E_PREPARE=1 pnpm --filter
+    @southneuhof/framework-web test:e2e -- service-levels.spec.ts` exit 0
+    (1 passed) with zero `sprindle request failed`/`Body is unusable` lines.
+    Intermediate findings, all resolved without framework changes: the first
+    `-1` POST aborts were the generated spec navigating away before the save
+    resolved (fixed by waiting for the POST/PATCH response); the
+    intermediate `Body is unusable` 500s came from an unproven
+    `c.req.clone()` edit (reverted); the missing success toast is expected
+    FormView behavior (no `defaultTo`, form stays mounted, error toasts
+    still work — forced-500 probe showed `Request failed.`). A re-run
+    without cleaning the E2E table fails loudly on the duplicate row
+    (strict-mode violation), which is the journey proving its own cleanup
+    works. DB `service_levels` held only `Standard` plus the journey row
+    during the run; servers stopped and probe rows removed after.
+
+Checks (final state, this checkout):
+
+- `node --test scripts/scaffold-bounded-module.test.mjs
+  scripts/integrate-bounded-module.test.mjs scripts/verify-module.test.mjs`:
+  30 pass, 0 fail.
+- `pnpm test:module-tooling`: 84 node pass, 2 python pass, exit 0.
+- `pnpm --filter @southneuhof/api type-check`: exit 0.
+- `pnpm --filter @southneuhof/framework-web type-check`: exit 0.
+- `git diff --check`: exit 0.
+- Live gamingmachine proof (disposable copy `018-live6`, approved temp only):
+  `e2e:prepare` exit 0; `E2E_ITERATION=1 SKIP_E2E_PREPARE=1 pnpm --filter
+  @southneuhof/framework-web test:e2e -- service-levels.spec.ts` exit 0
+  (1 passed, 0 `sprindle request failed` lines). The generated API focused
+  spec passed earlier in `018-live2`
+  (`test:focused -- 'src/routes/(authenticated)/service-levels/
+  service-levels.routes.spec.ts'`, 1 passed).
+
+## Addendum — framework form redirect fallback (2026-09-13)
+
+This addendum corrects the no-redirect rule recorded in steps 5 and 8 and in
+the step-5 checks paragraph. It does not reopen plan 018 execution. Plan 018
+scope forbids framework changes; the Loom change below is outside that scope.
+
+Committed Loom change: `eccf5dc` extends `formDefaultTo` in
+`packages/loom/src/resources/actionResource.ts` with a List fallback. Create
+and Update redirect to Detail when Detail exists, else to List when List
+exists, else stay on the page. Declared `defaultTo` and `defaultTo: false`
+keep their current meaning. New framework tests live in
+`packages/loom/src/resources/__tests__/resources.spec.ts` (list fallback and
+no-target cases).
+
+Consequences for generated modules:
+
+- The generator must emit no explicit `defaultTo` when Detail or List exists.
+  The old step-5 text said the journey stays on the page; that is now wrong.
+- The generated browser journey must wait for the POST/PATCH response, then
+  assert the framework redirect: Detail URL plus record heading when Detail
+  exists, else List URL plus record cell when List exists. It must not use an
+  explicit `goto` between submit and that assertion. The success-toast rule
+  is unchanged: never assert the toast.
+- The plan 018 §2 redirect rules (Detail, else List, else manifest
+  `redirect`) are unchanged. Only the mechanism moved: the framework now
+  performs the List fallback instead of the journey navigating by hand.
+
+Uncommitted generator alignment at the time of this addendum:
+`scripts/scaffold-bounded-module.mjs` plus
+`scripts/scaffold-bounded-module.test.mjs` — framework-redirect assertions,
+no explicit `goto` after submit, ListView delete-dialog confirmation, and a
+no-Detail list-redirect case. Verify with `node --test
+scripts/scaffold-bounded-module.test.mjs` (19 pass at addendum time) plus
+the plan 018 §6 tooling and type-check commands before commit.
 
 ## STOP conditions
 

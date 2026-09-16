@@ -5,16 +5,21 @@ description: Build or review Carta form values, validation, relation sources, de
 
 # Build resource forms
 
-Read the owning API entity, schema, resource, and route. Check the current
-`packages/loom/README.md` field contract and `apps/web/src/framework/inputs/registry.ts`.
-Use [web-ui-surfaces](../web-ui-surfaces/SKILL.md) for page composition and
-`docs/ui/forms.md` for app form defaults.
+Apply [discovery reuse](../carta-module-development/SKILL.md#discovery-reuse).
+Trace the changed value through its API schema, resource and route; reuse
+current pattern decisions from the plan. Read the field contract in
+`packages/loom/README.md` when its shape is unresolved, and
+`apps/web/src/framework/inputs/registry.ts` when renderer registration or defaults
+are unresolved. Use [web-ui-surfaces](../web-ui-surfaces/SKILL.md) for changed
+page composition and `docs/ui/forms.md` for an unresolved app form default.
 
 ## Define the value contract
 
-Bind standard API schemas with `defineSchema` and `fromZod(schema)`. Infer parsed
-types. For non-asset fields, add a local form transform only when the control
-and API shapes differ.
+Bind standard resources with app `defineSchema` from `@/framework/schema`.
+Pass raw Zod schemas; the app seam calls `fromZod` and infers parsed types.
+A Hono route or an explicit custom contract supplies the expected types.
+For non-asset fields, add a local form transform only when the control and API
+shapes differ.
 Keep custom action schemas separate from standard CRUD schemas.
 
 For file/image fields in standard or custom actions, read the
@@ -43,7 +48,8 @@ validators. A failed submit must preserve the draft.
 
 ## Select controls
 
-Read [field choices](references/form-field-types.md) for value-specific guidance.
+Read [field choices](references/form-field-types.md) when selecting a new control
+or resolving a value mismatch.
 Use the registered renderer, then an existing composite. Use `table`/`TableInput`
 for form-owned row arrays. If those cannot express one domain value, use the
 [custom field contract](references/custom-field-contract.md).
@@ -61,6 +67,11 @@ clearer. Let the form own draft, validation, pending state, and ordinary close
 behavior instead of adding parallel state in the route.
 
 ## Configure relation sources
+
+For each new or changed relation, use the
+[complete display/form pattern](../web-ui-surfaces/references/fields.md).
+Complete its API display data and list/detail projection with the form, rather
+than leaving display work for a later assignment.
 
 Use the owner resource as `source`. Its `list` action supplies server search and
 paging; `detail` resolves a selected record outside the current page. Static

@@ -1,5 +1,4 @@
 export { defineResource } from './defineResource'
-export { defineSchema } from './defineSchema'
 export type { ActionResource, ActionResourceDefinition, ResourceActionRoute } from './actionResource'
 export { resourceActionForRoute, registeredResourceActionNames, resetResourceActionRegistry } from './routeAccess'
 export type { RegisteredResourceAction } from './routeAccess'

@@ -1,19 +1,18 @@
 import { defineFields } from '../../fields/defineFields'
 import { defineResource } from '../defineResource'
-import { defineSchema } from '../defineSchema'
 import type { CollectionResult, ValidationResult } from '../../contracts'
 
 type Row = { id: string; name: string }
 type Draft = { name: string }
 type Query = { search?: string }
 const querySchema = { validate: (value: unknown): ValidationResult<Query> => ({ success: true, data: value as Query }) }
-const schema = defineSchema({
-  identity: 'id',
+const schema = {
+  identity: 'id' as const,
   record: { schema: { validate: (value: unknown): ValidationResult<Row> => ({ success: true, data: value as Row }) } },
   query: { schema: querySchema },
   create: { schema: { validate: (value: unknown): ValidationResult<Draft> => ({ success: true, data: value as Draft }) } },
   update: { schema: { validate: (value: unknown): ValidationResult<Draft> => ({ success: true, data: value as Draft }) } },
-})
+}
 const fields = defineFields(schema, { name: { label: 'Name', form: { renderer: 'text' } } })
 
 const resource = defineResource(schema, {

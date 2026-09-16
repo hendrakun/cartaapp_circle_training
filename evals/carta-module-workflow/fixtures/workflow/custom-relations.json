@@ -1,0 +1,27 @@
+{
+  "kind": "bounded-module",
+  "slug": "service-requests-standard",
+  "table": "service_requests_standard",
+  "symbol": "ServiceRequestStandard",
+  "title": "Service Requests",
+  "singular": "Service Request",
+  "fields": [
+    { "key": "title", "type": "text", "label": "Title", "required": true },
+    { "key": "active", "type": "boolean", "label": "Active", "default": true }
+  ],
+  "actions": {
+    "list": { "fields": ["title", "active"], "permission": "list-service-requests-standard" },
+    "create": { "fields": ["title", "active"], "permission": "create-service-requests-standard" },
+    "update": { "fields": ["title", "active"], "permission": "update-service-requests-standard" }
+  },
+  "permissions": {
+    "list-service-requests-standard": { "name": "List service requests", "description": "List service requests." },
+    "create-service-requests-standard": { "name": "Create service requests", "description": "Create service requests." },
+    "update-service-requests-standard": { "name": "Update service requests", "description": "Update service requests." }
+  },
+  "navigation": { "group": "settings", "after": "settings-roles", "title": "Service Requests", "icon": "folder" },
+  "test": {
+    "record": { "title": "Standard", "active": true },
+    "update": { "title": "Priority" }
+  }
+}

@@ -46,9 +46,10 @@ function requireUniquePattern(contents, pattern, checks, name, detail) {
   checks.push({ name, status: occurrences === 1 ? 'PASS' : 'FAIL', detail: `${detail} (${occurrences} occurrences)` })
 }
 
-function staticVerify(config, { root = repoRoot } = {}) {
+function staticVerify(config, { root = repoRoot, manifest = config } = {}) {
   const outputRoot = resolve(root)
   const metadata = moduleMetadata(config)
+  const selected = new Set(config.selectedActions)
   const checks = []
   const generated = expectedGeneratedPaths(config, { root: outputRoot })
   const missingGenerated = generated.filter((path) => !existsSync(path))
@@ -64,35 +65,43 @@ function staticVerify(config, { root = repoRoot } = {}) {
 
   const catalog = read(resolve(outputRoot, 'apps/api/src/authorization/catalog.ts'), checks, 'authorization catalog')
   if (catalog !== null) {
-    for (const action of ['list', 'detail', 'create', 'update', 'delete']) {
-      const code = metadata.permissions[action]
+    for (const action of config.selectedActions) {
+      const code = config.actions[action].permission
       requireUniquePattern(catalog, new RegExp(`\\{\\s*code:\\s*['"]${code}['"],`, 'g'), checks, `permission definition ${code}`, code)
     }
   }
   try {
-    const registration = integrate({ ...config, navigation: {
-      group: config.navigation.group, [config.navigation.position]: config.navigation.anchor,
-      title: config.navigation.title, icon: config.navigation.icon, separator: config.navigation.separator,
-    } }, { root: outputRoot })
+    const registration = integrate(manifest, { root: outputRoot })
     checks.push({ name: 'current owner integration', status: registration.status === 'READY' ? 'PASS' : 'FAIL', detail: registration.pending.join(', ') || 'All owner registrations are current.' })
   } catch (error) {
     checks.push({ name: 'current owner integration', status: 'FAIL', detail: error.message })
   }
 
-  const navigation = read(resolve(outputRoot, 'apps/web/src/manifest/navigation.ts'), checks, 'web navigation')
-  requireUniqueText(navigation, `to: { name: '${metadata.routes.list}' }`, checks, 'navigation route')
-  requireText(navigation, `permission: '${metadata.permissions.list}'`, checks, 'navigation permission')
-  requireText(navigation, `title: ${quoted(config.navigation.title)}`, checks, 'navigation title')
+  const group = config.navigation?.group ?? null
+  if (config.navigation && metadata.routes.list) {
+    const navigation = read(resolve(outputRoot, 'apps/web/src/manifest/navigation.ts'), checks, 'web navigation')
+    requireUniqueText(navigation, `to: { name: '${metadata.routes.list}' }`, checks, 'navigation route')
+    requireText(navigation, `permission: '${config.actions.list.permission}'`, checks, 'navigation permission')
+    requireText(navigation, `title: ${quoted(config.navigation.title)}`, checks, 'navigation title')
+  } else {
+    checks.push({ name: 'web navigation', status: 'PASS', detail: 'navigation absent' })
+  }
 
-  const group = config.navigation.group
-  const routeFiles = [
-    [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/index.route.vue`, `title="${html(config.labels.listTitle)}"`, 'list title'],
-    [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/create.route.vue`, `title="${html(config.labels.createTitle)}"`, 'create title'],
-    [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/create.route.vue`, `submit-label="${html(config.labels.submitLabel)}"`, 'create submit label'],
-    [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/${config.slug}.resource.ts`, `title: ${quoted(config.labels.detailTitle)}`, 'detail title'],
-    [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/[${metadata.routeParam}]/edit.route.vue`, `title="${html(config.labels.editTitle)}"`, 'edit title'],
-    [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/[${metadata.routeParam}]/edit.route.vue`, `submit-label="${html(config.labels.submitLabel)}"`, 'edit submit label'],
-  ]
+  const routeFiles = []
+  if (group) {
+    if (selected.has('list')) routeFiles.push(
+      [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/index.route.vue`, `title="${html(config.labels.listTitle)}"`, 'list title'],
+    )
+    if (selected.has('create')) routeFiles.push(
+      [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/create.route.vue`, `title="${html(config.labels.createTitle)}"`, 'create title'],
+    )
+    if (selected.has('detail')) routeFiles.push(
+      [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/${config.slug}.resource.ts`, `title: ${quoted(config.labels.detailTitle)}`, 'detail title'],
+    )
+    if (selected.has('update')) routeFiles.push(
+      [`apps/web/src/routes/(authenticated)/${group}/${config.slug}/[${metadata.routeParam}]/edit.route.vue`, `title="${html(config.labels.editTitle)}"`, 'edit title'],
+    )
+  }
   for (const [relativePath, text, name] of routeFiles) {
     const contents = read(resolve(outputRoot, relativePath), checks, name)
     requireText(contents, text, checks, `${name} content`)
@@ -112,31 +121,48 @@ function staticVerify(config, { root = repoRoot } = {}) {
 }
 
 export function verificationCommands(config, { withSeed = false } = {}) {
-  const slug = config.slug
-  const apiRouteFiles = [
-    `src/routes/(authenticated)/${slug}/${slug}.entity.ts`,
-    `src/routes/(authenticated)/${slug}/${slug}.ts`,
-    `src/routes/(authenticated)/${slug}/${slug}.routes.spec.ts`,
-    'src/domains.ts',
-    'src/authorization/catalog.ts',
-  ]
-  if (config.seed) apiRouteFiles.push(`src/routes/(authenticated)/${slug}/${slug}.seed.ts`, 'scripts/seed.ts')
-  const webFiles = [
-    `src/routes/(authenticated)/${config.navigation.group}/${slug}/${slug}.schema.ts`,
-    `src/routes/(authenticated)/${config.navigation.group}/${slug}/${slug}.resource.ts`,
-    `src/routes/(authenticated)/${config.navigation.group}/${slug}/${slug}.resource.spec.ts`,
-    `src/routes/(authenticated)/${config.navigation.group}/${slug}/${slug}.integration.spec.ts`,
-    `src/routes/(authenticated)/${config.navigation.group}/${slug}/index.route.vue`,
-    `src/routes/(authenticated)/${config.navigation.group}/${slug}/create.route.vue`,
-    `src/routes/(authenticated)/${config.navigation.group}/${slug}/[${moduleMetadata(config).routeParam}]/detail.route.vue`,
-    `src/routes/(authenticated)/${config.navigation.group}/${slug}/[${moduleMetadata(config).routeParam}]/edit.route.vue`,
-    'src/manifest/navigation.ts',
-  ]
+  const normalized = Object.hasOwn(config ?? {}, 'selectedActions') ? config : validateConfig(config)
+  const metadata = moduleMetadata(normalized)
+  const slug = normalized.slug
+  const group = normalized.navigation?.group ?? null
+  const selected = new Set(normalized.selectedActions)
+  const hasApiAction = ['list', 'detail', 'create', 'update', 'delete'].some((action) => selected.has(action)) || normalized.needsTechnicalDetailRead
+  const hasApiSpec = ['list', 'detail', 'create', 'update', 'delete'].some((action) => selected.has(action))
+  const hasWebAction = ['list', 'detail', 'create', 'update'].some((action) => selected.has(action))
+  const apiRouteFiles = ['src/domains.ts', 'src/authorization/catalog.ts']
+  if (hasApiAction) {
+    apiRouteFiles.unshift(
+      `src/routes/(authenticated)/${slug}/${slug}.entity.ts`,
+      `src/routes/(authenticated)/${slug}/${slug}.ts`,
+      `src/routes/(authenticated)/${slug}/+scope.ts`,
+    )
+    if (selected.has('list')) apiRouteFiles.push(`src/routes/(authenticated)/${slug}/list/+server.ts`)
+    if (selected.has('detail') || normalized.needsTechnicalDetailRead) apiRouteFiles.push(`src/routes/(authenticated)/${slug}/detail/[id]/+server.ts`)
+    if (selected.has('create')) apiRouteFiles.push(`src/routes/(authenticated)/${slug}/create/+server.ts`)
+    if (selected.has('update')) apiRouteFiles.push(`src/routes/(authenticated)/${slug}/update/[id]/+server.ts`)
+    if (selected.has('delete')) apiRouteFiles.push(`src/routes/(authenticated)/${slug}/delete/[id]/+server.ts`)
+  }
+  if (hasApiSpec) apiRouteFiles.push(`src/routes/(authenticated)/${slug}/${slug}.routes.spec.ts`)
+  if (normalized.seed) apiRouteFiles.push(`src/routes/(authenticated)/${slug}/${slug}.seed.ts`, 'scripts/seed.ts')
+  const webFiles = [...(normalized.navigation ? ['src/manifest/navigation.ts'] : [])]
+  if (hasWebAction && group) {
+    webFiles.push(
+      `src/routes/(authenticated)/${group}/${slug}/${slug}.schema.ts`,
+      `src/routes/(authenticated)/${group}/${slug}/${slug}.resource.ts`,
+    )
+    if (selected.has('list')) webFiles.push(`src/routes/(authenticated)/${group}/${slug}/index.route.vue`)
+    if (selected.has('create')) webFiles.push(`src/routes/(authenticated)/${group}/${slug}/create.route.vue`)
+    if (selected.has('detail')) webFiles.push(`src/routes/(authenticated)/${group}/${slug}/[${metadata.routeParam}]/detail.route.vue`)
+    if (selected.has('update')) webFiles.push(`src/routes/(authenticated)/${group}/${slug}/[${metadata.routeParam}]/edit.route.vue`)
+  }
+  const unsupportedRenderer = (normalized.fields ?? []).some((field) => field.rendererSupported === false)
+  const hasBrowserFile = hasWebAction && normalized.navigation && !unsupportedRenderer && (selected.has('create') || normalized.seed)
+  const e2eFiles = hasBrowserFile ? [`apps/web/e2e/${slug}.spec.ts`] : []
   const specs = []
   if (withSeed) specs.push(['pnpm', ['--filter', '@southneuhof/api', 'db:seed:test']])
+  if (hasApiSpec) specs.push(['pnpm', ['--filter', '@southneuhof/api', 'test:focused', '--', `src/routes/(authenticated)/${slug}/${slug}.routes.spec.ts`]])
+  if (e2eFiles.length) specs.push(['pnpm', ['--filter', '@southneuhof/framework-web', 'test:e2e', '--', `${slug}.spec.ts`]])
   specs.push(
-    ['pnpm', ['--filter', '@southneuhof/api', 'test:focused', '--', `src/routes/(authenticated)/${slug}/${slug}.routes.spec.ts`]],
-    ['pnpm', ['--filter', '@southneuhof/framework-web', 'test:focused', '--', `routes/(authenticated)/${config.navigation.group}/${slug}/${slug}.resource.spec.ts`, `routes/(authenticated)/${config.navigation.group}/${slug}/${slug}.integration.spec.ts`]],
     ['pnpm', ['--filter', '@southneuhof/api', 'lint:focused', '--', ...apiRouteFiles]],
     ['pnpm', ['--filter', '@southneuhof/framework-web', 'lint:focused', '--', ...webFiles]],
     ['pnpm', ['--filter', '@southneuhof/api', 'type-check']],
@@ -188,9 +214,11 @@ export function verify(value, { root = repoRoot, run = false, withSeed = false, 
     mkdirSync(reports, { recursive: true })
   }
   const before = reports ? captureInputs({ root: outputRoot, inputs }) : null
-  const staticResult = staticVerify(config, { root: outputRoot })
+  const staticResult = staticVerify(config, { root: outputRoot, manifest: value })
   const commands = staticResult.status === 'PASS' && run ? runChecks(config, { root: outputRoot, withSeed, timeoutMs, reports, inputs }) : []
   const commandFailure = commands.find((command) => command.status !== 'PASS')
+  const browserSelected = new Set(config.selectedActions)
+  const browserGroup = config.navigation?.group ?? null
   const result = {
     schemaVersion: 1,
     scope: run ? 'static-and-runtime-checks' : 'static',
@@ -201,12 +229,12 @@ export function verify(value, { root = repoRoot, run = false, withSeed = false, 
     commands,
     browser: {
       required: true, status: 'NOT_RUN',
-      paths: [
-        `/${config.navigation.group}/${config.slug}`,
-        `/${config.navigation.group}/${config.slug}/create`,
-        `/${config.navigation.group}/${config.slug}/${config.seed?.records[0]?.[config.identity.key] ?? 'record-1'}/detail`,
-        `/${config.navigation.group}/${config.slug}/${config.seed?.records[0]?.[config.identity.key] ?? 'record-1'}/edit`,
-      ],
+      paths: browserSelected.has('list') && browserGroup ? [
+        ...(browserSelected.has('list') ? [`/${browserGroup}/${config.slug}`] : []),
+        ...(browserSelected.has('create') ? [`/${browserGroup}/${config.slug}/create`] : []),
+        ...(browserSelected.has('detail') ? [`/${browserGroup}/${config.slug}/${config.seed?.records[0]?.[config.identity.key] ?? 'record-1'}/detail`] : []),
+        ...(browserSelected.has('update') ? [`/${browserGroup}/${config.slug}/${config.seed?.records[0]?.[config.identity.key] ?? 'record-1'}/edit`] : []),
+      ] : [],
     },
   }
   if (reports) {
@@ -234,6 +262,7 @@ function parseArgs(argv) {
   let timeoutMs = defaultCommandTimeoutMs
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index]
+    if (argument === '--') continue
     if (argument === '--manifest') {
       manifest = argv[index + 1]
       index += 1

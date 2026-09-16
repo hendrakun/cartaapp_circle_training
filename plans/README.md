@@ -1,5 +1,116 @@
 # File-routing plans
 
+## Current skill handoff — standard module path, 2026-09-14
+
+Skill updates are ready; the stopped trial's database baseline is not verified.
+Standard CRUD now uses one
+short work record, one continuing executor and an early development preview.
+Custom workflows build on that base in the same record. Full design/plan/worksheet
+records apply only to a scope that needs them, not to every module with a workflow.
+Relation display and edit values, requested access and usable results lead review.
+Standard detail pages do not gain custom Edit/Delete controls by default.
+
+Implementation instructions are in
+[`standard-module.md`](../.agents/skills/carta-module-development/references/standard-module.md).
+Forward verification of this revision is reserved for the user. Plan 024 is
+already implemented (see the table below); plan 025 remains optional
+follow-up work, not a prerequisite for this trial. The short
+path uses existing controls, ordinary evidence and safe manual generator fallback.
+No new generator, route-type command or connected-entity framework repair is
+claimed as implemented. Those tool limitations remain visible if encountered.
+
+The follow-up also reconciles the API runbook and replaces the file-upload
+test's shared-table reset with existing session fixtures. No database or framework
+changes were made by this follow-up.
+
+Before the next trial, use a confirmed isolated database whose migration history
+matches the selected source revision. Run the focused file-upload tests twice,
+then the API suite to check cross-file effects. These runtime checks remain
+unverified: the current target has unresolved drift and no local PostgreSQL or
+Docker command was available. Do not reset the existing target to complete them.
+Plan 024 is already implemented; keep 025 deferred. Forward
+verification is reserved for the user; no speed or reliability claim is made.
+
+## Earlier module skill follow-up — 2026-09-14
+
+The following notes record earlier revisions. The current handoff above governs
+where their mandatory worksheet/generation procedure differs.
+
+Discovery/test follow-up: layer skills now read broad architecture, registration
+and export references only for an unresolved fact. Discovery reports occur after
+initial owner reads and again after ten further files or five minutes without a
+change. The threshold triggers communication, not a forced write. Plans pass
+pattern decisions, reasons and revisions. The first working result includes a
+brief review of test justification before the pattern is repeated.
+
+Forward verification measures reads that resolve no new fact, time to
+communication and first working output, and test repair cost. Bounded harmless-change and fault
+probes check both test stability and useful detection. These evaluations remain
+TODO; the wording changes make no claim of measured speed or reliability.
+
+The user selected skill changes first, then plans for tool fixes and forward
+tests. Plans 021 and 022 are complete as recorded below.
+The skill revision uses CRUD tables and custom workflow YAML, reuses discovery,
+checks generation before detailed planning, and assigns one working path first.
+The worksheet parser now reads CRUD tables as well as custom workflow records.
+
+The final wording pass moved custom workflow YAML into a conditional reference,
+defined shared rules with I-IDs, and removed repeated procedures from stage
+entry points. The checker reads all repeated tables and rejects duplicate rule
+and acceptance IDs. Early dependent assignments stay in one plan; cross-plan
+dependencies require the complete predecessor.
+
+| Plan | Priority | Effort | Risk | Depends on | Status |
+|---|---|---|---|---|---|
+| [021: Submit without copy dependency](021-remove-submit-copy-dependency.md) | P1 | S | LOW | None | DONE — 2026-09-14, native submit locator, 21 tool tests pass |
+| [022: Report raw controls](022-report-raw-interactive-controls.md) | P1 | S | MED | None | DONE — 2026-09-14, native controls reach review, 18 tests pass |
+| [024: Prove shared form controls](024-prove-shared-form-controls.md) | P1 | M | MED | None | IMPLEMENTED — 2026-09-14, real Dialog/Table/calendar cases pass, helper regression passes |
+| [025: Separate runtime and review freshness](025-separate-runtime-and-review-freshness.md) | P2 | S | MED | None | TODO |
+
+Run the manual trial with the current skills. Plan 024 is already implemented
+as recorded in the table above; plan 025 can follow
+when its gap is relevant; it does not block this trial. Preserve existing
+plan status and user application work.
+
+| Finding | Category | Impact | Confidence | Evidence |
+|---|---|---|---|---|
+| English submit selector | Bug/tests | Correct localized forms fail | HIGH | `scripts/scaffold-bounded-module.mjs:819`, `:831` |
+| Raw controls pass without review | DX/tests | Framework replacements can be missed | HIGH | `scripts/module-ui-check.test.mjs:22` |
+| Revised delivery behavior is unproved | Tests | Time and completeness remain uncertain | HIGH | Forward test run facts |
+
+Earlier considered and rejected: removing the worksheet (then judged small;
+superseded for standard CRUD after the later 102-edit planning trace); another
+generator or skill (existing owners suffice); automatic relation/workflow
+generation (business rules remain manual); calling static pass acceptance.
+Plans 019–020 remain historical results, not proof of this new revision.
+
+Scope: selected module skills, generator submission, UI checker, and evaluation
+contracts. No full application, framework, security, dependency, deployment or
+performance audit was performed. No new product direction was requested.
+Skill validation passed for six changed skill folders, seven Node skill checks
+passed, and two Python tests passed with new CRUD acceptance cases. The first
+Python run failed because fixture tables lacked a separating blank line; the
+fixture was corrected. Full runtime forward tests remain unrun.
+
+Final handoff checks: `pnpm test:module-tooling` passed 92 Node tests and three
+Python tests. Four workflow skill validations and `git diff --check` passed.
+An old Node assertion required command text in the router; it failed after the
+procedure moved to its reference. That wording assertion was removed; the
+generator example check and reference-link checks remain. All five final skill
+changes are complete.
+The next skill pass defines framework/module test ownership in one reference,
+checks assertions before expensive runs, and requires page/artifact diagnosis
+after two failures at one browser interaction. Plan 024 closes real-control
+coverage gaps and supplies shared helpers. Plan 025 separates runtime freshness
+from design review; current recorder rules remain in force until it is complete.
+Application and framework source were not changed in this skill pass. The new
+rules still need the controlled trial; no speed improvement is claimed.
+
+Checks for this pass: 96 Node tooling tests and three Python tests passed.
+Both changed skill folders passed skill validation; `git diff --check` passed.
+Framework browser tests and the controlled trial were not run. Concurrent
+application changes were left untouched.
+
 Planned with the improve skill against checkout `00763ed` on 2026-09-08.
 Both plans passed parent review on 2026-09-09.
 
@@ -359,10 +470,11 @@ migration, run a seed, or start a service.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 | --- | --- | --- | --- | --- | --- |
-| [016](016-centralize-app-port-settings.md) | Read application ports only from each app environment | P1 | S | None | TODO — plan only |
-| [017](017-prepare-local-module-environment.md) | Prepare and check the local module environment | P1 | M | 016 | TODO — plan only |
-| [018](018-expand-bounded-module-generator.md) | Generate selected standard module actions and their proof | P1 | L | 016, 017 | TODO — plan only |
-| [019](019-align-module-workflow-and-measure-time.md) | Use the new module path and measure its effect | P1 | M | 016, 017, 018 | TODO — plan only |
+| [016](016-centralize-app-port-settings.md) | Read application ports only from each app environment | P1 | S | None | IMPLEMENTED — review APPROVE 2026-09-12; E2E-case run deferred to 017 |
+| [017](017-prepare-local-module-environment.md) | Prepare and check the local module environment | P1 | M | 016 | IMPLEMENTED — 2026-09-12, tool tests pass; live DB/S3/E2E integration blocked by missing local services |
+| [018](018-expand-bounded-module-generator.md) | Generate selected standard module actions and their proof | P1 | L | 016, 017 | IMPLEMENTED — 2026-09-13, tooling 84+2 pass, both type-checks pass; live migration/seed/API/browser runs blocked by missing local services |
+| [019](019-align-module-workflow-and-measure-time.md) | Use the new module path and measure its effect | P1 | M | 016, 017, 018 | IMPLEMENTED — 2026-09-13, trials green, repairs committed; no speed claim |
+| [020](020-accept-separator-and-fix-review.md) | Accept the pnpm separator and correct the workflow review findings | P1 | S | 019 | IMPLEMENTED — review APPROVE, 2026-09-13 |
 
 The generator stays in the current command. It creates only selected standard
 actions and the technical read that Update needs. It uses Drizzle for one reviewed
@@ -394,3 +506,88 @@ do not claim a time reduction before the controlled runs are complete.
   first version guess business behavior. Keep those parts in the module plan.
 - Generated source-shape tests repeat renderer logic. Generate direct API and
   browser behavior proof when the standard path can support it.
+
+## Form write-schema seam — 2026-09-15
+
+Planned with the improve skill against commit `783ac5d` on 2026-09-15.
+Scope: web form schemas that hand-build create/update slots around the Hono
+seam. A form used a read/enriched select shape as its base and guessed the
+server-owned omit list; type-check, lint, and the API spec passed, and submit
+failed silently (issues for fields with no visible input render nowhere:
+`packages/loom/src/components/core/Form.vue:177,357`). Plans write new
+implementation; no source was changed during planning. Working tree was
+stashed first (`stash@{0}`: forward-testing trash + seam proof WIP); the
+`document-types` module files it needs live in the stash untracked commit.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+| --- | --- | --- | --- | --- | --- |
+| [026](026-form-write-schema-seam.md) | Check form write schemas against the Hono wire input in defineEntitySchema | P1 | M | — | DONE — 2026-09-15, dual-shape overloads (bare entity + direct), input-direction + phantom-required checks, 10 type-test cases, type-check + 8 spec tests + lint pass; parent review caught and fixed 4 subagent deviations (see plan) |
+| [027](027-migrate-web-schemas-to-seam.md) | Migrate hand-built web schemas onto defineEntitySchema and delete redundant aliases | P1 | S | 026 | SUPERSEDED — 2026-09-15; keep the completed roles migration, but use 029 for all remaining current-tree work; absent document-types/validation-results modules remain absent |
+| [028](028-form-orphan-issue-backstop.md) | Make silent Form validation failures impossible (orphan-issue backstop) | P2 | S | 026 | DONE — 2026-09-15, `orphanValidationIssues` in select.ts + dev-throw/prod-toast+alert in Form.vue, 3 new form.spec tests, full loom suite 57 files/450 tests pass, type-check + lint clean; parent verified no other validateDraftAsync callers affected, prod branch review-only (jsdom runs dev branch) |
+
+Historical execution order: 026 → partial 027, then 028 with Loom authority.
+Plan 029 supersedes the remaining 027 work. Plan 028 is defense in depth
+(runtime visibility net, not the compile-time gate).
+
+### Findings considered and rejected
+
+- Runtime-only Form assert as the primary fix: rejected; the Form submit path
+  runs outside all delivery gates (E2E excluded), so it would not be seen
+  during development. Kept as plan 028 backstop only.
+- Per-module submit specs: rejected; schema shape is proved once at the seam
+  type-test, not per module.
+- Docs/"remember to omit" comments: rejected; comments do not fail builds.
+- API entity changes: rejected; entities already own the correct schemas.
+
+## Unified app resource schema seam — 2026-09-15
+
+Planned with `$improve` against commit `59ba2d1` on 2026-09-15. Scope: make
+one Carta web schema seam support Hono and custom resource contracts, migrate
+all current app and generator callers, then remove Loom's no-op schema builder.
+Planning changed only files under `plans/`. The untracked proof source remains
+unchanged for the implementer to fold into permanent tests.
+
+| Plan | Title | Priority | Effort | Depends on | Status |
+| --- | --- | --- | --- | --- | --- |
+| [029](029-centralize-app-resource-schema-seam.md) | Make one app schema seam support Hono and custom resource contracts | P1 | L | — | COMPLETE — 2026-09-15; reviewed and checked |
+| [030](030-remove-loom-schema-builder.md) | Remove Loom's schema builder and keep generic resource values | P1 | M | 029 | COMPLETE — 2026-09-15; reviewed and checked |
+
+Execution order: 029 → 030. Plan 029 leaves Loom's old builder only for Loom's
+own callers, while the app boundary test prevents web code from using it. Plan
+030 removes the builder after the app migration is complete.
+
+### Proof status
+
+The prototype proves the core overload and runtime design: Hono CRUD and
+read-only routes, exact record types, required and forbidden write slots,
+custom runtime and type-only contracts, parsed-output write compatibility, and
+users `{ id }` input without `.passthrough()`. Web type-check and focused lint
+passed. The focused test passed with `CHOKIDAR_USEPOLLING=true`; the first
+normal run stopped before collection with `EMFILE: too many open files, watch`.
+Plan 029 moves this proof into permanent tests and adds inferred-custom,
+query, identity, and validator coverage before migration is accepted. The full
+repository migration is planned, not yet implemented or proven.
+
+### Findings
+
+| Finding | Category | Impact | Effort | Risk | Confidence | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| Web code can bypass the Hono contract through Loom's identity-only builder | correctness / architecture | HIGH | L | MED | HIGH | `apps/web/src/framework/hono/entity.ts`; current Loom imports in web schemas, fixtures, and tests |
+| The current Hono write check compares raw Zod input, but Form submits parsed output | correctness | HIGH | M | MED | `apps/web/src/framework/hono/entity.ts:40-56`; `packages/loom/src/components/core/Form.vue:379-381`; passing prototype assertions |
+| App callers, generator output, agent skills, and architecture docs teach two schema paths | DX / tech debt | HIGH | M | LOW | `scripts/scaffold-bounded-module.mjs`; both named skill files; web architecture document |
+| Loom's public `defineSchema` is a no-op after the app seam owns adaptation | tech debt / API | MED | M | MED | `packages/loom/src/resources/defineSchema.ts`; `defineResource` already accepts `WebResourceSchemaBoundary` |
+
+### Approaches considered and rejected
+
+- Put Hono support in Loom: rejected. Loom must provide generic resource
+  contracts. Carta web owns the transport-provider assumption.
+- Keep `defineEntitySchema` or the Loom builder as an alias: rejected. Either
+  name leaves a second path that can bypass the current contract.
+- Add a separate record-only overload: rejected. Conditional Hono members and
+  the explicit custom-contract overload cover read-only resources with the same
+  implementation.
+- Restore absent `document-types` or `validation-results` files: rejected. They
+  are not part of the current tree and this migration must not invent them.
+
+This is a focused migration audit, not a full security, performance, database,
+or product-behavior audit. Those areas are outside Plans 029 and 030.

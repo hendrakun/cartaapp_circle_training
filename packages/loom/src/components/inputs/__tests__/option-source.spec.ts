@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import CheckboxGroupInput from '../CheckboxGroupInput.vue'
-import { defineFields, defineResource, defineSchema, type CollectionLoadContext, type CollectionResult } from '../../..'
+import { defineFields, defineResource, type CollectionLoadContext, type CollectionResult } from '../../..'
 import { mountInput } from './harness'
 
 const input = (name: string) => readFileSync(resolve(process.cwd(), 'src/components/inputs', name), 'utf8')
@@ -22,7 +22,7 @@ describe('explicit option sources', () => {
       data: [{ id: 1, name: 'A' }],
       meta: { total: 1, totalPage: 1 },
     }))
-    const schema = defineSchema({ identity: 'id' })
+    const schema = { identity: 'id' as const }
     const fields = defineFields(schema, { name: {} })
     const resource = defineResource(schema, {
       key: 'test-options',

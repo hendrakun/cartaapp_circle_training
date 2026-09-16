@@ -80,7 +80,8 @@ Do not apply one identifier rule to all inputs:
   `view` keys. Use the source identity for detail, CRUD, and cache operations.
   When a pre-filled value uses a different picked key, load it through a loader
   that accepts that key or through returned list records. Never pass `pick` as a
-  detail ID. Check a pre-filled lookup in the focused Playwright journey.
+  detail ID. Review the actual form's load wiring and relation source. Do not
+  add a browser journey for the lookup.
 - A multi lookup or select keeps the exact selected records in the live draft
   and sends them unchanged. The backend extracts identity fields only at the
   persistence boundary, then sends current labels in the same record array.
@@ -135,10 +136,8 @@ mismatch at its owner; use an authorized supported local extension only if it
 preserves this contract. A cast or client conversion must not hide the
 mismatch.
 
-Use shared form readiness when available. Browser checks wait for upload and
-model commit; filename presence does not prove completion. Existing upload
-progress test IDs avoid dependence on translated copy. Keep module-specific
-pending flags out of the normal form path.
+Use shared form readiness when available. Keep module-specific pending flags
+out of the normal form path. Module delivery does not run browser checks.
 
 For changed asset fields, prove unchanged save, addition, permitted removal or
 clear, retained metadata and reload. Cover omitted PATCH separately from empty

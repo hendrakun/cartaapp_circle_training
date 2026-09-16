@@ -1,19 +1,10 @@
-import { defineSchema, fromZod } from '@southneuhof/loom'
 import { createUserSchema } from '@southneuhof/api/routes/(authenticated)/users/users.create.contract'
-import { user, userPublicSchema } from '@southneuhof/api/routes/(authenticated)/users/users.entity'
+import { user } from '@southneuhof/api/routes/(authenticated)/users/users.entity'
 import { z } from 'zod/v4'
-import type { AppResourceContract } from '@/framework/hono'
 import { rpc } from '@/framework/rpc'
+import { defineSchema } from '@/framework/schema'
 
-export type User = z.output<typeof userPublicSchema>
-
-const roleSelection = z.union([
-  z.string().trim().min(1),
-  z
-    .object({ id: z.string().trim().min(1) })
-    .passthrough()
-    .transform(({ id }) => id),
-])
+const roleSelection = z.union([z.string().trim().min(1), z.object({ id: z.string().trim().min(1) }).transform(({ id }) => id)])
 
 export const createUserFormSchema = createUserSchema.extend({
   roleIds: z
@@ -24,9 +15,9 @@ export const createUserFormSchema = createUserSchema.extend({
     }),
 })
 
-export const usersSchema = defineSchema<AppResourceContract<typeof rpc.users>>({
+export const usersSchema = defineSchema(rpc.users, {
   identity: 'id',
-  record: { schema: fromZod(userPublicSchema) },
-  create: { schema: fromZod(createUserFormSchema) },
-  update: { schema: fromZod(user.schemas.update) },
+  record: user.schemas.select,
+  create: createUserFormSchema,
+  update: user.schemas.update,
 })

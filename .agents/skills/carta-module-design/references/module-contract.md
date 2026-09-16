@@ -1,9 +1,15 @@
 # Module contract
 
+This is the full-process contract for a scope that needs explicit traceability.
+Start with the [standard module base](../../carta-module-development/references/standard-module.md),
+including custom workflows. A relation, filter or custom action alone does not
+require this inventory. Record the scope covered here and reference the rest.
+
 `plans/<feature>/design.md` owns intended behavior and approval. Plans own
 technical decisions; the worksheet owns progress; reports own observed results.
-Use tables for data, YAML records for actions and acceptance, and Mermaid for
-branched workflows. Diagrams reference rule IDs; records remain authoritative.
+Use tables for data, standard CRUD actions and their acceptance cases. Use YAML
+only for custom workflows. Use Mermaid when it clarifies a branched workflow;
+diagrams reference the authoritative rules.
 Existing approved artifacts can retain their format when they meet this contract.
 
 ## Record rules
@@ -11,6 +17,8 @@ Existing approved artifacts can retain their format when they meet this contract
 Assign stable IDs to workflows (`W-01`), behaviors (`B-01`), transitions (`T-01`),
 invariants (`I-01`) and acceptance cases (`A-01`). Define each rule once and link
 its consumers. Keep reasons and source notes outside executable conditions.
+IDs are unique across the design. Tables can repeat under resource headings;
+the checker combines tables with the same header and rejects duplicate IDs.
 A blank required property is incomplete. `NONE` is an explicit absence;
 `UNRESOLVED` blocks affected work. An unchanged contract reference names its
 path and symbol or rule ID. Define technical terms before using them.
@@ -61,99 +69,55 @@ permitted prerequisite orders and cross-module effects when they exist.
 | Obligation | Rule references | Acceptance IDs |
 |---|---|---|
 
-For UI workflows, list the distinct browser journeys:
+Keep this legacy checker table empty in module delivery:
 
 | Journey | Obligation | Acceptance IDs | Distinct interaction |
 |---|---|---|---|
 
-Use stable `J-01` IDs and existing obligation/acceptance IDs. Select paths by the
-[journey rule](../../carta-module-development/references/verification-strategy.md#browser-journeys),
-including conditional required inputs. Headless or unchanged UI work keeps an
-empty table with its reason. This table selects proof; action records own rules.
+Reason: E2E is outside module delivery under the
+[verification boundary](../../carta-module-development/references/verification-strategy.md#browser-journeys).
+Describe UI behavior in action records, not browser test mappings. On resume,
+move old journey obligations to separately scoped work; do not mark them passed.
 
 Present this inventory during design review. The worksheet checker cannot discover
 business work omitted here. Explicit exclusions belong in scope, not this table.
 
-For stateful behavior, define each state variable, initial value, valid combinations
-and terminal states. Give named conditions exact predicates. Use:
-
-| Transition ID | From state | Action | Condition | To state | Effect references |
-|---|---|---|---|---|---|
-
-Define invariants separately:
-
-| Invariant ID | Condition that must remain true |
-|---|---|
-
 Every defined behavior, transition and invariant must appear in the inventory's
 Rule references. Use exact IDs, not ID ranges.
 
-Specify no-match rejection and overlapping-condition precedence, or make conditions
-exclusive. For joins, define completion; for returns, define retained and cleared
-values. A linear resource needs no artificial state machine.
+## Shared rules
 
-For each completion condition, define the evidence or authorized confirmation
-that establishes it. For return/resubmit paths, state which prior decisions and
-reasons remain available after another cycle. Check terminal-state restrictions
-against every action, including attachment and metadata writes. Reference these
-conditions from action records so transitions and actions use the same rule.
+Define a condition used by several actions once, as an invariant:
 
-## Action records
+| Invariant ID | Condition that must remain true |
+|---|---|
+| I-01 | Each newly selected division is active when the write occurs. |
 
-Use one record per action. Every property below needs a value or `NONE`; expand
-conditions and effects into referenced records when several actions share them.
-Use field/value maps and condition/result rows, not paragraphs inside scalar values.
-Separate alternatives into rows. Reference data-table rules instead of copying them.
+Use the existing I-ID family. State when the condition applies, including whether
+it applies to existing records or only new selections. Action and acceptance rows
+reference the ID; field definitions remain the owner of field rules.
 
-```yaml
-id: B-01
-workflow: W-01
-name: <business action>
-access:
-  actor: <permission or role>
-  scope: <record ownership predicate>
-  assignment: <predicate or NONE>
-  denied: <observable result; unchanged data>
-input:
-  fields: <field names mapped to data-table rules and action-specific overrides>
-  unknown_fields: <reject or ignore>
-preconditions:
-  - condition: <exact predicate or condition ID>
-    otherwise: <rejection result; unchanged data>
-effects:
-  set: <field-to-value map or NONE>
-  clear: <field names or NONE>
-  create: <record types and field-to-value maps or NONE>
-  delete: <record selection or NONE>
-  preserved: <other relevant data>
-  transaction: <coupled writes and rollback boundary>
-  transitions: <transition IDs or NONE>
-  external: <delivery, failure and recovery rules or NONE>
-repeat:
-  result: <duplicate/retry outcome>
-  effects: <write changes and effect counts>
-concurrent:
-  outcomes: <allowed final outcomes>
-  preserved: <effects that cannot be lost or duplicated>
-result: <returned data and visible outcome>
-ui:
-  entry: <route or surface>
-  parent_visibility: <retained pages or NONE>
-  back: <target or NONE>
-  control:
-    label: <framework default, or confirmed exact text and source>
-    visible: <predicate>
-    enabled: <predicate>
-  fields: <editable/read-only fields; defaults; dependent lookups>
-  states: <loading, empty, denied and error behavior>
-  success: <confirmation, navigation, refresh and reload behavior>
-  failure: <feedback, input preservation and recovery>
-acceptance: [<acceptance IDs>]
-```
+## Standard CRUD actions
 
-Use `ui: NONE` for headless actions and define the consumer result instead.
-Specify required display data and unaffected interfaces. Apply Carta navigation
-and visual conventions by reference where they settle the result.
+Use one row per requested List, Detail, Create, Update or Delete action:
+
+| ID | Action | Access and scope | Inputs | Rules or exceptions | Expected result | Acceptance IDs |
+|---|---|---|---|---|---|---|
+
+Reference field definitions for requiredness, defaults, writable fields and
+omitted/null values. Define shared rules once. Add UI entry, visible inputs and
+save/reload outcomes once per distinct interaction. Reference unchanged Carta
+behavior by its owner instead of copying it into every action.
+
+An immutable field, relation constraint or custom filter stays in this table.
+Choose YAML when an action implements a custom workflow with conditions,
+transitions or coupled effects. A feature can contain both formats.
+
+## Custom workflows
+
+For custom conditions, transitions or coupled effects, read
+[custom-workflows.md](custom-workflows.md). It defines the workflow state and
+YAML action/acceptance records. Load it only for that part of a mixed module.
 
 ## Acceptance records
 
@@ -162,22 +126,15 @@ Cover each independent condition, transition branch and invariant. Include bound
 and rejection cases that distinguish plausible wrong results, plus complete sequence
 cases where isolated action tests cannot prove the workflow.
 
-```yaml
-id: A-01
-rules: [<behavior, transition or invariant IDs>]
-given:
-  actors: <named actors mapped to identity, permissions and scope>
-  records: <named records mapped to concrete field values>
-when:
-  - actor: <fixture actor>
-    action: <action ID>
-    input: <field-to-value map or NONE>
-expect:
-  result: <exact observable output or rejection>
-  stored: <record/field-to-value map and effect counts>
-  unchanged: <data that must remain unchanged or NONE>
-  visible: <UI result or NONE>
-```
+For standard CRUD, use one independently checkable outcome per row:
+
+| ID | Rule references | Given | Action and input | Expected result and stored/unchanged values | Required visible result |
+|---|---|---|---|---|---|
+
+Several rows can share a test when its assertions prove each outcome. Use
+concrete values that distinguish plausible faults. Include allowed and denied
+access, omitted and cleared values, and retained values where the rules require
+them. Custom workflow acceptance follows the linked workflow reference.
 
 ## Boundaries and readiness
 

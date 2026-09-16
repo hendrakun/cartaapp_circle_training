@@ -63,10 +63,13 @@ Do not add a compatibility wrapper or preserve the old module API.
 
 ### 1. Create the schema
 
-Create `<module>.schema.ts` with core `defineSchema`.
+Create `<module>.schema.ts` with app `defineSchema` from `@/framework/schema`.
 
-- Use the app-level contract type for a typed Hono route.
-- Let manual runtime schemas infer types for services or fetch.
+- Use the Hono route provider for a standard typed Hono resource. Do not use
+  a custom contract to bypass a route mismatch.
+- Use an explicit custom contract for a resource without a standard Hono route,
+  or let local runtime schemas infer its types.
+- Pass raw Zod schemas; the app seam owns `fromZod`.
 - Put record, query, create, update, identity, and all standard frontend
   validation here.
 - Move synchronous and asynchronous custom validators here.
