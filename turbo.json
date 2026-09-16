@@ -26,6 +26,10 @@
       "dependsOn": ["^type-check"],
       "outputs": ["dist-tooling/**", "dist-types/**", ".sprindle/**"]
     },
+    "@southneuhof/framework-web#type-check": {
+      "cache": false,
+      "dependsOn": ["^type-check"]
+    },
     "lint": {
       "dependsOn": ["^lint"],
       "outputs": []

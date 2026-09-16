@@ -20,10 +20,8 @@ collections.
 
 ## Standard resource path
 
-Standard detail pages use the direct DetailView prop bag without custom Edit or
-Delete controls. List row actions are the normal location. Use a detail controls
-slot only for a named workflow need; permission to delete does not require a
-second delete control. Existing customized pages are not default templates.
+Follow the [standard action placement rule](../SKILL.md#framework-first-composition).
+Existing customized pages are not default templates.
 
 Resource actions are independent. Expose the actions required by the task;
 a resource does not need all CRUD actions. Use `FormView` for independent form
@@ -108,8 +106,6 @@ For a tree or other surface outside standard Views:
 
 - Use `resourceCan(resource)` from `apps/web/src/framework/access.ts` so the
   resource permission remains the single source.
-- Use `useConfirmDelete` with `ConfirmationDialog` for the shared custom delete
-  flow.
 - Use `errorMessage(error, fallback)` from the app normalization adapter.
 
 Keep server-derived record actions or `allowedOperations` as the record-level

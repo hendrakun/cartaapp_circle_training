@@ -30,16 +30,22 @@ import { resolveFields } from '../fields/resolve'
 import { invalidateResourceData } from '../query/client'
 import { stableValue } from '../query/keys'
 import { useResourceRuntime } from './runtime'
-import type { RouteLocationRaw } from 'vue-router'
+import type { RouteLocationRaw, RouteMap } from 'vue-router'
 import { registerResourceAction } from './routeAccess'
 
 type ResourceOperation = 'list' | 'detail' | 'create' | 'update' | 'delete'
-type ActionParams = Record<string, string | number>
+type ResourceRouteParams<Name extends keyof RouteMap> = {
+  [Key in keyof RouteMap[Name]['paramsRaw']]: RouteMap[Name]['paramsRaw'][Key] extends (infer Value)[]
+    ? RouteMap[Name]['paramsRaw'][Key] | readonly Value[]
+    : RouteMap[Name]['paramsRaw'][Key]
+}
 
 export type ResourceActionRoute<TIdentity extends RecordIdentity = RecordIdentity> = {
-  name: string
-  params?: ActionParams | ((id: TIdentity) => ActionParams)
-}
+  [Name in Extract<keyof RouteMap, string>]: {
+    name: Name
+    params?: Partial<ResourceRouteParams<Name>> | ((id: TIdentity) => Partial<ResourceRouteParams<Name>>)
+  }
+}[Extract<keyof RouteMap, string>]
 
 export type ResourceFormDefaultTo<TRecord extends object> =
   | RouteLocationRaw

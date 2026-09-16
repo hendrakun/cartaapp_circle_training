@@ -48,6 +48,12 @@ validators. A failed submit must preserve the draft.
 
 ## Select controls
 
+Custom business operations use the same framework forms and controls as CRUD.
+Give the operation its own schema and action; let the form own input, validation
+and pending state. Use local UI code only for a named requirement that registered
+renderers and existing composites cannot meet. Record that gap in the existing
+work record before implementing the exception.
+
 Read [field choices](references/form-field-types.md) when selecting a new control
 or resolving a value mismatch.
 Use the registered renderer, then an existing composite. Use `table`/`TableInput`

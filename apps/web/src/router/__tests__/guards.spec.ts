@@ -140,12 +140,12 @@ describe('permission guard', () => {
         create: {
           run: async (input) => ({ id: 'project-created', input }),
           permission: 'create-quality-inspection',
-          route: { name: 'project-create-route' },
+          route: { name: 'settings-users-create' },
         },
       },
     })
 
-    expect(createPermissionGuard(denyAll)({ name: 'project-create-route', meta: {} } as any, {} as any, next)).toEqual({ name: 'dashboard' })
+    expect(createPermissionGuard(denyAll)({ name: 'settings-users-create', meta: {} } as any, {} as any, next)).toEqual({ name: 'dashboard' })
   })
 
   it('checks a registered project update action through the access adapter', () => {
@@ -155,12 +155,12 @@ describe('permission guard', () => {
         update: {
           run: async (id, input) => ({ id: String(id), input }),
           permission: 'update-quality-inspection',
-          route: { name: 'project-update-route', params: (id) => ({ id: String(id) }) },
+          route: { name: 'settings-users-edit', params: (id) => ({ userId: String(id) }) },
         },
       },
     })
 
-    expect(createPermissionGuard(denyAll)({ name: 'project-update-route', meta: {} } as any, {} as any, next)).toEqual({ name: 'dashboard' })
+    expect(createPermissionGuard(denyAll)({ name: 'settings-users-edit', meta: {} } as any, {} as any, next)).toEqual({ name: 'dashboard' })
   })
 
   it('still rejects denied browser access for a registered system create action', () => {
@@ -170,12 +170,12 @@ describe('permission guard', () => {
         create: {
           run: async (input) => ({ id: 'system-created', input }),
           permission: 'create-users',
-          route: { name: 'system-create-route' },
+          route: { name: 'settings-roles-create' },
         },
       },
     })
 
-    expect(createPermissionGuard(denyAll)({ name: 'system-create-route', meta: {} } as any, {} as any, next)).toEqual({ name: 'dashboard' })
+    expect(createPermissionGuard(denyAll)({ name: 'settings-roles-create', meta: {} } as any, {} as any, next)).toEqual({ name: 'dashboard' })
   })
 
   it('discovers lazy route action before resolving direct entry', async () => {
@@ -185,7 +185,7 @@ describe('permission guard', () => {
         { path: '/dashboard', name: 'dashboard', component: { template: '<main>dashboard</main>' } },
         {
           path: '/detail/:id',
-          name: 'lazy-detail',
+          name: 'settings-roles-detail',
           component: async () => {
             defineResource(schema, {
               key: 'lazy-roles',
@@ -193,7 +193,7 @@ describe('permission guard', () => {
                 detail: {
                   run: async () => undefined,
                   permission: 'view-roles',
-                  route: { name: 'lazy-detail', params: (id) => ({ id: String(id) }) },
+                  route: { name: 'settings-roles-detail', params: (id) => ({ roleId: String(id) }) },
                 },
               },
             })

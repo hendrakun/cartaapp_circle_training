@@ -3,8 +3,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import VueRouter from 'vue-router/vite'
-import { applyFileRouteConventions } from './src/router/file-routing/layout-groups'
-import { staticRouteName } from './src/router/file-routing/names'
+import { fileRouteOptions } from './src/router/file-routing/options'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -28,13 +27,7 @@ export default defineConfig(({ command, mode }) => {
       strictPort: true,
     },
     plugins: [
-      VueRouter({
-        routesFolder: 'src/routes',
-        extensions: ['.route.vue', '.layout.vue'],
-        dts: 'src/route-map.d.ts',
-        getRouteName: staticRouteName,
-        beforeWriteFiles: applyFileRouteConventions,
-      }),
+      VueRouter(fileRouteOptions),
       vue({
         script: {
           defineModel: true,

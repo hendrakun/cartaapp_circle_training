@@ -38,10 +38,10 @@ async function fixture() {
   const roles = defineResource(schema, {
     key: 'fixture-roles',
     actions: {
-      list: { run: async () => ({ data: [] }), route: { name: 'users-detail-roles', params: { userId: 'u1' } } },
+      list: { run: async () => ({ data: [] }), route: { name: 'settings-users-detail-role-assignments', params: { userId: 'u1' } } },
       detail: {
         run: async ({ id }) => ({ id: String(typeof id === 'object' ? id.id : id) }),
-        route: { name: 'users-detail-roles-detail', params: (id) => ({ userId: 'u1', roleId: String(typeof id === 'object' ? id.id : id) }) },
+        route: { name: 'settings-users-detail', params: () => ({ userId: 'u1' }) },
       },
     },
   })
@@ -61,8 +61,8 @@ async function fixture() {
     '(authenticated)/authenticated.layout.vue': '<template><RouterView /></template>',
     '(authenticated)/dashboard.route.vue': '<template><div /></template>',
     '(authenticated)/users/[userId]/detail.route.vue': '<template><RouterView /></template>',
-    '(authenticated)/users/[userId]/detail/roles/index.route.vue': '<template><div /></template>',
-    '(authenticated)/users/[userId]/detail.roles.[roleId].detail.route.vue': '<template><div /></template>',
+    '(authenticated)/users/[userId]/detail/roles/index.route.vue': '<route>{ "name": "settings-users-detail-role-assignments" }</route><template><div /></template>',
+    '(authenticated)/users/[userId]/detail.roles.[roleId].detail.route.vue': '<route>{ "name": "settings-users-detail" }</route><template><div /></template>',
     '(authenticated)/users/[userId]/detail.denied.route.vue': '<route>{ "meta": { "permission": "denied" } }</route><template><div /></template>',
   }
   for (const [relative, value] of Object.entries(files)) {
@@ -114,6 +114,37 @@ async function fixture() {
 }
 
 describe('generated nested navigation', () => {
+  it('inherits omitted resource parameters, accepts an override, and rejects missing context', async () => {
+    registerResourceRuntime({ queryClient: createFrameworkQueryClient(), adapters: resolveFrameworkAdapters(), fieldDefaults: resolveFrameworkFieldDefaults() })
+    const inherited = defineResource(schema, {
+      key: 'inherited-child-route',
+      actions: {
+        list: { run: async () => ({ data: [] }), route: { name: 'settings-users-detail-role-assignments' } },
+        detail: { run: async () => undefined },
+      },
+    })
+    const overridden = defineResource(schema, {
+      key: 'overridden-child-route',
+      actions: {
+        list: { run: async () => ({ data: [] }), route: { name: 'settings-users-detail-role-assignments', params: { userId: 'u2' } } },
+        detail: { run: async () => undefined },
+      },
+    })
+    const routes: RouteRecordRaw[] = [
+      { path: '/users/:userId/detail', name: 'settings-users-detail', component: { template: '<div />' } },
+      { path: '/users/:userId/detail/roles', name: 'settings-users-detail-role-assignments', component: { template: '<div />' } },
+      { path: '/outside', name: 'dashboard', component: { template: '<div />' } },
+    ]
+    const router = createRouter({ history: createMemoryHistory(), routes })
+
+    await router.push('/users/u1/detail')
+    expect(router.resolve(inherited.detail({ id: 'r1' }).backTo!).fullPath).toBe('/users/u1/detail/roles')
+    expect(router.resolve(overridden.detail({ id: 'r1' }).backTo!).fullPath).toBe('/users/u2/detail/roles')
+
+    await router.push('/outside')
+    expect(() => router.resolve(inherited.detail({ id: 'r1' }).backTo!)).toThrow(/Missing required param "userId"/)
+  })
+
   it('uses scoped page Back on fresh direct entry', async () => {
     const { router, host } = await fixture()
     await router.push('/users/u1/detail/roles/r1/detail')

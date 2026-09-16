@@ -69,11 +69,14 @@ Use [verification strategy](references/verification-strategy.md) for checks and
 evidence. Use `$verify-carta-module` for final review. Finish when the requested
 result works, required checks are sufficient, and the work record reports the
 development preview, migration/seed status and any remaining gaps.
+Record the review verdict before reporting completion. A pending required
+review leaves the work in `verifying`, including after a repair.
 
 ## Layer contracts
 
 - Use `$api-conventions` for API edits and `$web-ui-surfaces` for web surfaces.
-- Use `$build-resource-form` for forms. For a relation, read the complete
+- Before selecting controls for any user input, use `$build-resource-form`.
+  This includes custom actions, playgrounds and inline uploads. For a relation, read the complete
   [display and form pattern](../web-ui-surfaces/references/fields.md), not just
   the lookup configuration.
 - Read [cross-layer contracts](references/contract-rules.md) for changed boundaries.

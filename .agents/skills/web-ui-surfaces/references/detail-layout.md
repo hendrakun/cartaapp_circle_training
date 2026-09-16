@@ -27,15 +27,14 @@ Refresh related resources only when their displayed data changed.
 
 ## Actions
 
-Keep Edit and Delete in the record action region. Group workflow actions by
-purpose and show only actions allowed for the current record. Use server
+Follow the [standard action placement rule](../SKILL.md#framework-first-composition).
+Group workflow actions by purpose and show only actions allowed for the current record. Use server
 capabilities for record decisions, and repeat authorization on submit.
 
 Use `DialogForm` for a short contextual action. Each action has its own input
 schema and field set. If the clicked action fixes a value, do not ask for that
 value again. Use `FormView` for an independent or long form.
 
-Use `useConfirmDelete` and `ConfirmationDialog` for a custom delete control.
-On success, navigate to a valid parent. Keep load and write failures visible
+Keep load and write failures visible
 through the existing error formatter. A custom body must supply loading,
 error, unavailable-record, and retry behavior that a standard View would own.

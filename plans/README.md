@@ -1,5 +1,35 @@
 # File-routing plans
 
+## Typed resource routes — 2026-09-16
+
+Planned with `improve` at `c5d8f9b`. The user selected this migration, so no
+general audit or additional selection step was needed. Existing plans use this
+directory for framework and application migrations; numbering continues at 031.
+
+| Plan | Result | Priority | Effort | Risk | Depends on | Status |
+|---|---|---|---|---|---|---|
+| [031](031-check-resource-route-names.md) | Reject unknown names with fresh generated route types | P1 | M | MED | None | DONE — 2026-09-16, approved after one test revision |
+| [032](032-check-resource-route-parameters.md) | Check supplied parameters and preserve inherited values | P2 | M | MED | 031 | DONE — 2026-09-16, approved after two plan reconciliations |
+
+Execute 031 before 032. Plan 031 includes generation, the normal compiler gate,
+and a stale-map regression. Plan 032 retains optional inherited parameters;
+it does not claim to prove that runtime parent context exists.
+
+Evidence: `packages/loom/src/resources/actionResource.ts:39` accepts any string
+name and broad parameter records. `apps/web/package.json` type-check does not
+generate route declarations. `apps/web/src/router/tabs.ts:4` already demonstrates
+typed names with partial raw parameters. These findings have high confidence.
+
+Considered and rejected: regex as the primary route contract; per-resource
+opt-in helpers; mandatory parameters that break inherited parent context;
+manual route maps; and runtime navigation changes in a type-only migration.
+
+Planning inspected Loom resource types, web route generation, package commands,
+the relevant CI jobs and existing route tests. No source was changed in this
+planning turn. Commands are specified from source; implementation checks have
+not run. API behavior, databases, security, performance, UI controls and other
+Carta applications were not audited. Existing work remains unchanged.
+
 ## Current skill handoff — standard module path, 2026-09-14
 
 Skill updates are ready; the stopped trial's database baseline is not verified.

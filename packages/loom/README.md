@@ -157,6 +157,13 @@ await roles.delete({ id }).run()
 
 Action definitions can also carry route and permission metadata when the application uses those features.
 
+Resource route names use the consuming application's Vue Router `RouteMap`.
+Carta regenerates that map before web type checking, so a deleted or renamed
+route fails compilation. Supplied parameters use that route's raw parameter
+names and values. Parameters can be omitted because Vue Router can inherit them
+from the current route at runtime. Type assertions can bypass these checks, and
+an application without a typed route map keeps Vue Router's generic contract.
+
 Permission metadata controls presentation. The backend remains responsible for authorization.
 
 ## Views and core components
