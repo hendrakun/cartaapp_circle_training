@@ -21,9 +21,12 @@ Add search, notifications, or a dashboard only when the task requires them.
 
 Use `ListView`, `DetailView`, and `FormView` for their standard tasks. The View
 owns the page header and normal actions. Add content through its supported slots
-or below the View. Use a short section heading for additional content. Add a
-framework card only when the content needs a distinct group. Keep module titles
-in the standard header; omit decorative banners, repeated titles, and slogans.
+or below the View. Give additional content a short section heading. Choose one
+surface treatment: an unframed section with normal page spacing, or a framework
+card when the content needs visual containment. Keep unframed sections free of
+card-like borders, backgrounds, corner rounding, and container padding. Keep
+module titles in the standard header; omit decorative banners, repeated titles,
+and slogans.
 
 A record with one additional section shows that section directly below
 `DetailView` on entry. Use an adjacent component, or a default child
