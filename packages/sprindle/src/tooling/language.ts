@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
-import { dirname, join, relative, resolve, sep } from 'node:path'
+import { basename, dirname, join, relative, resolve, sep } from 'node:path'
 import { API } from 'typescript/unstable/sync'
 import { parse } from '@babel/parser'
 import { parse as parseJsonc } from 'jsonc-parser'
@@ -102,7 +102,8 @@ function helperDeclaration(root: string, file: string, files: Set<string>, defin
   const directory = dirname(file)
   const { parameters } = routeFileLocation(root, file)
   const parentFile = scopeParents(root, file, files)
-  const parent = parentFile ? `typeof import(${JSON.stringify('./' + relative(directory, parentFile).replace(/\.ts$/, ''))}).default` : 'ScopeView<{}, never>'
+  const parentImport = ('./' + relative(directory, parentFile ?? '').replace(/\.ts$/, '')).replaceAll(sep, '/')
+  const parent = parentFile ? `typeof import(${JSON.stringify(parentImport)}).default` : 'ScopeView<{}, never>'
   const params = `{${parameters.map((name) => `${JSON.stringify(name)}: string`).join(';')}}`
   const definitionImport = relative(directory, definition).replaceAll(sep, '/').replace(/\.ts$/, '')
   const specifier = definitionImport.startsWith('.') ? definitionImport : `./${definitionImport}`
@@ -203,13 +204,13 @@ export function routeLanguageOverlay(
   const publicTypes = publicTypesFile ?? [resolve(import.meta.dirname, '../../dist-types/index.d.ts'), resolve(import.meta.dirname, '../dist-types/index.d.ts')].find(existsSync)
   if (!definition || !publicTypes) throw new Error('Sprindle route definition declarations are missing; prepare the package first')
   const routeFiles = [...walk(root), ...open.keys()]
-  const entryFiles = routeFiles.filter((file) => /\/(?:\+scope|\+server)\.ts$/.test(file))
+  const entryFiles = routeFiles.filter((file) => /^(?:\+scope|\+server)\.ts$/.test(basename(file)))
   const paths = new Set([...entryFiles, ...sourceDependencies(entryFiles, open).filter((file) => file.startsWith(root + sep) && file.endsWith('.ts'))])
   const next = new Map<string, string>()
   const dependencies = sourceDependencies([...projectFiles(projectRoot), ...configFiles(config), ...open.keys()], open)
   for (const file of dependencies) next.set(file, open.get(file) ?? readFileSync(file, 'utf8'))
   for (const file of paths) {
-    const isScope = file.endsWith('/+scope.ts')
+    const isScope = basename(file) === '+scope.ts'
     const helper = isScope ? '.s' : '.r'
     next.set(file, redirectSprindleImports(open.get(file) ?? readFileSync(file, 'utf8'), `./${helper}`))
     next.set(join(dirname(file), `${helper}.d.ts`), helperDeclaration(root, file, paths, definition, publicTypes))

@@ -30,6 +30,7 @@ function prepareE2eState() {
     cwd: repoRoot,
     stdio: 'inherit',
     env: process.env,
+    shell: process.platform === 'win32',
   })
 }
 

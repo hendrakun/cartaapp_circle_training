@@ -2,10 +2,11 @@ import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, syml
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
 
 test('plain Node runs the source-free application with one request asset module', () => {
-  const root = new URL('../..', import.meta.url).pathname
+  const root = fileURLToPath(new URL('../..', import.meta.url))
   const source = readFileSync(join(root, 'dist', 'application.mjs'), 'utf8')
   const chunks = readdirSync(join(root, 'dist', 'chunks')).filter((name) => name.endsWith('.mjs')).map((name) => readFileSync(join(root, 'dist', 'chunks', name), 'utf8')).join('\n')
   expect(source + chunks).not.toMatch(/(?:from|import)\s*["']@southneuhof\/sprindle|typescript\/|from ["'][^"']*src\//)

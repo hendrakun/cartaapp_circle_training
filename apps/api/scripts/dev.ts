@@ -1,7 +1,8 @@
 import { spawn, type ChildProcess } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 import { watchRouteManifest } from '@southneuhof/sprindle/tooling'
 
-const projectRoot = new URL('..', import.meta.url).pathname
+const projectRoot = fileURLToPath(new URL('..', import.meta.url))
 const manifest = '.sprindle-dev/routes.mjs'
 const bootStarted = Date.now()
 const log = (message: string) => console.log(`[api:dev] ${message} (+${Date.now() - bootStarted}ms)`)
@@ -14,7 +15,7 @@ let ready = false
 
 function startServer() {
   log('Starting API server...')
-  server = spawn('tsx', ['--env-file-if-exists=.env', 'src/server.ts'], { stdio: 'inherit', env: { ...process.env, SPRINDLE_ROUTE_MANIFEST: manifest } })
+  server = spawn(process.execPath, ['--env-file-if-exists=.env', '--import', 'tsx', 'src/server.ts'], { stdio: 'inherit', env: { ...process.env, SPRINDLE_ROUTE_MANIFEST: manifest } })
   server.on('exit', (code, signal) => {
     if (restarting) return
     void watcher?.close().finally(() => process.exit(signal ? 1 : code ?? 0))

@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { serve } from "@hono/node-server";
 
 const bootStarted = Date.now();
@@ -13,7 +14,7 @@ if (!port) {
 log("Loading route manifest...");
 const { assertRouteEntitiesBound, bindRouteEntities, loadRouteManifest } = await import("@southneuhof/sprindle/hono");
 const routeManifest = await loadRouteManifest(
-  new URL("..", import.meta.url).pathname,
+  fileURLToPath(new URL("..", import.meta.url)),
   process.env.SPRINDLE_ROUTE_MANIFEST ?? (process.env.VITEST ? ".sprindle-test/routes.mjs" : ".sprindle/routes.mjs"),
 );
 log(`Route manifest loaded with ${routeManifest.length} routes.`);

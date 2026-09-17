@@ -5,6 +5,10 @@ import vue from '@vitejs/plugin-vue'
 import VueRouter from 'vue-router/vite'
 import { fileRouteOptions } from './src/router/file-routing/options'
 
+// Alias targets must use POSIX separators so Vite/rolldown resolves them as
+// filesystem paths on Windows as well as Linux and macOS.
+const sourcePath = (relative: string) => fileURLToPath(new URL(relative, import.meta.url)).replaceAll('\\', '/')
+
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
@@ -43,31 +47,31 @@ export default defineConfig(({ command, mode }) => {
       alias: [
         {
           find: '@',
-          replacement: fileURLToPath(new URL('./src', import.meta.url)),
+          replacement: sourcePath('./src'),
         },
         {
           find: /^@southneuhof\/loom$/,
-          replacement: fileURLToPath(new URL('../../packages/loom/src/index.ts', import.meta.url)),
+          replacement: sourcePath('../../packages/loom/src/index.ts'),
         },
         {
           find: '@southneuhof/loom/',
-          replacement: fileURLToPath(new URL('../../packages/loom/src/', import.meta.url)),
+          replacement: sourcePath('../../packages/loom/src/'),
         },
         {
           find: /^@southneuhof\/api$/,
-          replacement: fileURLToPath(new URL('../api/src/index.ts', import.meta.url)),
+          replacement: sourcePath('../api/src/index.ts'),
         },
         {
           find: '@southneuhof/api/',
-          replacement: fileURLToPath(new URL('../api/src/', import.meta.url)),
+          replacement: sourcePath('../api/src/'),
         },
         {
           find: /^@southneuhof\/sdk$/,
-          replacement: fileURLToPath(new URL('../../packages/sdk/src/index.ts', import.meta.url)),
+          replacement: sourcePath('../../packages/sdk/src/index.ts'),
         },
         {
           find: '@southneuhof/sdk/',
-          replacement: fileURLToPath(new URL('../../packages/sdk/src/', import.meta.url)),
+          replacement: sourcePath('../../packages/sdk/src/'),
         },
       ],
     },

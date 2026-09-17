@@ -1,12 +1,13 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
 import { createRequire } from 'node:module'
+import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
 import { compileRouteManifest } from '@southneuhof/sprindle/tooling'
 
-const root = new URL('..', import.meta.url).pathname
+const root = fileURLToPath(new URL('..', import.meta.url))
 const generatedName = `.sprindle-build-${process.pid}-${randomUUID()}`
-const generated = new URL(`../${generatedName}/`, import.meta.url).pathname
+const generated = fileURLToPath(new URL(`../${generatedName}/`, import.meta.url))
 const resolveFromApi = createRequire(new URL('../package.json', import.meta.url))
 try {
   await rm(generated, { recursive: true, force: true })

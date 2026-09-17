@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { watch } from 'node:fs'
-import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { existsSync, copyFileSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, basename, extname, isAbsolute, relative, resolve, sep } from 'node:path'
 import { createRequire } from 'node:module'
@@ -14,6 +14,14 @@ import { readRouteDirectory } from './route-files.ts'
 import { routeLanguageOverlay } from './language.ts'
 
 const dependencyInputs = new Map<string, string[]>()
+
+// Directory junctions do not need the Windows symlink privilege, and a file
+// symlink can fall back to a copy when that privilege is unavailable.
+function linkPath(source: string, target: string, directory: boolean) {
+  if (process.platform !== 'win32') { symlinkSync(source, target, directory ? 'dir' : 'file'); return }
+  if (directory) { symlinkSync(source, target, 'junction'); return }
+  try { symlinkSync(source, target, 'file') } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'EPERM') throw error; copyFileSync(source, target) }
+}
 
 function rejectStaticCycles(projectRoot: string, inputs: Record<string, { imports: { path: string; kind: string; external?: boolean }[] }>) {
   const graph = new Map(Object.entries(inputs).map(([file, input]) => [file, input.imports.filter((entry) => entry.kind === 'import-statement' && !entry.external && inputs[entry.path]).map((entry) => entry.path).sort()]))
@@ -52,15 +60,16 @@ export async function compileRouteManifest(projectRoot: string, routesDirectory 
   const emitDeclarations = options.declarations ?? true
   const model = await readRouteDirectory(root)
   const portable = model.routes.map((route) => ({ ...route, sourcePath: relative(projectRoot, route.sourcePath), scopes: route.scopes.map((scope) => relative(projectRoot, scope)) }))
-  const imports: string[] = [], scopeNames = new Map<string, string>()
-  for (const scope of model.scopes) { const name = `scope${scopeNames.size}`; scopeNames.set(scope, name); imports.push(`import ${name} from ${JSON.stringify(scope)}`) }
-  const entries = model.routes.map((route, index) => { const name = `route${index}`; imports.push(`import * as ${name} from ${JSON.stringify(route.sourcePath)}`); return `{sourcePath:${JSON.stringify(relative(projectRoot, route.sourcePath))},httpPath:${JSON.stringify(route.httpPath)},parameters:${JSON.stringify(route.parameters)},methods:${JSON.stringify(route.methods)},scopes:[${route.scopes.map((scope) => scopeNames.get(scope)).join(',')}],handlers:${name}}` })
   const target = resolve(projectRoot, output); await mkdir(dirname(target), { recursive: true })
+  const moduleSpecifier = (file: string) => { const path = relative(dirname(target), file).replaceAll(sep, '/'); return path.startsWith('.') ? path : `./${path}` }
+  const imports: string[] = [], scopeNames = new Map<string, string>()
+  for (const scope of model.scopes) { const name = `scope${scopeNames.size}`; scopeNames.set(scope, name); imports.push(`import ${name} from ${JSON.stringify(moduleSpecifier(scope))}`) }
+  const entries = model.routes.map((route, index) => { const name = `route${index}`; imports.push(`import * as ${name} from ${JSON.stringify(moduleSpecifier(route.sourcePath))}`); return `{sourcePath:${JSON.stringify(relative(projectRoot, route.sourcePath))},httpPath:${JSON.stringify(route.httpPath)},parameters:${JSON.stringify(route.parameters)},methods:${JSON.stringify(route.methods)},scopes:[${route.scopes.map((scope) => scopeNames.get(scope)).join(',')}],handlers:${name}}` })
   const temporary = `${target}.${process.pid}.${randomUUID()}.tmp`
   const source = (hash: string) => `${imports.join('\n')}\nexport const hash=${JSON.stringify(hash)};export default [${entries.join(',')}];`
   const placeholder = '0'.repeat(64)
   const provisionalSource = source(placeholder)
-  const analysis = await build({ stdin: { contents: provisionalSource, resolveDir: projectRoot, sourcefile: 'sprindle-routes.ts', loader: 'ts' }, outfile: temporary, write: false, bundle: true, packages: 'external', platform: 'node', format: 'esm', target: 'node22', metafile: true, sourcemap: bundle ? 'inline' : false })
+  const analysis = await build({ stdin: { contents: provisionalSource, resolveDir: dirname(target), sourcefile: 'sprindle-routes.ts', loader: 'ts' }, outfile: temporary, write: false, bundle: true, packages: 'external', platform: 'node', format: 'esm', target: 'node22', metafile: true, sourcemap: bundle ? 'inline' : false })
   const bundled = Object.keys(analysis.metafile.inputs).filter((file) => !file.endsWith('sprindle-routes.ts') && file !== '<stdin>').map((file) => isAbsolute(file) ? file : existsSync(resolve(file)) ? resolve(file) : resolve(projectRoot, file))
   const inputs = [...new Set([...bundled, ...(await configInputs(resolve(projectRoot, 'tsconfig.json')))])].sort()
   dependencyInputs.set(resolve(projectRoot), inputs)
@@ -192,10 +201,15 @@ async function emitRouteDeclarations(projectRoot: string, routesDirectory: strin
     mkdirSync(resolve(input, 'node_modules'), { recursive: true })
     const frameworkModules = resolve(frameworkRoot, 'node_modules')
     const projectModules = resolve(projectRoot, 'node_modules')
-    if (existsSync(projectModules)) for (const entry of readdirSync(projectModules, { withFileTypes: true })) symlinkSync(resolve(projectModules, entry.name), resolve(input, 'node_modules', entry.name), entry.isDirectory() ? 'dir' : 'file')
+    if (existsSync(projectModules)) for (const entry of readdirSync(projectModules, { withFileTypes: true })) {
+      const source = resolve(projectModules, entry.name)
+      let directory = entry.isDirectory()
+      if (entry.isSymbolicLink()) { try { directory = statSync(source).isDirectory() } catch { directory = false } }
+      linkPath(source, resolve(input, 'node_modules', entry.name), directory)
+    }
     for (const name of ['@types', 'hono', 'zod']) {
       const target = resolve(input, 'node_modules', name)
-      if (!existsSync(target)) symlinkSync(resolve(frameworkModules, name), target, 'dir')
+      if (!existsSync(target)) linkPath(resolve(frameworkModules, name), target, true)
     }
     const options = { ...effective.compilerOptions }
     const originalBase = resolve(projectRoot, typeof options.baseUrl === 'string' ? options.baseUrl : '.')
