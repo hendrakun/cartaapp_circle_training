@@ -1,5 +1,25 @@
 # File-routing plans
 
+## Managed dialog forms — 2026-09-17
+
+Planned with `improve` at `5cafda4`. The user selected this migration. Plan 033
+keeps visibility inside DialogForm by default and retains controlled visibility
+as the advanced option. Existing framework migration plans use this directory.
+
+| Plan | Result | Priority | Effort | Risk | Depends on | Status |
+|---|---|---|---|---|---|---|
+| [033](033-managed-dialog-forms.md) | Managed triggers, safe completion order, independent row dialogs and updated guidance | P1 | M | MED | None | TODO |
+
+Execute the steps in 033 in order. Source and runtime tests were inspected;
+implementation checks have not run. Only plan files changed during planning.
+The forward test stays stashed. No database or package publishing work is included.
+
+Considered and rejected: public sessions; shared action-owned visibility (action
+objects are cached); closing on submit start or unmount; a new controlled-dialog
+alias; and treating internal visibility as missing functionality (it already exists).
+The confirmed gap is completion order and the normal examples/tests favoring
+external ownership. Confidence: HIGH. Whole-repo audit was not requested.
+
 ## Typed resource routes — 2026-09-16
 
 Planned with `improve` at `c5d8f9b`. The user selected this migration, so no
