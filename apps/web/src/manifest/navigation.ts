@@ -3,6 +3,16 @@ import { defineNavigation, type NavigationIcon, type NavigationModule } from './
 export const navigation = defineNavigation([
   { name: 'dashboard', title: 'Dashboard', icon: 'home', description: 'Dashboard', routes: [{ to: { name: 'dashboard' }, permission: null, title: 'Dashboard', icon: 'home' }] },
   {
+    name: 'vendors',
+    title: 'Vendors',
+    icon: 'folder',
+    description: 'Vendor onboarding',
+    routes: [
+      { to: { name: 'vendors-mine' }, permission: null, title: 'My registration', icon: 'inbox' },
+      { to: { name: 'vendors' }, permission: 'view-vendors', title: 'Vendor review', icon: 'folder' },
+    ],
+  },
+  {
     name: 'settings',
     title: 'Settings',
     icon: 'settings',

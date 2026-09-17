@@ -1,0 +1,57 @@
+[
+  {
+    "id": "1",
+    "question": "Apakah Perusahaan anda sudah menerapkan BIM? Jika Iya mohon dituliskan keterangan di isi tahun mulai diterapkannya BIM diperusahaan anda & mohon Upload BIM Portofolio Berupa File Pdf",
+    "sortOrder": 1
+  },
+  {
+    "id": "2",
+    "question": "Apakah perusahaan anda memiliki Departemen/bagian khusus yang menangani BIM ? Jika Iya Mohon Upload Struktur Organisasi yang menunjukan hal tersebut",
+    "sortOrder": 2
+  },
+  {
+    "id": "3",
+    "question": "Apa scope pekerjaan yang melibatkan BIM pada pekerjaan Anda?",
+    "sortOrder": 3
+  },
+  {
+    "id": "4",
+    "question": "Apakah perusahaan anda memiliki pengalaman bekerja di proyek dengan menggunakan Common Data Environment (CDE) ? Jika Iya mohon sebutkan Platform CDE yang digunakan dan Mohon Upload Portofolio penggunaan CDE dalam format Pdf",
+    "sortOrder": 4
+  },
+  {
+    "id": "5",
+    "question": "Apakah perusahaan Anda memiliki policy/regulasi terkait pertukaran informasi (Information Exchange)? Jika Iya mohon upload dokumen Policy/Regulasi tersebut",
+    "sortOrder": 5
+  },
+  {
+    "id": "6",
+    "question": "Apakah perusahaan anda memiliki kebijakan, sistem, dan prosedur untuk mencapai BIM sebagaimana ditentukan dalam Strategi BIM pemerintah? Jika Iya Mohon Upload Dokumen Kebijakan,sistem atau prosedur tersebut.",
+    "sortOrder": 6
+  },
+  {
+    "id": "7",
+    "question": "Apakah perusahaan memiliki kemampuan untuk menghasilkan produk BIM sesuai tahapan proyek? Jika Iya mohon Upload Portofolio terkait Produk BIM Tersebut dalam format Pdf",
+    "sortOrder": 7
+  },
+  {
+    "id": "8",
+    "question": "Apakah perusahaan anda memiliki kemampuan untuk mengembangkan dan menyampaikan atau bekerja sesuai BIM Execution Plan (BEP) ? Jika Iya mohon Upload contoh Dokumen BEP Portofolio Perusahaan anda.",
+    "sortOrder": 8
+  },
+  {
+    "id": "9",
+    "question": "Apakah Perusahaan Anda memiiki Personil tersertifikasi yang mampu mengoperasikan Software BIM dan Software apa yang digunakan dalam melakukan pekerjaan BIM di perusahaan Anda? Jika Iya mohon sebutkan software yang digunakan dan mohon upload sertifikat Penguasaan Software personil tersebut",
+    "sortOrder": 9
+  },
+  {
+    "id": "10",
+    "question": "Apakah perusahaan anda memiliki rencana untuk melatih karyawan dalam keterampilan terkait BIM ? Jika Iya mohon upload Dokumen Rencana tersebut",
+    "sortOrder": 10
+  },
+  {
+    "id": "11",
+    "question": "Apakah perusahaan memiliki database/katalog produk dalam BIM Model? Jika Iya Mohon Upload Dokumen Katalog tersebut dalam format Pdf dan mohon cantumkan link database tersebut.",
+    "sortOrder": 11
+  }
+]

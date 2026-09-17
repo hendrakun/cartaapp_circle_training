@@ -1,0 +1,2252 @@
+[
+  {
+    "id": "280",
+    "businessField": "jasa",
+    "name": "ALAT ELEKTRONIK DAN DIGITAL"
+  },
+  {
+    "id": "151",
+    "businessField": "jasa",
+    "name": "ASURANSI (UMUM, SURETY BOND, CAR, DLL)"
+  },
+  {
+    "id": "241",
+    "businessField": "jasa",
+    "name": "ASURANSI (UMUM, SURETY BOND, CAR, DLL)"
+  },
+  {
+    "id": "260",
+    "businessField": "jasa",
+    "name": "BADAN SERTIFIKASI"
+  },
+  {
+    "id": "258",
+    "businessField": "jasa",
+    "name": "BADAN SERTIFIKASI"
+  },
+  {
+    "id": "152",
+    "businessField": "jasa",
+    "name": "BANK"
+  },
+  {
+    "id": "223",
+    "businessField": "jasa",
+    "name": "BANK"
+  },
+  {
+    "id": "293",
+    "businessField": "jasa",
+    "name": "BATCHING PLANT"
+  },
+  {
+    "id": "153",
+    "businessField": "jasa",
+    "name": "BROKER ASURANSI"
+  },
+  {
+    "id": "242",
+    "businessField": "jasa",
+    "name": "BROKER ASURANSI"
+  },
+  {
+    "id": "156",
+    "businessField": "jasa",
+    "name": "CARGO / LOGISTICS TRANSPORT (DARAT, LAUT, UDARA)"
+  },
+  {
+    "id": "224",
+    "businessField": "jasa",
+    "name": "CARGO / LOGISTICS TRANSPORT (DARAT, LAUT, UDARA)"
+  },
+  {
+    "id": "157",
+    "businessField": "jasa",
+    "name": "COMPRESSOR (SEWA / JUAL)"
+  },
+  {
+    "id": "243",
+    "businessField": "jasa",
+    "name": "COMPRESSOR (SEWA / JUAL)"
+  },
+  {
+    "id": "158",
+    "businessField": "jasa",
+    "name": "DESIGN GRAFIS"
+  },
+  {
+    "id": "225",
+    "businessField": "jasa",
+    "name": "DESIGN GRAFIS"
+  },
+  {
+    "id": "159",
+    "businessField": "jasa",
+    "name": "EVENT ORGANIZER"
+  },
+  {
+    "id": "265",
+    "businessField": "jasa",
+    "name": "EXCAVATOR"
+  },
+  {
+    "id": "314",
+    "businessField": "jasa",
+    "name": "GARMENT"
+  },
+  {
+    "id": "310",
+    "businessField": "jasa",
+    "name": "INSPEKSI DAN SERTIFIKASI"
+  },
+  {
+    "id": "327",
+    "businessField": "jasa",
+    "name": "IT NETWORK"
+  },
+  {
+    "id": "301",
+    "businessField": "jasa",
+    "name": "JASA ARSITEKTUR DAN TEKNIK SIPIL"
+  },
+  {
+    "id": "261",
+    "businessField": "jasa",
+    "name": "Jasa Kesehatan"
+  },
+  {
+    "id": "262",
+    "businessField": "jasa",
+    "name": "JASA KESEHATAN"
+  },
+  {
+    "id": "290",
+    "businessField": "jasa",
+    "name": "JASA LAINNYA"
+  },
+  {
+    "id": "291",
+    "businessField": "jasa",
+    "name": "JASA PENILAI"
+  },
+  {
+    "id": "160",
+    "businessField": "jasa",
+    "name": "JASA PENJAMINAN KREDIT"
+  },
+  {
+    "id": "226",
+    "businessField": "jasa",
+    "name": "JASA PENJAMINAN KREDIT"
+  },
+  {
+    "id": "264",
+    "businessField": "jasa",
+    "name": "JASA TRAVEL"
+  },
+  {
+    "id": "305",
+    "businessField": "jasa",
+    "name": "KALIBRASI / ALAT UKUR"
+  },
+  {
+    "id": "161",
+    "businessField": "jasa",
+    "name": "KEUANGAN (AKUNTAN, PAJAK DAN SEKURITAS)"
+  },
+  {
+    "id": "245",
+    "businessField": "jasa",
+    "name": "KEUANGAN (AKUNTAN, PAJAK DAN SEKURITAS)"
+  },
+  {
+    "id": "308",
+    "businessField": "jasa",
+    "name": "KONSULTAN AMDAL"
+  },
+  {
+    "id": "272",
+    "businessField": "jasa",
+    "name": "KONSULTAN HUKUM"
+  },
+  {
+    "id": "162",
+    "businessField": "jasa",
+    "name": "KONSULTAN ISO / OHSAS"
+  },
+  {
+    "id": "227",
+    "businessField": "jasa",
+    "name": "KONSULTAN ISO / OHSAS"
+  },
+  {
+    "id": "326",
+    "businessField": "jasa",
+    "name": "KONSULTAN IT"
+  },
+  {
+    "id": "312",
+    "businessField": "jasa",
+    "name": "KONSULTAN K3"
+  },
+  {
+    "id": "270",
+    "businessField": "jasa",
+    "name": "KONSULTAN MANAGEMENT"
+  },
+  {
+    "id": "464",
+    "businessField": "jasa",
+    "name": "KONSULTAN PENGAWAS"
+  },
+  {
+    "id": "163",
+    "businessField": "jasa",
+    "name": "KONSULTAN PERENCANA"
+  },
+  {
+    "id": "246",
+    "businessField": "jasa",
+    "name": "KONSULTAN PERENCANA"
+  },
+  {
+    "id": "267",
+    "businessField": "jasa",
+    "name": "KONSULTAN SUMBER DAYA MANUSIA"
+  },
+  {
+    "id": "165",
+    "businessField": "jasa",
+    "name": "LABORATORIUM (UJI TANAH, BETON, BAJA, DLL)"
+  },
+  {
+    "id": "247",
+    "businessField": "jasa",
+    "name": "LABORATORIUM (UJI TANAH, BETON, BAJA, DLL)"
+  },
+  {
+    "id": "166",
+    "businessField": "jasa",
+    "name": "MANAJEMEN KONSTRUKSI"
+  },
+  {
+    "id": "228",
+    "businessField": "jasa",
+    "name": "MANAJEMEN KONSTRUKSI"
+  },
+  {
+    "id": "307",
+    "businessField": "jasa",
+    "name": "OFFSHORE WELDING"
+  },
+  {
+    "id": "248",
+    "businessField": "jasa",
+    "name": "PDA TEST"
+  },
+  {
+    "id": "167",
+    "businessField": "jasa",
+    "name": "PDA TEST"
+  },
+  {
+    "id": "296",
+    "businessField": "jasa",
+    "name": "PELATIHAN PENGEMBANGAN DIRI"
+  },
+  {
+    "id": "169",
+    "businessField": "jasa",
+    "name": "PENERBITAN"
+  },
+  {
+    "id": "249",
+    "businessField": "jasa",
+    "name": "PENERBITAN"
+  },
+  {
+    "id": "313",
+    "businessField": "jasa",
+    "name": "PENUNJANG MEDIS"
+  },
+  {
+    "id": "259",
+    "businessField": "jasa",
+    "name": "PENYEDIA JASA"
+  },
+  {
+    "id": "324",
+    "businessField": "jasa",
+    "name": "PENYEDIA LISENSI / TRAINING SOFTWARE"
+  },
+  {
+    "id": "170",
+    "businessField": "jasa",
+    "name": "PENYELIDIKAN TANAH DAN BETON"
+  },
+  {
+    "id": "229",
+    "businessField": "jasa",
+    "name": "PENYELIDIKAN TANAH DAN BETON"
+  },
+  {
+    "id": "318",
+    "businessField": "jasa",
+    "name": "PERCETAKAN"
+  },
+  {
+    "id": "171",
+    "businessField": "jasa",
+    "name": "PERCETAKAN"
+  },
+  {
+    "id": "250",
+    "businessField": "jasa",
+    "name": "PERCETAKAN"
+  },
+  {
+    "id": "172",
+    "businessField": "jasa",
+    "name": "PERIKLANAN"
+  },
+  {
+    "id": "230",
+    "businessField": "jasa",
+    "name": "PERIKLANAN"
+  },
+  {
+    "id": "231",
+    "businessField": "jasa",
+    "name": "SAFETY & SECURITY SOLUTION"
+  },
+  {
+    "id": "174",
+    "businessField": "jasa",
+    "name": "SAFETY & SECURITY SOLUTION"
+  },
+  {
+    "id": "175",
+    "businessField": "jasa",
+    "name": "SELAM"
+  },
+  {
+    "id": "269",
+    "businessField": "jasa",
+    "name": "SERVICE ALAT LISTRIK"
+  },
+  {
+    "id": "176",
+    "businessField": "jasa",
+    "name": "SERVICE ALAT UKUR"
+  },
+  {
+    "id": "232",
+    "businessField": "jasa",
+    "name": "SERVICE ALAT UKUR"
+  },
+  {
+    "id": "233",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE ALAT BERAT"
+  },
+  {
+    "id": "178",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE ALAT BERAT"
+  },
+  {
+    "id": "234",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE GENSET"
+  },
+  {
+    "id": "180",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE GENSET"
+  },
+  {
+    "id": "252",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE GONDOLA"
+  },
+  {
+    "id": "235",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE GONDOLA"
+  },
+  {
+    "id": "182",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE GONDOLA"
+  },
+  {
+    "id": "181",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE GONDOLA"
+  },
+  {
+    "id": "253",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE SCAFFOLDING"
+  },
+  {
+    "id": "236",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE SCAFFOLDING"
+  },
+  {
+    "id": "184",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE SCAFFOLDING"
+  },
+  {
+    "id": "185",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE SCAFFOLDING"
+  },
+  {
+    "id": "254",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE TOWER CRANE"
+  },
+  {
+    "id": "187",
+    "businessField": "jasa",
+    "name": "SEWA / SERVICE TOWER CRANE"
+  },
+  {
+    "id": "255",
+    "businessField": "jasa",
+    "name": "SEWA CONCRETE MIXER / BETON MOLEN"
+  },
+  {
+    "id": "189",
+    "businessField": "jasa",
+    "name": "SEWA CONCRETE MIXER / BETON MOLEN"
+  },
+  {
+    "id": "237",
+    "businessField": "jasa",
+    "name": "SEWA CONCRETE PUMP"
+  },
+  {
+    "id": "190",
+    "businessField": "jasa",
+    "name": "SEWA CONCRETE PUMP"
+  },
+  {
+    "id": "238",
+    "businessField": "jasa",
+    "name": "SEWA CONCRETE VIBRATOR DAN SHAFT VIBRATOR"
+  },
+  {
+    "id": "192",
+    "businessField": "jasa",
+    "name": "SEWA CONCRETE VIBRATOR DAN SHAFT VIBRATOR"
+  },
+  {
+    "id": "300",
+    "businessField": "jasa",
+    "name": "SEWA MOBIL"
+  },
+  {
+    "id": "299",
+    "businessField": "jasa",
+    "name": "SEWA MOBIL"
+  },
+  {
+    "id": "239",
+    "businessField": "jasa",
+    "name": "SEWA PASSANGER HOIST"
+  },
+  {
+    "id": "194",
+    "businessField": "jasa",
+    "name": "SEWA PASSANGER HOIST"
+  },
+  {
+    "id": "196",
+    "businessField": "jasa",
+    "name": "SURVEI PEMETAAN & GIS (GEOGRAPHIC INFORMATION SYSTEM)"
+  },
+  {
+    "id": "240",
+    "businessField": "jasa",
+    "name": "SURVEI PEMETAAN & GIS (GEOGRAPHIC INFORMATION SYSTEM)"
+  },
+  {
+    "id": "257",
+    "businessField": "jasa",
+    "name": "SURVEI TOPOGRAFI, GEOLOGI, GEOFISIK"
+  },
+  {
+    "id": "211",
+    "businessField": "jasa",
+    "name": "SURVEI TOPOGRAFI, GEOLOGI, GEOFISIK"
+  },
+  {
+    "id": "197",
+    "businessField": "jasa",
+    "name": "WEB DEVELOPER"
+  },
+  {
+    "id": "256",
+    "businessField": "jasa",
+    "name": "WEB DEVELOPER"
+  },
+  {
+    "id": "10",
+    "businessField": "subkon",
+    "name": "AHU / FCU"
+  },
+  {
+    "id": "11",
+    "businessField": "subkon",
+    "name": "AIR CONDITIONING (AC) & AIR VENTILATION (AV)"
+  },
+  {
+    "id": "336",
+    "businessField": "subkon",
+    "name": "Airports"
+  },
+  {
+    "id": "440",
+    "businessField": "subkon",
+    "name": "ALAT BANTU"
+  },
+  {
+    "id": "438",
+    "businessField": "subkon",
+    "name": "ALAT BERAT/ HEAVY EQUIPMENT"
+  },
+  {
+    "id": "439",
+    "businessField": "subkon",
+    "name": "ALAT KECIL/RINGAN"
+  },
+  {
+    "id": "442",
+    "businessField": "subkon",
+    "name": "ALAT LABORATORIUM"
+  },
+  {
+    "id": "463",
+    "businessField": "subkon",
+    "name": "ALAT PRODUKSI AMP"
+  },
+  {
+    "id": "441",
+    "businessField": "subkon",
+    "name": "ALAT SURVEY"
+  },
+  {
+    "id": "13",
+    "businessField": "subkon",
+    "name": "ALUMINIUM"
+  },
+  {
+    "id": "15",
+    "businessField": "subkon",
+    "name": "ALUMINIUM COMPOSITE PANEL"
+  },
+  {
+    "id": "282",
+    "businessField": "subkon",
+    "name": "ALUMINIUM SANDWICH PANEL"
+  },
+  {
+    "id": "285",
+    "businessField": "subkon",
+    "name": "ARSITEKTUR"
+  },
+  {
+    "id": "18",
+    "businessField": "subkon",
+    "name": "ATAP & RANGKA ATAP"
+  },
+  {
+    "id": "20",
+    "businessField": "subkon",
+    "name": "BANGUNAN MIGAS ( TANGKI TIMBUN DAN JARINGAN PIPA )"
+  },
+  {
+    "id": "25",
+    "businessField": "subkon",
+    "name": "BANGUNAN PENGAIRAN ( BENDUNG, IRIGASI, SUNGAI, PINTU AIR )"
+  },
+  {
+    "id": "27",
+    "businessField": "subkon",
+    "name": "BEKISTING / FORMWORK ( BEKISTING KAYU, BEKISTING BESI, SLIPFORM )"
+  },
+  {
+    "id": "30",
+    "businessField": "subkon",
+    "name": "BOILER ( HOT WATER & STEAM )"
+  },
+  {
+    "id": "32",
+    "businessField": "subkon",
+    "name": "BORED PILE"
+  },
+  {
+    "id": "33",
+    "businessField": "subkon",
+    "name": "BRIDGE ERECTION"
+  },
+  {
+    "id": "36",
+    "businessField": "subkon",
+    "name": "BUILDING AUTOMATION SYSTEM"
+  },
+  {
+    "id": "39",
+    "businessField": "subkon",
+    "name": "CABLE STAY"
+  },
+  {
+    "id": "40",
+    "businessField": "subkon",
+    "name": "CAT ( PENGECATAN )"
+  },
+  {
+    "id": "42",
+    "businessField": "subkon",
+    "name": "CATHODIC PROTECTION"
+  },
+  {
+    "id": "38",
+    "businessField": "subkon",
+    "name": "CCTV"
+  },
+  {
+    "id": "46",
+    "businessField": "subkon",
+    "name": "CEILING AND PARTITION ( PLAFOND ACOUSTIC, GYPSUM, ALUMINIUM )"
+  },
+  {
+    "id": "47",
+    "businessField": "subkon",
+    "name": "CHEMICALS SPECIALIST"
+  },
+  {
+    "id": "460",
+    "businessField": "subkon",
+    "name": "CONSUMABLE TOOLS"
+  },
+  {
+    "id": "49",
+    "businessField": "subkon",
+    "name": "COOLING TOWER"
+  },
+  {
+    "id": "309",
+    "businessField": "subkon",
+    "name": "DESIGN AND BUILD"
+  },
+  {
+    "id": "51",
+    "businessField": "subkon",
+    "name": "DRILLING"
+  },
+  {
+    "id": "54",
+    "businessField": "subkon",
+    "name": "ELEVATOR / ESKALATOR / LIFT"
+  },
+  {
+    "id": "56",
+    "businessField": "subkon",
+    "name": "EXPANSION JOINT"
+  },
+  {
+    "id": "278",
+    "businessField": "subkon",
+    "name": "FASADE"
+  },
+  {
+    "id": "283",
+    "businessField": "subkon",
+    "name": "FIBER INSULASI ATAP"
+  },
+  {
+    "id": "59",
+    "businessField": "subkon",
+    "name": "FIRE ALARM ( FIGHTING / STOP )"
+  },
+  {
+    "id": "446",
+    "businessField": "subkon",
+    "name": "FORMWORK SYSTEM"
+  },
+  {
+    "id": "453",
+    "businessField": "subkon",
+    "name": "GENERAL CONTRACTOR"
+  },
+  {
+    "id": "311",
+    "businessField": "subkon",
+    "name": "GEOLISTRIK"
+  },
+  {
+    "id": "64",
+    "businessField": "subkon",
+    "name": "GEOTECHNICAL (VERTICAL DRAIN)"
+  },
+  {
+    "id": "65",
+    "businessField": "subkon",
+    "name": "GONDOLA (DESAIN & FABRIKASI)"
+  },
+  {
+    "id": "61",
+    "businessField": "subkon",
+    "name": "GRC ( PANEL GRC )"
+  },
+  {
+    "id": "320",
+    "businessField": "subkon",
+    "name": "GUARD RAIL"
+  },
+  {
+    "id": "67",
+    "businessField": "subkon",
+    "name": "INDUSTRIAL PLANT ENGINEERING & CONSTRUCTION"
+  },
+  {
+    "id": "69",
+    "businessField": "subkon",
+    "name": "INTERIOR (FINISHING, PARTIS, PARQUIT, CARPET, WALLPAPER, DLL)"
+  },
+  {
+    "id": "71",
+    "businessField": "subkon",
+    "name": "JALAN REL"
+  },
+  {
+    "id": "454",
+    "businessField": "subkon",
+    "name": "JASA SERVICE"
+  },
+  {
+    "id": "263",
+    "businessField": "subkon",
+    "name": "Jasa Travel"
+  },
+  {
+    "id": "268",
+    "businessField": "subkon",
+    "name": "KABEL & ALAT LISTRIK"
+  },
+  {
+    "id": "73",
+    "businessField": "subkon",
+    "name": "KABEL TRAY"
+  },
+  {
+    "id": "74",
+    "businessField": "subkon",
+    "name": "KACA"
+  },
+  {
+    "id": "76",
+    "businessField": "subkon",
+    "name": "KALIBRASI / ALAT UKUR"
+  },
+  {
+    "id": "444",
+    "businessField": "subkon",
+    "name": "KALIBRASI & SERTIFIKASI"
+  },
+  {
+    "id": "78",
+    "businessField": "subkon",
+    "name": "KOLAM RENANG"
+  },
+  {
+    "id": "80",
+    "businessField": "subkon",
+    "name": "KONSTRUKSI BAJA (STEEL STRUCTURE)"
+  },
+  {
+    "id": "215",
+    "businessField": "subkon",
+    "name": "KONSTRUKSI JALAN"
+  },
+  {
+    "id": "214",
+    "businessField": "subkon",
+    "name": "KONSTRUKSI JEMBATAN"
+  },
+  {
+    "id": "323",
+    "businessField": "subkon",
+    "name": "KONSULTAN IT"
+  },
+  {
+    "id": "213",
+    "businessField": "subkon",
+    "name": "KONTRAKTOR UMUM"
+  },
+  {
+    "id": "84",
+    "businessField": "subkon",
+    "name": "KUNCI (PINTU DAN JENDELA)"
+  },
+  {
+    "id": "87",
+    "businessField": "subkon",
+    "name": "KUSEN KAYU / KAYU PROFIL (WOODWORKING)"
+  },
+  {
+    "id": "90",
+    "businessField": "subkon",
+    "name": "LAMPU & FIXTURIES (LIGHTING CONTROL, SYSTEM, DLL)"
+  },
+  {
+    "id": "92",
+    "businessField": "subkon",
+    "name": "LANTAI (KERAMIK, GRANIT, MARMER, LINOLEUM)"
+  },
+  {
+    "id": "94",
+    "businessField": "subkon",
+    "name": "MARINE CONTRACTOR"
+  },
+  {
+    "id": "96",
+    "businessField": "subkon",
+    "name": "MARKA JALAN (ROAD MARKING), RAMBU, CURB, DLL"
+  },
+  {
+    "id": "462",
+    "businessField": "subkon",
+    "name": "MARKING/RAMBU"
+  },
+  {
+    "id": "212",
+    "businessField": "subkon",
+    "name": "MECHANICAL DAN ELECTRICAL"
+  },
+  {
+    "id": "99",
+    "businessField": "subkon",
+    "name": "MINIPILE FOUNDATION"
+  },
+  {
+    "id": "306",
+    "businessField": "subkon",
+    "name": "OFFSHORE WELDING"
+  },
+  {
+    "id": "100",
+    "businessField": "subkon",
+    "name": "PANEL LISTRIK"
+  },
+  {
+    "id": "430",
+    "businessField": "subkon",
+    "name": "PEKERJAAN ARSITEKTUR"
+  },
+  {
+    "id": "449",
+    "businessField": "subkon",
+    "name": "PEKERJAAN COMMISSIONING"
+  },
+  {
+    "id": "437",
+    "businessField": "subkon",
+    "name": "PEKERJAAN DESIGN/PERENCANAAN"
+  },
+  {
+    "id": "451",
+    "businessField": "subkon",
+    "name": "PEKERJAAN ELECTRICAL"
+  },
+  {
+    "id": "435",
+    "businessField": "subkon",
+    "name": "PEKERJAAN ERECTION & DISMANTLING"
+  },
+  {
+    "id": "436",
+    "businessField": "subkon",
+    "name": "PEKERJAAN FINISHING"
+  },
+  {
+    "id": "452",
+    "businessField": "subkon",
+    "name": "PEKERJAAN INSTRUMENT AND CONTROL"
+  },
+  {
+    "id": "434",
+    "businessField": "subkon",
+    "name": "PEKERJAAN INTERIOR"
+  },
+  {
+    "id": "432",
+    "businessField": "subkon",
+    "name": "PEKERJAAN IT & TELEKOMUNIKASI"
+  },
+  {
+    "id": "294",
+    "businessField": "subkon",
+    "name": "PEKERJAAN IT MULTIMEDIA"
+  },
+  {
+    "id": "433",
+    "businessField": "subkon",
+    "name": "PEKERJAAN LANDSCAPE"
+  },
+  {
+    "id": "431",
+    "businessField": "subkon",
+    "name": "PEKERJAAN MEKANIKAL / PLUMBING"
+  },
+  {
+    "id": "429",
+    "businessField": "subkon",
+    "name": "PEKERJAAN PERKERASAN JALAN"
+  },
+  {
+    "id": "426",
+    "businessField": "subkon",
+    "name": "PEKERJAAN PERSIAPAN"
+  },
+  {
+    "id": "450",
+    "businessField": "subkon",
+    "name": "PEKERJAAN PIPING & PIPELINE"
+  },
+  {
+    "id": "448",
+    "businessField": "subkon",
+    "name": "PEKERJAAN PRECOMMISIONING & TESTING"
+  },
+  {
+    "id": "428",
+    "businessField": "subkon",
+    "name": "PEKERJAAN SIPIL STRUCTURE"
+  },
+  {
+    "id": "427",
+    "businessField": "subkon",
+    "name": "PEKERJAAN SIPIL SUB STRUCTURE"
+  },
+  {
+    "id": "455",
+    "businessField": "subkon",
+    "name": "PEKERJAAN TANAH"
+  },
+  {
+    "id": "102",
+    "businessField": "subkon",
+    "name": "PEKERJAAN TANAH (EARTH WORKS)"
+  },
+  {
+    "id": "266",
+    "businessField": "subkon",
+    "name": "PEKERJAAN TANAH (EARTH WORKS)"
+  },
+  {
+    "id": "104",
+    "businessField": "subkon",
+    "name": "PELEDAKAN (BLASTING)"
+  },
+  {
+    "id": "106",
+    "businessField": "subkon",
+    "name": "PEMANCANGAN (PILING CONTRACTOR)"
+  },
+  {
+    "id": "110",
+    "businessField": "subkon",
+    "name": "PEMBUATAN SITE OFFICE"
+  },
+  {
+    "id": "112",
+    "businessField": "subkon",
+    "name": "PENANGKAL PETIR"
+  },
+  {
+    "id": "281",
+    "businessField": "subkon",
+    "name": "PENGASPALAN"
+  },
+  {
+    "id": "116",
+    "businessField": "subkon",
+    "name": "PENGECATAN PIPA BAJA"
+  },
+  {
+    "id": "119",
+    "businessField": "subkon",
+    "name": "PENGERUKAN (DREDGING) & REKLAMASI"
+  },
+  {
+    "id": "443",
+    "businessField": "subkon",
+    "name": "PERAWATAN/SERVICE"
+  },
+  {
+    "id": "121",
+    "businessField": "subkon",
+    "name": "PERBENGKELAN"
+  },
+  {
+    "id": "447",
+    "businessField": "subkon",
+    "name": "PERLENGKAPAN K3L"
+  },
+  {
+    "id": "123",
+    "businessField": "subkon",
+    "name": "PINTU BESI, PINTU TAHAN API, PINTU OTOMATIS"
+  },
+  {
+    "id": "126",
+    "businessField": "subkon",
+    "name": "PLUMBING (INSTALASI PIPA)"
+  },
+  {
+    "id": "128",
+    "businessField": "subkon",
+    "name": "PONDASI"
+  },
+  {
+    "id": "130",
+    "businessField": "subkon",
+    "name": "POST TENSIONING / PRESTRESSING / GROUND ANCHOR"
+  },
+  {
+    "id": "335",
+    "businessField": "subkon",
+    "name": "Power and Industrial"
+  },
+  {
+    "id": "338",
+    "businessField": "subkon",
+    "name": "Powerplants"
+  },
+  {
+    "id": "136",
+    "businessField": "subkon",
+    "name": "RAILING (HAND RAILL / STAINLESS STEEL / TERALIS)"
+  },
+  {
+    "id": "333",
+    "businessField": "subkon",
+    "name": "Rails and HSR"
+  },
+  {
+    "id": "137",
+    "businessField": "subkon",
+    "name": "REKLAME"
+  },
+  {
+    "id": "140",
+    "businessField": "subkon",
+    "name": "REPAIR CONSTRUCTION (GROUTING, CONCRETE REPAIR)"
+  },
+  {
+    "id": "331",
+    "businessField": "subkon",
+    "name": "Residental and Comercial"
+  },
+  {
+    "id": "298",
+    "businessField": "subkon",
+    "name": "RIGID PAVEMENT"
+  },
+  {
+    "id": "332",
+    "businessField": "subkon",
+    "name": "Roads, Bridges, and Highway"
+  },
+  {
+    "id": "142",
+    "businessField": "subkon",
+    "name": "ROLLING DOOR"
+  },
+  {
+    "id": "459",
+    "businessField": "subkon",
+    "name": "SAFETY CONSUMABLE"
+  },
+  {
+    "id": "458",
+    "businessField": "subkon",
+    "name": "SAFETY EQUIPMENT"
+  },
+  {
+    "id": "145",
+    "businessField": "subkon",
+    "name": "SANITARY & ACCESSORIES"
+  },
+  {
+    "id": "457",
+    "businessField": "subkon",
+    "name": "SCAFFOLDING-PERANCAH"
+  },
+  {
+    "id": "337",
+    "businessField": "subkon",
+    "name": "Seaports"
+  },
+  {
+    "id": "150",
+    "businessField": "subkon",
+    "name": "SECURITY SYSTEM ( ALARM ELEKTRONIK )"
+  },
+  {
+    "id": "154",
+    "businessField": "subkon",
+    "name": "SOIL IMPROVEMENT SPECIALIST (EARTH WORKS)"
+  },
+  {
+    "id": "155",
+    "businessField": "subkon",
+    "name": "SOUND SYSTEM"
+  },
+  {
+    "id": "164",
+    "businessField": "subkon",
+    "name": "STAINLESS STEEL (RAILLING, LOGO, DLL)"
+  },
+  {
+    "id": "168",
+    "businessField": "subkon",
+    "name": "STEEL FABRICATION (JEMBATAN, RANGKA BAJA, PINTU AIR IRIGASI, DLL)"
+  },
+  {
+    "id": "173",
+    "businessField": "subkon",
+    "name": "STP (SEWAGE, TREATMENT PLANT) & WTP (WATER TREATMENT PLANT)"
+  },
+  {
+    "id": "177",
+    "businessField": "subkon",
+    "name": "TAMAN (LANDSCAPE / HARDSCAPE)"
+  },
+  {
+    "id": "179",
+    "businessField": "subkon",
+    "name": "TELECOMUNICATION NETWORK"
+  },
+  {
+    "id": "456",
+    "businessField": "subkon",
+    "name": "TOOLS"
+  },
+  {
+    "id": "183",
+    "businessField": "subkon",
+    "name": "TRAFO (TRANSFORMATOR)"
+  },
+  {
+    "id": "445",
+    "businessField": "subkon",
+    "name": "TRANSPORTASI & MOBILISASI"
+  },
+  {
+    "id": "186",
+    "businessField": "subkon",
+    "name": "VALVE (VALVE CONTROL, INERGENT & GAS MEDIC)"
+  },
+  {
+    "id": "461",
+    "businessField": "subkon",
+    "name": "VEHICLE"
+  },
+  {
+    "id": "334",
+    "businessField": "subkon",
+    "name": "Water and Dams"
+  },
+  {
+    "id": "188",
+    "businessField": "subkon",
+    "name": "WATERPROOFING"
+  },
+  {
+    "id": "340",
+    "businessField": "supplier",
+    "name": "ADDITIVE BETON"
+  },
+  {
+    "id": "391",
+    "businessField": "supplier",
+    "name": "AGREGAT (KELAS A, KELAS B, KELAS S)"
+  },
+  {
+    "id": "191",
+    "businessField": "supplier",
+    "name": "AIR CONDITIONING & AIR VENTILATING FAN"
+  },
+  {
+    "id": "193",
+    "businessField": "supplier",
+    "name": "AKSESORIS JENDELA DAN PINTU"
+  },
+  {
+    "id": "195",
+    "businessField": "supplier",
+    "name": "ALAT BANTU PEKERJA KONSTRUKSI"
+  },
+  {
+    "id": "198",
+    "businessField": "supplier",
+    "name": "ALAT BERAT (CRANE, LOADER, DOZER, EXCAVATOR, ASPHALT PAVER)"
+  },
+  {
+    "id": "279",
+    "businessField": "supplier",
+    "name": "ALAT ELEKTRONIK DAN DIGITAL"
+  },
+  {
+    "id": "199",
+    "businessField": "supplier",
+    "name": "ALAT PERAWATAN LANTAI KERAMIK & GRANIT"
+  },
+  {
+    "id": "200",
+    "businessField": "supplier",
+    "name": "ALAT UKUR ( RENTAL, PENJUALAN, SPARE PART, SERVICE & KALIBRASI)"
+  },
+  {
+    "id": "201",
+    "businessField": "supplier",
+    "name": "ALAT-ALAT KONSTRUKSI"
+  },
+  {
+    "id": "202",
+    "businessField": "supplier",
+    "name": "ALUMINIUM"
+  },
+  {
+    "id": "203",
+    "businessField": "supplier",
+    "name": "ALUMINIUM COMPOSITE PANEL"
+  },
+  {
+    "id": "204",
+    "businessField": "supplier",
+    "name": "ALUMINIUM FOIL"
+  },
+  {
+    "id": "392",
+    "businessField": "supplier",
+    "name": "ALUMINIUM FOIL"
+  },
+  {
+    "id": "289",
+    "businessField": "supplier",
+    "name": "ALUMINIUM SANDWICH PANEL"
+  },
+  {
+    "id": "370",
+    "businessField": "supplier",
+    "name": "ALUMUNIUM COMPOSITE PANEL (ACP)"
+  },
+  {
+    "id": "205",
+    "businessField": "supplier",
+    "name": "ANCHOR (EPOXY)"
+  },
+  {
+    "id": "206",
+    "businessField": "supplier",
+    "name": "ASPAL"
+  },
+  {
+    "id": "274",
+    "businessField": "supplier",
+    "name": "ASPAL BETON"
+  },
+  {
+    "id": "219",
+    "businessField": "supplier",
+    "name": "ASPHALT MIXING PLANT (AMP)"
+  },
+  {
+    "id": "207",
+    "businessField": "supplier",
+    "name": "ATAP (ROOFING MATERIAL)"
+  },
+  {
+    "id": "208",
+    "businessField": "supplier",
+    "name": "BAHAN BANGUNAN (BUILDING MATERIAL)"
+  },
+  {
+    "id": "209",
+    "businessField": "supplier",
+    "name": "BAJA KONSTRUKSI"
+  },
+  {
+    "id": "12",
+    "businessField": "supplier",
+    "name": "BAJA PROFIL"
+  },
+  {
+    "id": "210",
+    "businessField": "supplier",
+    "name": "BAJA RINGAN"
+  },
+  {
+    "id": "400",
+    "businessField": "supplier",
+    "name": "BAR BENDER/CUTTER"
+  },
+  {
+    "id": "371",
+    "businessField": "supplier",
+    "name": "BATA MERAH/ BATU BATA"
+  },
+  {
+    "id": "5",
+    "businessField": "supplier",
+    "name": "BATA RINGAN"
+  },
+  {
+    "id": "14",
+    "businessField": "supplier",
+    "name": "BATA TAHAN API"
+  },
+  {
+    "id": "17",
+    "businessField": "supplier",
+    "name": "BATU KLINKER"
+  },
+  {
+    "id": "343",
+    "businessField": "supplier",
+    "name": "BAUT"
+  },
+  {
+    "id": "342",
+    "businessField": "supplier",
+    "name": "BAUT ANGKUR"
+  },
+  {
+    "id": "422",
+    "businessField": "supplier",
+    "name": "BBM / SOLAR INDUSTRI"
+  },
+  {
+    "id": "421",
+    "businessField": "supplier",
+    "name": "BEACON"
+  },
+  {
+    "id": "287",
+    "businessField": "supplier",
+    "name": "BEKISTING / FORMWORK ( BEKISTING KAYU, BEKISTING BESI, SLIPFORM )"
+  },
+  {
+    "id": "19",
+    "businessField": "supplier",
+    "name": "BENTONITE"
+  },
+  {
+    "id": "3",
+    "businessField": "supplier",
+    "name": "BESI BETON"
+  },
+  {
+    "id": "344",
+    "businessField": "supplier",
+    "name": "BESI HOLLOW"
+  },
+  {
+    "id": "346",
+    "businessField": "supplier",
+    "name": "BESI PLAT"
+  },
+  {
+    "id": "345",
+    "businessField": "supplier",
+    "name": "BESI SIKU"
+  },
+  {
+    "id": "275",
+    "businessField": "supplier",
+    "name": "BETON READYMIX"
+  },
+  {
+    "id": "347",
+    "businessField": "supplier",
+    "name": "BOLLARD"
+  },
+  {
+    "id": "373",
+    "businessField": "supplier",
+    "name": "BOX MCB"
+  },
+  {
+    "id": "21",
+    "businessField": "supplier",
+    "name": "BRONJONG / GABIONS"
+  },
+  {
+    "id": "381",
+    "businessField": "supplier",
+    "name": "BULK MATERIAL (ELECTRICAL)"
+  },
+  {
+    "id": "380",
+    "businessField": "supplier",
+    "name": "BULK MATERIAL (INSTRUMENT)"
+  },
+  {
+    "id": "397",
+    "businessField": "supplier",
+    "name": "BULK MATERIAL (PIPE, ELBOW, TEE, ETC)"
+  },
+  {
+    "id": "390",
+    "businessField": "supplier",
+    "name": "BUSDUCT"
+  },
+  {
+    "id": "383",
+    "businessField": "supplier",
+    "name": "CABLE TRAY"
+  },
+  {
+    "id": "22",
+    "businessField": "supplier",
+    "name": "CAT (MATERIAL PAINTING, THINNER, ETC)"
+  },
+  {
+    "id": "374",
+    "businessField": "supplier",
+    "name": "CATHODIC MATERIAL"
+  },
+  {
+    "id": "23",
+    "businessField": "supplier",
+    "name": "CCTV"
+  },
+  {
+    "id": "286",
+    "businessField": "supplier",
+    "name": "CEILING AND PARTITION ( PLAFOND ACOUSTIC, GYPSUM, ALUMINIUM )"
+  },
+  {
+    "id": "348",
+    "businessField": "supplier",
+    "name": "CETAKAN BETON PRECAST"
+  },
+  {
+    "id": "398",
+    "businessField": "supplier",
+    "name": "CHEMICAL (ACETONE, TRIETHANOL, ETC)"
+  },
+  {
+    "id": "382",
+    "businessField": "supplier",
+    "name": "COATING"
+  },
+  {
+    "id": "24",
+    "businessField": "supplier",
+    "name": "CONBLOCK ( BATACO, CELCON, PAVING )"
+  },
+  {
+    "id": "321",
+    "businessField": "supplier",
+    "name": "CONCRETE BARRIER"
+  },
+  {
+    "id": "26",
+    "businessField": "supplier",
+    "name": "CONCRETE BLOCK, KANSTIN"
+  },
+  {
+    "id": "401",
+    "businessField": "supplier",
+    "name": "CONCRETE CUTTER"
+  },
+  {
+    "id": "28",
+    "businessField": "supplier",
+    "name": "CONCRETE MIXER"
+  },
+  {
+    "id": "29",
+    "businessField": "supplier",
+    "name": "CONCRETE PUMP"
+  },
+  {
+    "id": "399",
+    "businessField": "supplier",
+    "name": "CONCRETE VIBRATOR ELECTRIC"
+  },
+  {
+    "id": "292",
+    "businessField": "supplier",
+    "name": "COOLING TOWER"
+  },
+  {
+    "id": "403",
+    "businessField": "supplier",
+    "name": "CORRUGATED SHEET PILE BETON"
+  },
+  {
+    "id": "31",
+    "businessField": "supplier",
+    "name": "CRUSHED STONE (PASIR DAN SPLIT)"
+  },
+  {
+    "id": "316",
+    "businessField": "supplier",
+    "name": "DECK DRAIN"
+  },
+  {
+    "id": "34",
+    "businessField": "supplier",
+    "name": "DIGITAL SCALE"
+  },
+  {
+    "id": "349",
+    "businessField": "supplier",
+    "name": "DYNABOLT"
+  },
+  {
+    "id": "35",
+    "businessField": "supplier",
+    "name": "ELEVATOR, ESCALATOR DAN TRAVELATOR"
+  },
+  {
+    "id": "385",
+    "businessField": "supplier",
+    "name": "EXOTHERMIC WELDING T CONNECT"
+  },
+  {
+    "id": "410",
+    "businessField": "supplier",
+    "name": "EXTINGUISHER (PORTABLE, WHEELED)"
+  },
+  {
+    "id": "37",
+    "businessField": "supplier",
+    "name": "FIBER GLASS"
+  },
+  {
+    "id": "303",
+    "businessField": "supplier",
+    "name": "FIRE ALARM ( FIGHTING / STOP )"
+  },
+  {
+    "id": "411",
+    "businessField": "supplier",
+    "name": "FIRE EXTINGUISHER (APAR)"
+  },
+  {
+    "id": "41",
+    "businessField": "supplier",
+    "name": "FIRE FIGHTING SYSTEM (ALARM, SPRINGKLER, HYDRANT)"
+  },
+  {
+    "id": "304",
+    "businessField": "supplier",
+    "name": "FIRE SYSTEM"
+  },
+  {
+    "id": "395",
+    "businessField": "supplier",
+    "name": "FLANGE AND FITTING"
+  },
+  {
+    "id": "375",
+    "businessField": "supplier",
+    "name": "FLOODLIGHT"
+  },
+  {
+    "id": "43",
+    "businessField": "supplier",
+    "name": "FLOORDECK (METAL DECK)"
+  },
+  {
+    "id": "44",
+    "businessField": "supplier",
+    "name": "FURNITURE"
+  },
+  {
+    "id": "315",
+    "businessField": "supplier",
+    "name": "GARMENT"
+  },
+  {
+    "id": "45",
+    "businessField": "supplier",
+    "name": "GENSET & UPS"
+  },
+  {
+    "id": "48",
+    "businessField": "supplier",
+    "name": "GEOTEXTILE / GEOGRID / VERTICAL DRAIN"
+  },
+  {
+    "id": "295",
+    "businessField": "supplier",
+    "name": "GIRDER"
+  },
+  {
+    "id": "50",
+    "businessField": "supplier",
+    "name": "GLASS (KACA)"
+  },
+  {
+    "id": "52",
+    "businessField": "supplier",
+    "name": "GONDOLA (UNIT & SPARE PART)"
+  },
+  {
+    "id": "53",
+    "businessField": "supplier",
+    "name": "GRANIT & MARMER"
+  },
+  {
+    "id": "362",
+    "businessField": "supplier",
+    "name": "GRATING"
+  },
+  {
+    "id": "55",
+    "businessField": "supplier",
+    "name": "GRC BOARD AND GYPSUM"
+  },
+  {
+    "id": "351",
+    "businessField": "supplier",
+    "name": "GUARDRAIL"
+  },
+  {
+    "id": "372",
+    "businessField": "supplier",
+    "name": "GYPSUM"
+  },
+  {
+    "id": "350",
+    "businessField": "supplier",
+    "name": "H BEAM"
+  },
+  {
+    "id": "389",
+    "businessField": "supplier",
+    "name": "HAZARDOUS WASTE STORAGE"
+  },
+  {
+    "id": "220",
+    "businessField": "supplier",
+    "name": "HOTMIX"
+  },
+  {
+    "id": "376",
+    "businessField": "supplier",
+    "name": "INSTRUMENT CABLE (FIBER OPTIC, ETHERNET CABLE)"
+  },
+  {
+    "id": "404",
+    "businessField": "supplier",
+    "name": "INSULATION JOINT"
+  },
+  {
+    "id": "425",
+    "businessField": "supplier",
+    "name": "IT HARDWARE"
+  },
+  {
+    "id": "57",
+    "businessField": "supplier",
+    "name": "KABEL & ALAT LISTRIK"
+  },
+  {
+    "id": "221",
+    "businessField": "supplier",
+    "name": "KABEL LISTRIK / TELEPON"
+  },
+  {
+    "id": "58",
+    "businessField": "supplier",
+    "name": "KARPET"
+  },
+  {
+    "id": "60",
+    "businessField": "supplier",
+    "name": "KAWAT BAJA (STEEL WIRE, PC WIRE, PC STRAND)"
+  },
+  {
+    "id": "62",
+    "businessField": "supplier",
+    "name": "KAWAT BENDRAT"
+  },
+  {
+    "id": "63",
+    "businessField": "supplier",
+    "name": "KAWAT LAS & PERALATAN LAS"
+  },
+  {
+    "id": "66",
+    "businessField": "supplier",
+    "name": "KAYU KONSTRUKSI (KASO, SERUT, BALOK, PAPAN, DOLKEN, DLL)"
+  },
+  {
+    "id": "68",
+    "businessField": "supplier",
+    "name": "KAYU LAPIS (MULTIPLEX, PLYWOOD, PHENOLIX FILM, DLL)"
+  },
+  {
+    "id": "70",
+    "businessField": "supplier",
+    "name": "KERAMIK (LANTAI DAN DINDING)"
+  },
+  {
+    "id": "72",
+    "businessField": "supplier",
+    "name": "KIMIA KONSTRUKSI"
+  },
+  {
+    "id": "317",
+    "businessField": "supplier",
+    "name": "KOMPOR GAS ALAM"
+  },
+  {
+    "id": "75",
+    "businessField": "supplier",
+    "name": "KUNCI (LOCKING SYSTEM) DAN ASESORIS"
+  },
+  {
+    "id": "77",
+    "businessField": "supplier",
+    "name": "KUSEN (KAYU, ALUMINIUM, UPVC)"
+  },
+  {
+    "id": "416",
+    "businessField": "supplier",
+    "name": "LABORATORY EQUIPMENT"
+  },
+  {
+    "id": "79",
+    "businessField": "supplier",
+    "name": "LAMPU & FIXTURES (LIGHTING CONTROL, SYSTEM, DLL)"
+  },
+  {
+    "id": "394",
+    "businessField": "supplier",
+    "name": "LANDSCAPING (POHON, RUMPUT, KURSI TAMAN, ETC)"
+  },
+  {
+    "id": "414",
+    "businessField": "supplier",
+    "name": "LIFT ELEVATOR"
+  },
+  {
+    "id": "415",
+    "businessField": "supplier",
+    "name": "LIFT ESCALATOR"
+  },
+  {
+    "id": "369",
+    "businessField": "supplier",
+    "name": "LIFTING HOOK"
+  },
+  {
+    "id": "378",
+    "businessField": "supplier",
+    "name": "LIGHTNING & GROUNDING"
+  },
+  {
+    "id": "386",
+    "businessField": "supplier",
+    "name": "LV SWITCHGEAR"
+  },
+  {
+    "id": "81",
+    "businessField": "supplier",
+    "name": "MATERIAL INTERIOR"
+  },
+  {
+    "id": "341",
+    "businessField": "supplier",
+    "name": "MATERIAL PLASTIC"
+  },
+  {
+    "id": "402",
+    "businessField": "supplier",
+    "name": "MESIN POTONG RUMPUT"
+  },
+  {
+    "id": "406",
+    "businessField": "supplier",
+    "name": "METER RUMAH TANGGA (METER RT)"
+  },
+  {
+    "id": "83",
+    "businessField": "supplier",
+    "name": "MINYAK / PELUMAS / GAS"
+  },
+  {
+    "id": "85",
+    "businessField": "supplier",
+    "name": "MOBIL / KENDARAAN (TRUK, MINIBUS, DLL)"
+  },
+  {
+    "id": "424",
+    "businessField": "supplier",
+    "name": "MOTOR RODA 3"
+  },
+  {
+    "id": "405",
+    "businessField": "supplier",
+    "name": "MOV (GATE, SHUTDOWN)"
+  },
+  {
+    "id": "366",
+    "businessField": "supplier",
+    "name": "MULTI PLATE PIPE ARCH"
+  },
+  {
+    "id": "387",
+    "businessField": "supplier",
+    "name": "MV SWITCHGEAR"
+  },
+  {
+    "id": "360",
+    "businessField": "supplier",
+    "name": "NAVIGATION BUOY"
+  },
+  {
+    "id": "352",
+    "businessField": "supplier",
+    "name": "NOZLE"
+  },
+  {
+    "id": "86",
+    "businessField": "supplier",
+    "name": "PAKU"
+  },
+  {
+    "id": "377",
+    "businessField": "supplier",
+    "name": "PANEL"
+  },
+  {
+    "id": "218",
+    "businessField": "supplier",
+    "name": "PANEL LANTAI"
+  },
+  {
+    "id": "88",
+    "businessField": "supplier",
+    "name": "PANEL LISTRIK"
+  },
+  {
+    "id": "89",
+    "businessField": "supplier",
+    "name": "PASIR & SPLITE"
+  },
+  {
+    "id": "328",
+    "businessField": "supplier",
+    "name": "Pekerjaan Manufacture"
+  },
+  {
+    "id": "91",
+    "businessField": "supplier",
+    "name": "PERALATAN K3 (SEPATU SAFETY, HELMET, BODY HARNESS)"
+  },
+  {
+    "id": "93",
+    "businessField": "supplier",
+    "name": "PERALATAN KANTOR DAN ALAT TULIS KANTOR (ATK)"
+  },
+  {
+    "id": "95",
+    "businessField": "supplier",
+    "name": "PERALATAN LABORATURIUM PENGUJIAN"
+  },
+  {
+    "id": "325",
+    "businessField": "supplier",
+    "name": "PERANGKAT LUNAK"
+  },
+  {
+    "id": "420",
+    "businessField": "supplier",
+    "name": "PIG (DETECTOR, LAUNCHER, RECEIVER)"
+  },
+  {
+    "id": "367",
+    "businessField": "supplier",
+    "name": "PILE SHOE"
+  },
+  {
+    "id": "358",
+    "businessField": "supplier",
+    "name": "PINTU (PVC, KAYU, ENGINEERING)"
+  },
+  {
+    "id": "97",
+    "businessField": "supplier",
+    "name": "PINTU BESI (PINTU TAHAN API)"
+  },
+  {
+    "id": "98",
+    "businessField": "supplier",
+    "name": "PIPA (PVC, PE, HDPE, PPR)"
+  },
+  {
+    "id": "101",
+    "businessField": "supplier",
+    "name": "PIPA BAJA (CS, SEAMLESS,ERW)"
+  },
+  {
+    "id": "103",
+    "businessField": "supplier",
+    "name": "PIPA BESI + ASESORIS (VALVE)"
+  },
+  {
+    "id": "105",
+    "businessField": "supplier",
+    "name": "PIPA BETON (GORONG-GORONG, BUIS BETON)"
+  },
+  {
+    "id": "107",
+    "businessField": "supplier",
+    "name": "PIPA GALVANIZE"
+  },
+  {
+    "id": "396",
+    "businessField": "supplier",
+    "name": "PIPE BEND"
+  },
+  {
+    "id": "368",
+    "businessField": "supplier",
+    "name": "PIPE SUPPORT BEKISTING"
+  },
+  {
+    "id": "108",
+    "businessField": "supplier",
+    "name": "PLAFOND, PARTISI, ASBES, ETERNIT"
+  },
+  {
+    "id": "354",
+    "businessField": "supplier",
+    "name": "PLAT BAJA"
+  },
+  {
+    "id": "355",
+    "businessField": "supplier",
+    "name": "PLAT BONDEX"
+  },
+  {
+    "id": "419",
+    "businessField": "supplier",
+    "name": "PLUMBING"
+  },
+  {
+    "id": "109",
+    "businessField": "supplier",
+    "name": "POMPA (PUMP)"
+  },
+  {
+    "id": "276",
+    "businessField": "supplier",
+    "name": "PRECAST"
+  },
+  {
+    "id": "111",
+    "businessField": "supplier",
+    "name": "PRECAST CONCRETE"
+  },
+  {
+    "id": "216",
+    "businessField": "supplier",
+    "name": "PRESTRESSED SPUN PILE"
+  },
+  {
+    "id": "417",
+    "businessField": "supplier",
+    "name": "QRH (QUICK RELEASE HOOK)"
+  },
+  {
+    "id": "409",
+    "businessField": "supplier",
+    "name": "RAMBU-RAMBU / WARNING SIGN"
+  },
+  {
+    "id": "4",
+    "businessField": "supplier",
+    "name": "READYMIX CONCRETE"
+  },
+  {
+    "id": "407",
+    "businessField": "supplier",
+    "name": "REGULATION STATION (RS)"
+  },
+  {
+    "id": "113",
+    "businessField": "supplier",
+    "name": "RUBBER (BEARING PAD, EXPANSION JOINT, FENDER)"
+  },
+  {
+    "id": "412",
+    "businessField": "supplier",
+    "name": "SAFETY CONSUMABLE"
+  },
+  {
+    "id": "288",
+    "businessField": "supplier",
+    "name": "SANDWICH PANEL"
+  },
+  {
+    "id": "114",
+    "businessField": "supplier",
+    "name": "SANITARY & ACCESSORIES"
+  },
+  {
+    "id": "115",
+    "businessField": "supplier",
+    "name": "SANITARY & ACCESSORIES"
+  },
+  {
+    "id": "117",
+    "businessField": "supplier",
+    "name": "SCAFFOLDING"
+  },
+  {
+    "id": "118",
+    "businessField": "supplier",
+    "name": "SCREW"
+  },
+  {
+    "id": "120",
+    "businessField": "supplier",
+    "name": "SEALANT"
+  },
+  {
+    "id": "122",
+    "businessField": "supplier",
+    "name": "SECURITY SYSTEM (ALARM ELEKTRONIK)"
+  },
+  {
+    "id": "356",
+    "businessField": "supplier",
+    "name": "SEKRUP"
+  },
+  {
+    "id": "359",
+    "businessField": "supplier",
+    "name": "SELING BELT"
+  },
+  {
+    "id": "2",
+    "businessField": "supplier",
+    "name": "SEMEN"
+  },
+  {
+    "id": "6",
+    "businessField": "supplier",
+    "name": "SEMEN MORTAR"
+  },
+  {
+    "id": "124",
+    "businessField": "supplier",
+    "name": "SHEET PILE (BETON / BAJA)"
+  },
+  {
+    "id": "302",
+    "businessField": "supplier",
+    "name": "SIRTU & BATU BOULDER"
+  },
+  {
+    "id": "408",
+    "businessField": "supplier",
+    "name": "SITE TOILET"
+  },
+  {
+    "id": "379",
+    "businessField": "supplier",
+    "name": "SOLAR CELL"
+  },
+  {
+    "id": "125",
+    "businessField": "supplier",
+    "name": "SOUND SYSTEM"
+  },
+  {
+    "id": "357",
+    "businessField": "supplier",
+    "name": "SPANDEX"
+  },
+  {
+    "id": "127",
+    "businessField": "supplier",
+    "name": "SPAREPART ALAT BERAT & ALAT BANTU"
+  },
+  {
+    "id": "129",
+    "businessField": "supplier",
+    "name": "SPAREPART COMPRESSOR"
+  },
+  {
+    "id": "131",
+    "businessField": "supplier",
+    "name": "SPAREPART GENSET"
+  },
+  {
+    "id": "132",
+    "businessField": "supplier",
+    "name": "SPAREPART TOWER CRANE"
+  },
+  {
+    "id": "423",
+    "businessField": "supplier",
+    "name": "SPEEDBOAT"
+  },
+  {
+    "id": "217",
+    "businessField": "supplier",
+    "name": "SPUN CONCRETE PILE (TIANG PANCANG)"
+  },
+  {
+    "id": "222",
+    "businessField": "supplier",
+    "name": "SPUN CONCRETE POLE (TIANG LISTRIK)"
+  },
+  {
+    "id": "133",
+    "businessField": "supplier",
+    "name": "STAINLESS STEEL"
+  },
+  {
+    "id": "134",
+    "businessField": "supplier",
+    "name": "STEEL FABRICATION (GALZAVANIZING)"
+  },
+  {
+    "id": "363",
+    "businessField": "supplier",
+    "name": "STEEL HANDRAIL"
+  },
+  {
+    "id": "364",
+    "businessField": "supplier",
+    "name": "STEEL LADDER"
+  },
+  {
+    "id": "365",
+    "businessField": "supplier",
+    "name": "STEEL STAIR-CASE"
+  },
+  {
+    "id": "361",
+    "businessField": "supplier",
+    "name": "STEEL STRUCTURE"
+  },
+  {
+    "id": "393",
+    "businessField": "supplier",
+    "name": "STEP NOSING"
+  },
+  {
+    "id": "413",
+    "businessField": "supplier",
+    "name": "STORAGE TANK"
+  },
+  {
+    "id": "339",
+    "businessField": "supplier",
+    "name": "TANAH"
+  },
+  {
+    "id": "135",
+    "businessField": "supplier",
+    "name": "TANGKI AIR"
+  },
+  {
+    "id": "418",
+    "businessField": "supplier",
+    "name": "TANGKI SOLAR"
+  },
+  {
+    "id": "138",
+    "businessField": "supplier",
+    "name": "TERPAL PLASTIK / TENDA / JARING PENGAMAN"
+  },
+  {
+    "id": "7",
+    "businessField": "supplier",
+    "name": "TIANG PANCANG BAJA"
+  },
+  {
+    "id": "9",
+    "businessField": "supplier",
+    "name": "TIANG PANCANG BETON"
+  },
+  {
+    "id": "139",
+    "businessField": "supplier",
+    "name": "TRADING COMPANY"
+  },
+  {
+    "id": "141",
+    "businessField": "supplier",
+    "name": "TRAFO (TRANSFORMATOR)"
+  },
+  {
+    "id": "388",
+    "businessField": "supplier",
+    "name": "TRANSFORMER / TRANSFORMATOR"
+  },
+  {
+    "id": "384",
+    "businessField": "supplier",
+    "name": "UNINTERRUPTIBLE POWER SUPPLY (AC UPS/DC UPS)"
+  },
+  {
+    "id": "353",
+    "businessField": "supplier",
+    "name": "VALVE"
+  },
+  {
+    "id": "143",
+    "businessField": "supplier",
+    "name": "VALVE (ball, globe, gate, check, control, manual)"
+  },
+  {
+    "id": "144",
+    "businessField": "supplier",
+    "name": "WATER HEATER"
+  },
+  {
+    "id": "147",
+    "businessField": "supplier",
+    "name": "WATER PROOFING"
+  },
+  {
+    "id": "146",
+    "businessField": "supplier",
+    "name": "WATER TREATMENT Package (Raw, Waste, Demineralized)"
+  },
+  {
+    "id": "322",
+    "businessField": "supplier",
+    "name": "WIREMESH AND BRC"
+  },
+  {
+    "id": "148",
+    "businessField": "supplier",
+    "name": "WIREMESH AND BRC"
+  },
+  {
+    "id": "149",
+    "businessField": "supplier",
+    "name": "WIREMESH AND BRC"
+  }
+]

@@ -43,6 +43,10 @@ describe("authorization catalog", () => {
       "list-role-assignments",
       "create-role-assignments",
       "delete-role-assignments",
+      "view-vendors",
+      "list-vendors",
+      "detail-vendors",
+      "approve-vendors",
     ] as const;
     for (const code of guards) {
       expect(code in permissionByCode).toBe(true);

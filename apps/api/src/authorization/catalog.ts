@@ -73,6 +73,17 @@ export const authorizationModules = [
       { code: "delete-role-assignments", name: "Unassign Role", description: "Remove a role from a user.", targetType: "global", active: true },
     ],
   },
+  {
+    code: "vendors",
+    name: "Vendors",
+    active: true,
+    permissions: [
+      { code: "view-vendors", name: "View Vendors", description: "View vendor onboarding.", targetType: "global", active: true },
+      { code: "list-vendors", name: "List Vendors", description: "List vendor onboarding records.", targetType: "global", active: true },
+      { code: "detail-vendors", name: "Detail Vendors", description: "View a vendor onboarding record.", targetType: "global", active: true },
+      { code: "approve-vendors", name: "Approve Vendors", description: "Approve or reject a vendor onboarding record.", targetType: "global", active: true },
+    ],
+  },
 ] as const satisfies readonly ModuleDefinition[];
 
 export type AuthorizationModuleCode = (typeof authorizationModules)[number]["code"];

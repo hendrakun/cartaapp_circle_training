@@ -1,0 +1,128 @@
+[
+  {
+    "id": "24",
+    "category": "finance",
+    "name": "Data Rekening Bank",
+    "nameEn": "Bank Account Data",
+    "required": true,
+    "appliesToForeign": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "9",
+    "category": "finance",
+    "name": "Nomor Pokok Wajib Pajak (NPWP)",
+    "nameEn": "Tax Registration Document (Include Tax Number)",
+    "required": true,
+    "appliesToForeign": true,
+    "sortOrder": 2
+  },
+  {
+    "id": "13",
+    "category": "finance",
+    "name": "Surat Pengusahan Kena Pajak (PKP)/Surat Pernyataan Non PKP",
+    "nameEn": "Taxable employers",
+    "required": true,
+    "appliesToForeign": false,
+    "sortOrder": 3
+  },
+  {
+    "id": "10",
+    "category": "finance",
+    "name": "SPT PPh Badan 1 Tahun Terakhir dan SSP 3 Bulan Terakhir",
+    "nameEn": "Evidence of Tax Payment",
+    "required": true,
+    "appliesToForeign": true,
+    "sortOrder": 4
+  },
+  {
+    "id": "8",
+    "category": "finance",
+    "name": "Neraca Keuangan, Laporan Laba Rugi 3 tahun terakhir dan Surat Pernyataan Keabsahan yang ditandatangani a. Audited : Besar dan Menengah b. Non Audited : Kecil dan Mikro",
+    "nameEn": "Financial Balance / Financial Statements for the last 3 years",
+    "required": true,
+    "appliesToForeign": true,
+    "sortOrder": 5
+  },
+  {
+    "id": "23",
+    "category": "finance",
+    "name": "Surat Keterangan Terdaftar Pajak",
+    "nameEn": "Other Tax Certificates",
+    "required": true,
+    "appliesToForeign": false,
+    "sortOrder": 6
+  },
+  {
+    "id": "1",
+    "category": "legal",
+    "name": "Surat Ijin Usaha dan Nomor Induk Berusaha (NIB)",
+    "nameEn": "Legality of business Permit/ Business license",
+    "required": true,
+    "appliesToForeign": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "3",
+    "category": "legal",
+    "name": "Bukti Pendirian Perusahaan/Akta Pendirian Perusahaan (Termasuk Bukti/Akta Perubahan Terakhir)",
+    "nameEn": "Articles of Association",
+    "required": true,
+    "appliesToForeign": true,
+    "sortOrder": 2
+  },
+  {
+    "id": "12",
+    "category": "legal",
+    "name": "Surat Keterangan Tidak Dalam Pengawasan Pengadilan atau Bangkrut",
+    "nameEn": "Statement Letter No Court Supervision or Bankrupt",
+    "required": true,
+    "appliesToForeign": true,
+    "sortOrder": 3
+  },
+  {
+    "id": "4",
+    "category": "legal",
+    "name": "Company Profile Badan Usaha yang terdiri dari: a. Daftar Sumber Daya Personil/Struktur Organisasi b. Daftar Pengalaman Kerja dan perusahaan bekerja sama c. Daftar Sumber Daya Alat & Bukti Kepemilikan d. Identitas Pemegang Saham",
+    "nameEn": "Company Profile",
+    "required": true,
+    "appliesToForeign": true,
+    "sortOrder": 4
+  },
+  {
+    "id": "16",
+    "category": "legal",
+    "name": "Surat Komitmen Penerapan Anti Suap/Pakta Integritas",
+    "nameEn": "Integrity Pact",
+    "required": true,
+    "appliesToForeign": true,
+    "sortOrder": 5
+  },
+  {
+    "id": "22",
+    "category": "legal",
+    "name": "Deklarasi Benturan Kepentingan",
+    "nameEn": "Self Declaration Regarding Conflict of Interest",
+    "required": true,
+    "appliesToForeign": true,
+    "sortOrder": 6
+  },
+  {
+    "id": "17",
+    "category": "technical",
+    "name": "Surat Komitmen Penggunaan TKDN",
+    "nameEn": "Statement Letter of Obligation for use Indonesian Domestic Component",
+    "required": true,
+    "appliesToForeign": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "18",
+    "category": "technical",
+    "name": "Surat Melibatkan UMKM",
+    "nameEn": "The statement will involve Micro, Small and Medium Indonesian Company",
+    "required": true,
+    "appliesToForeign": true,
+    "sortOrder": 2
+  }
+]

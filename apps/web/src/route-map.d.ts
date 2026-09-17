@@ -122,9 +122,124 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    'vendors': RouteRecordInfo<
+      'vendors',
+      '/vendors',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'vendors-detail': RouteRecordInfo<
+      'vendors-detail',
+      '/vendors/:vendorId/detail',
+      { vendorId: ParamValue<true> },
+      { vendorId: ParamValue<false> },
+      | 'vendors-detail-bim'
+      | 'vendors-detail-contacts'
+      | 'vendors-detail-documents'
+      | 'vendors-detail-reviews'
+    >,
+    'vendors-detail-bim': RouteRecordInfo<
+      'vendors-detail-bim',
+      '/vendors/:vendorId/detail/bim',
+      { vendorId: ParamValue<true> },
+      { vendorId: ParamValue<false> },
+      | never
+    >,
+    'vendors-detail-contacts': RouteRecordInfo<
+      'vendors-detail-contacts',
+      '/vendors/:vendorId/detail/contacts',
+      { vendorId: ParamValue<true> },
+      { vendorId: ParamValue<false> },
+      | never
+    >,
+    'vendors-detail-documents': RouteRecordInfo<
+      'vendors-detail-documents',
+      '/vendors/:vendorId/detail/documents',
+      { vendorId: ParamValue<true> },
+      { vendorId: ParamValue<false> },
+      | never
+    >,
+    'vendors-detail-reviews': RouteRecordInfo<
+      'vendors-detail-reviews',
+      '/vendors/:vendorId/detail/reviews',
+      { vendorId: ParamValue<true> },
+      { vendorId: ParamValue<false> },
+      | never
+    >,
+    'vendors-mine': RouteRecordInfo<
+      'vendors-mine',
+      '/vendors/mine',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'vendors-mine-bidang-usaha': RouteRecordInfo<
+      'vendors-mine-bidang-usaha',
+      '/vendors/mine/bidang-usaha',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'vendors-mine-contact-person': RouteRecordInfo<
+      'vendors-mine-contact-person',
+      '/vendors/mine/contact-person',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'vendors-mine-data-pendukung-keuangan': RouteRecordInfo<
+      'vendors-mine-data-pendukung-keuangan',
+      '/vendors/mine/data-pendukung-keuangan',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'vendors-mine-data-pendukung-legal': RouteRecordInfo<
+      'vendors-mine-data-pendukung-legal',
+      '/vendors/mine/data-pendukung-legal',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'vendors-mine-data-pendukung-teknis': RouteRecordInfo<
+      'vendors-mine-data-pendukung-teknis',
+      '/vendors/mine/data-pendukung-teknis',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'vendors-mine-input-bim': RouteRecordInfo<
+      'vendors-mine-input-bim',
+      '/vendors/mine/input-bim',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'vendors-mine-konfirmasi-selesai': RouteRecordInfo<
+      'vendors-mine-konfirmasi-selesai',
+      '/vendors/mine/konfirmasi-selesai',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     'auth-login': RouteRecordInfo<
       'auth-login',
       '/auth/login',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'vendors-register': RouteRecordInfo<
+      'vendors-register',
+      '/vendors/register',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'vendors-verify': RouteRecordInfo<
+      'vendors-verify',
+      '/vendors/verify',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -164,6 +279,20 @@ declare module 'vue-router/auto-routes' {
         | 'settings-users-detail'
         | 'settings-users-detail-role-assignments'
         | 'settings-users-edit'
+        | 'vendors'
+        | 'vendors-detail'
+        | 'vendors-detail-bim'
+        | 'vendors-detail-contacts'
+        | 'vendors-detail-documents'
+        | 'vendors-detail-reviews'
+        | 'vendors-mine'
+        | 'vendors-mine-bidang-usaha'
+        | 'vendors-mine-contact-person'
+        | 'vendors-mine-data-pendukung-keuangan'
+        | 'vendors-mine-data-pendukung-legal'
+        | 'vendors-mine-data-pendukung-teknis'
+        | 'vendors-mine-input-bim'
+        | 'vendors-mine-konfirmasi-selesai'
       views:
         | 'default'
       pathParamNames:
@@ -275,9 +404,142 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    'src/routes/(authenticated)/vendors/index.route.vue': {
+      routes:
+        | 'vendors'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/[vendorId]/detail.route.vue': {
+      routes:
+        | 'vendors-detail'
+        | 'vendors-detail-bim'
+        | 'vendors-detail-contacts'
+        | 'vendors-detail-documents'
+        | 'vendors-detail-reviews'
+      views:
+        | 'default'
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/[vendorId]/detail/bim/index.route.vue': {
+      routes:
+        | 'vendors-detail-bim'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/[vendorId]/detail/contacts/index.route.vue': {
+      routes:
+        | 'vendors-detail-contacts'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/[vendorId]/detail/documents/index.route.vue': {
+      routes:
+        | 'vendors-detail-documents'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/[vendorId]/detail/reviews/index.route.vue': {
+      routes:
+        | 'vendors-detail-reviews'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/mine/vendor.layout.vue': {
+      routes:
+        | 'vendors-mine'
+        | 'vendors-mine-bidang-usaha'
+        | 'vendors-mine-contact-person'
+        | 'vendors-mine-data-pendukung-keuangan'
+        | 'vendors-mine-data-pendukung-legal'
+        | 'vendors-mine-data-pendukung-teknis'
+        | 'vendors-mine-input-bim'
+        | 'vendors-mine-konfirmasi-selesai'
+      views:
+        | 'default'
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/mine/index.route.vue': {
+      routes:
+        | 'vendors-mine'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/mine/bidang-usaha/index.route.vue': {
+      routes:
+        | 'vendors-mine-bidang-usaha'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/mine/contact-person/index.route.vue': {
+      routes:
+        | 'vendors-mine-contact-person'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/mine/data-pendukung-keuangan/index.route.vue': {
+      routes:
+        | 'vendors-mine-data-pendukung-keuangan'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/mine/data-pendukung-legal/index.route.vue': {
+      routes:
+        | 'vendors-mine-data-pendukung-legal'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/mine/data-pendukung-teknis/index.route.vue': {
+      routes:
+        | 'vendors-mine-data-pendukung-teknis'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/mine/input-bim/index.route.vue': {
+      routes:
+        | 'vendors-mine-input-bim'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(authenticated)/vendors/mine/konfirmasi-selesai/index.route.vue': {
+      routes:
+        | 'vendors-mine-konfirmasi-selesai'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     'src/routes/(public)/public.layout.vue': {
       routes:
         | 'auth-login'
+        | 'vendors-register'
+        | 'vendors-verify'
       views:
         | 'default'
       pathParamNames:
@@ -286,6 +548,22 @@ declare module 'vue-router/auto-routes' {
     'src/routes/(public)/auth/login/index.route.vue': {
       routes:
         | 'auth-login'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(public)/vendors/register/index.route.vue': {
+      routes:
+        | 'vendors-register'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/routes/(public)/vendors/verify/index.route.vue': {
+      routes:
+        | 'vendors-verify'
       views:
         | never
       pathParamNames:

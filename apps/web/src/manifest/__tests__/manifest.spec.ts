@@ -30,9 +30,12 @@ describe('navigation entrypoints', () => {
 
   it('keeps dashboard and settings entrypoints with their grants', () => {
     const settings = navigation.find((module) => module.name === 'settings')!
+    const vendors = navigation.find((module) => module.name === 'vendors')!
     expect(settings.routes).toContainEqual({ to: { name: 'settings-users' }, permission: 'view-users', title: 'Users', icon: 'folder' })
     expect(settings.routes).toContainEqual({ to: { name: 'settings-roles' }, permission: 'view-roles', title: 'Roles', icon: 'folder' })
     expect(settings.routes).toContainEqual({ to: { name: 'settings-permissions' }, permission: 'view-permissions', title: 'Permissions', icon: 'folder' })
+    expect(vendors.routes).toContainEqual({ to: { name: 'vendors-mine' }, permission: null, title: 'My registration', icon: 'inbox' })
+    expect(vendors.routes).toContainEqual({ to: { name: 'vendors' }, permission: 'view-vendors', title: 'Vendor review', icon: 'folder' })
   })
 
   it('matches entrypoint subtrees at segment boundaries and prefers longest target', () => {
@@ -56,7 +59,7 @@ describe('navigation entrypoints', () => {
       .filter((entry) => !('separator' in entry))
       .map((entry) => entry.name)
 
-    expect(routes).toEqual(['dashboard'])
+    expect(routes).toEqual(['dashboard', 'vendors-mine'])
   })
 
   it('uses active catalog codes for every guarded entrypoint', () => {

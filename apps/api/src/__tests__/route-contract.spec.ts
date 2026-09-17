@@ -10,6 +10,15 @@ const routes = [
   'GET /roles/{roleId}/permissions', 'DELETE /roles/{roleId}/permissions/{permissionId}', 'PUT /roles/{roleId}/permissions/{permissionId}',
   'POST /users/create', 'GET /users/detail/{id}', 'GET /users/list', 'PATCH /users/update/{id}',
   'GET /users/{userId}/role-assignments', 'DELETE /users/{userId}/role-assignments/{roleId}', 'PUT /users/{userId}/role-assignments/{roleId}',
+  'POST /vendors/register', 'GET /vendors/verify', 'POST /vendors/resend-verification',
+  'GET /vendors/mine', 'PATCH /vendors/mine', 'POST /vendors/mine/submit',
+  'POST /vendors/mine/contacts', 'PATCH /vendors/mine/contacts/{contactId}', 'DELETE /vendors/mine/contacts/{contactId}',
+  'GET /vendors/mine/classifications', 'PUT /vendors/mine/classifications',
+  'PUT /vendors/mine/documents/{requirementId}', 'DELETE /vendors/mine/documents/{requirementId}',
+  'PUT /vendors/mine/bim',
+  'GET /vendors/classifications/list', 'GET /vendors/classifications/detail/{id}', 'GET /vendors/divisions/list',
+  'GET /vendors/list', 'GET /vendors/detail/{id}', 'POST /vendors/review/{id}',
+  'GET /vendors/contacts/list',
 ].sort()
 
 describe('HTTP route contract', () => {

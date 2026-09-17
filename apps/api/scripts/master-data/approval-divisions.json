@@ -1,0 +1,34 @@
+[
+  {
+    "code": "80",
+    "name": "Divisi EPC"
+  },
+  {
+    "code": "60",
+    "name": "Divisi Gedung"
+  },
+  {
+    "code": "INFRA",
+    "name": "Divisi Sipil Umum"
+  },
+  {
+    "code": "00",
+    "name": "Kantor Pusat"
+  },
+  {
+    "code": "66",
+    "name": "PT HK Realtindo"
+  },
+  {
+    "code": "88",
+    "name": "PT. HAKAASTON"
+  },
+  {
+    "code": "HKI",
+    "name": "PT. Hutama Karya Infrastruktur"
+  },
+  {
+    "code": "UPT",
+    "name": "Unit Pengadaan Jalan Tol"
+  }
+]
