@@ -104,3 +104,9 @@ Update the existing work record, relevant application-map entries and, only for
 the full process, worksheet states. Report source readiness, development preview
 and verification separately. Record time to usable preview as well as total
 elapsed time; keep user waits and external blockers distinct.
+
+After a reported defect, inspect other uses of the same faulty pattern and reopen
+the affected review scope. Update the existing record with the repair and current
+evidence before restoring completion. Preserve evidence that the defect and repair
+do not affect. Include the account role and data prerequisites needed to use the
+preview, without exposing credentials.

@@ -65,11 +65,22 @@ for form-owned row arrays. If those cannot express one domain value, use the
 
 The outer form owns label, required state, error, help, and grid span.
 
+Define custom-action fields through the supported typed field builder or an
+explicit field type at declaration. Check renderer and renderer-prop placement
+against that contract; assigning a loose object to a component is not proof
+that its configuration keys are used.
+
 Apply the [framework-first composition rule](../web-ui-surfaces/SKILL.md#framework-first-composition)
 once per form pattern. Select the form surface from
 [DESIGN.md](../../../DESIGN.md#actions-and-forms).
 Pass the standard action bag directly. Let the form own draft, validation, pending state, and ordinary close
 behavior instead of adding parallel state in the route.
+
+For a custom submit, trace write success, form completion and data refresh in
+order. Keep the form mounted through completion; background refresh must not
+remove its state owner. Use the supported loading and invalidation path from
+the [query-cache contract](../carta-module-development/references/web-query-cache.md).
+Report a failed write separately from a failed refresh after a successful write.
 
 ## Configure relation sources
 

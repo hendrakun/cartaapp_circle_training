@@ -125,6 +125,11 @@ presentation. Use the app routing Tabs component for route navigation.
 
 Select collection content from [DESIGN.md](../../../../DESIGN.md#page-structure).
 
+Custom collections preserve the standard query and result contract. Trace paging
+from the control through the request, server limit/order/count, and normalized
+response. Use an unpaged collection only for a defined bounded set or an explicit
+product requirement; a small seed dataset does not establish a bound.
+
 Keep search, filters, sorting, and paging in the collection query. Preserve
 unrelated query keys when one filter changes and reset the page to one. A
 local presentation switch preserves that query. Use the existing namespaced

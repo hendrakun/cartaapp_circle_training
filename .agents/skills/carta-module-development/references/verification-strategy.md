@@ -74,6 +74,13 @@ overlay and focus tests in modules. Framework gaps are separate work.
 Module tests own schemas, relation sources, field dependencies, authorization,
 business rules and persistence. Use actual module owners, not copied schemas.
 
+Application integration is a separate boundary from unchanged framework behavior.
+When local code coordinates submit, component lifetime, refresh or invalidation,
+use a focused non-browser check that exercises that coordination through its
+actual owners. Include write failure and successful write followed by refresh
+failure where those paths differ. Keep source review for layout and configuration;
+avoid tests that only repeat their text.
+
 ## Test justification
 
 Before adding a test, identify the plausible wrong result and the coverage gap.
@@ -123,6 +130,11 @@ replaces schema needs its own isolated target.
 Keep commands, exit status, selected cases, source state and non-secret target
 identity in the existing work record. No recorder JSON is needed for ordinary
 work. Record source-review findings and unverified UI behavior separately.
+
+Support each required outcome with a relevant assertion or specific source-review
+finding. Read the assertion before claiming coverage. An aggregate test count or
+a type-check pass does not establish behavior outside its checks. Keep missing
+required proof open even when all executed commands pass.
 
 For the full process, select only API/UNIT evidence. Use the existing recorder
 through `node scripts/module-evidence.mjs --help`. Include actual source, tests,

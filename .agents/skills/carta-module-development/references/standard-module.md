@@ -4,6 +4,24 @@ Build requested CRUD with standard resources, forms and Views. Add custom
 workflows to that base where needed. Most modules can share this approach;
 use a different structure when the requested task does not fit CRUD.
 
+## Select the process
+
+Select from the complete user flow before choosing a record. Use the standard
+path for CRUD and custom operations whose rules and results can be specified
+and checked locally. A relation, custom control or shared access predicate alone
+does not require the full process.
+
+Use the full design/plan/worksheet process for the affected scope when correctness
+depends on a sequence of domain operations, coupled rules across operations, or
+derived results that several consumers must keep consistent after writes. Also
+use it for required traceability. Approval states are one source of complexity;
+their absence does not establish that a flow is simple.
+
+Record the selected scope and its reason in the existing design. Keep independent
+CRUD on the standard path. Reassess the choice when new dependencies appear;
+preserve settled decisions and valid evidence. Both paths use the same framework
+contracts and quality requirements.
+
 ## One work record
 
 Use `plans/<feature>/design.md`. Start from the
@@ -65,10 +83,8 @@ Use YAML for custom workflows, not CRUD. Select control placement from
 [DESIGN.md](../../../../DESIGN.md#actions-and-forms). Adding a workflow does not
 require new document types or a restart.
 
-Use a full design contract or separate plan only when a material decision, consequential
-change or required traceability needs it. Define the affected scope and reference
-the existing base instead of repeating it. The full contract and worksheet are
-available for that scope; custom actions alone do not require them.
+Apply the process selection above to combined behavior. Reference the existing
+base for unaffected work instead of repeating it in the full contract.
 
 Use the standard API/resource/View path. Keep standard actions in their normal
 locations and add custom controls only for a named user need. A related feature

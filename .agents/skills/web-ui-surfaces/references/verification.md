@@ -22,6 +22,13 @@ Trace changed API values into the actual field configuration. Do not create
 tests that copy configuration or repeat standard framework control behavior.
 Use API tests for access enforcement, domain rules and stored effects.
 
+For custom integration, trace the complete boundary: query to collection result,
+field definition to control and submitted value, and write completion to dialog
+state, feedback and affected data refresh. Check the application composition,
+even when each framework component is already tested. Use the focused proof
+rules in the shared verification strategy. A source-check pass proves only the
+checks that the tool reports.
+
 Review custom composition against the
 [framework-first rule](../SKILL.md#framework-first-composition).
 Each custom block must meet a requirement not met by the standard components.

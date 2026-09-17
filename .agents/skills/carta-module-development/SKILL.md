@@ -17,13 +17,11 @@ journey. Follow the [non-browser boundary](references/verification-strategy.md#b
 
 Start with the [standard module base](references/standard-module.md). It owns
 the single design record and how to add custom behavior to requested CRUD.
-Read it before creating artifacts. A custom action does not switch the whole
-module to another process.
+Read its process-selection rule before creating artifacts.
 
 Use `$carta-module-design` for unresolved behavior and `$carta-module-plan` for
-implementation planning. Use the full design/plan/[worksheet](references/module-execution-worksheet.md)
-process only where required traceability or a consequential change needs that
-record. State its scope; keep unaffected work in the existing record.
+implementation planning. Apply the selected process to its recorded scope;
+keep unaffected work in the existing record.
 
 On resume, reuse current decisions, approval and evidence in the selected process.
 Explicit user-required processes still apply.

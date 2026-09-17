@@ -41,6 +41,12 @@ Keep the record summary first. Show each field or attachment once. Use a
 sidebar only when short workflow controls need to sit beside longer content.
 Several sections alone do not require a custom record shell.
 
+Give the record summary, related collections and distinct workflow areas named
+sections. On a custom detail page, use separate framework cards by default for
+areas with independent content or controls. Use unframed sections when headings
+and spacing make their boundaries clear. Keep each section's heading, content
+and controls together. A standard View can already supply this grouping.
+
 For collections, show the primary name or reference first, then useful status
 and dates. Put long prose and secondary audit fields in detail. Use cards when
 images or summaries help users compare records. Add a Table/Cards switch only
@@ -48,7 +54,7 @@ when both views serve the task.
 
 ## Actions and forms
 
-Keep standard Create controls and list row Edit/Delete actions in their normal
+Keep standard Create controls and list row View/Edit/Delete actions in their normal
 locations. Put requested record workflow actions in the detail controls area.
 Group related actions. Keep header actions right-aligned and final form actions
 together at the bottom-right. The page header does not repeat form actions.

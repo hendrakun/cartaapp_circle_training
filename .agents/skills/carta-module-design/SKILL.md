@@ -22,8 +22,8 @@ document. Complete the standard module's design approval gate before a
 design-only handoff or return to the requesting workflow. Custom actions alone
 do not require the full procedure below.
 
-Use the remaining sections where a consequential change or required traceability
-needs a full contract. State its scope in the design record; preserve unaffected
+Use the remaining sections for the full-process scope selected by the standard
+module base. State its scope in the design record; preserve unaffected
 behavior and reference it instead of copying it into a second record.
 The original request and later answers govern over examples.
 An inferred default cannot override explicit requirements or become user-confirmed

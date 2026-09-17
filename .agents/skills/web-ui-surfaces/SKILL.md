@@ -16,11 +16,14 @@ reference below. Reuse the plan's verified adapter and component choices.
 Inspect an export or one nearby example only for an unresolved contract.
 Before writing each new interaction pattern, identify its View or form, input
 renderers, display renderers, value contract, action owner, and visible parent.
+For custom reads or writes, read the
+[query-cache contract](../carta-module-development/references/web-query-cache.md).
+Identify the loading owner and every data consumer affected by a write.
 Read [Fields](references/fields.md) for every resource display and
 [File routing](references/file-routing.md) for every child section.
 Discovery is complete when each visible field has a supported display path,
-and each interaction has a supported component and route placement or a named
-framework gap. Keep these
+and each interaction has supported configuration, route placement, loading and
+refresh ownership, or a named framework gap. Keep these
 decisions in the existing work record and reuse them for matching interactions.
 
 Read `docs/architecture/web-application-architecture.md` when ownership or app
