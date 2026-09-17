@@ -329,6 +329,21 @@ describe('vendor onboarding', () => {
     })
   })
 
+  describe('account audience', () => {
+    it('reports the owned vendor on the identity payload and leaves staff empty', async () => {
+      const owner = await registeredOwner('identity')
+      const ownerResponse = await app.request('/me', { headers: { Cookie: owner.cookie } })
+      expect(ownerResponse.status).toBe(200)
+      const ownerBody = (await ownerResponse.json()) as { data: { vendor: { id: string; statusCode: string } | null } }
+      expect(ownerBody.data.vendor).toMatchObject({ id: owner.vendorId, statusCode: 'email_verified' })
+
+      const staff = await staffSession('vendor-staff-identity')
+      const staffResponse = await app.request('/me', { headers: { Cookie: staff.cookie } })
+      const staffBody = (await staffResponse.json()) as { data: { vendor: unknown } }
+      expect(staffBody.data.vendor).toBeNull()
+    })
+  })
+
   describe('reference reads', () => {
     it('lists and searches classifications, and reads one for a lookup', async () => {
       const owner = await registeredOwner('reference')

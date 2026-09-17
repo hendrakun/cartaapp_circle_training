@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { visibleNavigation } from '@/manifest'
 import { allowsPermission } from '@/framework/adapters/bundle'
+import { navigationAudience } from '@/framework/audience'
 import Logo from '@/assets/corporate/common/Logo.vue'
 import Icon from '@southneuhof/loom/components/base/Icon.vue'
 import CommandPalette from './CommandPalette.vue'
@@ -11,7 +12,7 @@ import { routeBreadcrumbs } from './breadcrumbs'
 defineEmits<{ openNavigation: [] }>()
 const route = useRoute()
 const router = useRouter()
-const breadcrumbs = computed(() => routeBreadcrumbs(route, router, visibleNavigation(allowsPermission)))
+const breadcrumbs = computed(() => routeBreadcrumbs(route, router, visibleNavigation(allowsPermission, navigationAudience())))
 </script>
 
 <template>

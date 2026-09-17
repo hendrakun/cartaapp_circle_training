@@ -7,6 +7,8 @@ import Icon from '@southneuhof/loom/components/base/Icon.vue'
 import Popover from '@southneuhof/loom/components/base/Popover.vue'
 
 const profileData = computed(() => identity.value?.user)
+/** Shows which side of the application this account belongs to. */
+const accountKind = computed(() => (identity.value?.vendor ? 'Vendor' : 'HK staff'))
 const open = ref(false)
 const signingOut = ref(false)
 const colorPreference = useColorPreference()
@@ -35,7 +37,7 @@ async function signOut() {
         </span>
         <span class="min-w-0 flex-1">
           <span class="block truncate text-sm font-medium">{{ profileData?.name || 'Account' }}</span>
-          <span class="block truncate text-xs text-on-surface-variant">{{ profileData?.email || '' }}</span>
+          <span class="block truncate text-xs text-on-surface-variant">{{ accountKind }} · {{ profileData?.email || '' }}</span>
         </span>
         <Icon name="arrow-up-s" size="base" class="shrink-0 text-on-surface-variant" />
       </button>
@@ -44,6 +46,7 @@ async function signOut() {
       <div class="border-b border-outline-variant px-2 pb-2">
         <p class="font-semibold">{{ profileData?.name || 'Account' }}</p>
         <p class="text-sm text-on-surface">{{ profileData?.email || '' }}</p>
+        <p class="text-xs text-on-surface-variant">{{ accountKind }} account</p>
       </div>
       <div class="flex flex-col gap-1">
         <button

@@ -34,8 +34,8 @@ describe('navigation entrypoints', () => {
     expect(settings.routes).toContainEqual({ to: { name: 'settings-users' }, permission: 'view-users', title: 'Users', icon: 'folder' })
     expect(settings.routes).toContainEqual({ to: { name: 'settings-roles' }, permission: 'view-roles', title: 'Roles', icon: 'folder' })
     expect(settings.routes).toContainEqual({ to: { name: 'settings-permissions' }, permission: 'view-permissions', title: 'Permissions', icon: 'folder' })
-    expect(vendors.routes).toContainEqual({ to: { name: 'vendors-mine' }, permission: null, title: 'My registration', icon: 'inbox' })
-    expect(vendors.routes).toContainEqual({ to: { name: 'vendors' }, permission: 'view-vendors', title: 'Vendor review', icon: 'folder' })
+    expect(vendors.routes).toContainEqual({ to: { name: 'vendors-mine' }, permission: null, audience: 'vendor', title: 'My registration', icon: 'inbox' })
+    expect(vendors.routes).toContainEqual({ to: { name: 'vendors' }, permission: 'view-vendors', audience: 'staff', title: 'Vendor review', icon: 'folder' })
   })
 
   it('matches entrypoint subtrees at segment boundaries and prefers longest target', () => {
@@ -53,13 +53,30 @@ describe('navigation entrypoints', () => {
   })
 
   it('keeps only open menus visible without grants', () => {
-    const visible = visibleNavigation(() => false)
-    const routes = visible
+    const names = (audience: 'staff' | 'vendor') =>
+      visibleNavigation(() => false, audience)
+        .flatMap((module) => module.routes)
+        .filter((entry) => !('separator' in entry))
+        .map((entry) => entry.name)
+
+    expect(names('staff')).toEqual(['dashboard'])
+    expect(names('vendor')).toEqual(['dashboard', 'vendors-mine'])
+  })
+
+  it('keeps the vendor menu and the staff review apart', () => {
+    const staff = visibleNavigation(() => true, 'staff')
+      .flatMap((module) => module.routes)
+      .filter((entry) => !('separator' in entry))
+      .map((entry) => entry.name)
+    const vendor = visibleNavigation(() => true, 'vendor')
       .flatMap((module) => module.routes)
       .filter((entry) => !('separator' in entry))
       .map((entry) => entry.name)
 
-    expect(routes).toEqual(['dashboard', 'vendors-mine'])
+    expect(staff).toContain('vendors')
+    expect(staff).not.toContain('vendors-mine')
+    expect(vendor).toContain('vendors-mine')
+    expect(vendor).not.toContain('vendors')
   })
 
   it('uses active catalog codes for every guarded entrypoint', () => {

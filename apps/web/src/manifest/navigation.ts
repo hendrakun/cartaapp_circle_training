@@ -1,4 +1,4 @@
-import { defineNavigation, type NavigationIcon, type NavigationModule } from './contract'
+import { defineNavigation, type NavigationAudience, type NavigationEntry, type NavigationIcon, type NavigationModule } from './contract'
 
 export const navigation = defineNavigation([
   { name: 'dashboard', title: 'Dashboard', icon: 'home', description: 'Dashboard', routes: [{ to: { name: 'dashboard' }, permission: null, title: 'Dashboard', icon: 'home' }] },
@@ -8,8 +8,8 @@ export const navigation = defineNavigation([
     icon: 'folder',
     description: 'Vendor onboarding',
     routes: [
-      { to: { name: 'vendors-mine' }, permission: null, title: 'My registration', icon: 'inbox' },
-      { to: { name: 'vendors' }, permission: 'view-vendors', title: 'Vendor review', icon: 'folder' },
+      { to: { name: 'vendors-mine' }, permission: null, audience: 'vendor', title: 'My registration', icon: 'inbox' },
+      { to: { name: 'vendors' }, permission: 'view-vendors', audience: 'staff', title: 'Vendor review', icon: 'folder' },
     ],
   },
   {
@@ -29,7 +29,7 @@ export type VisibleNavigationRoute = { name: string; to: unknown; title: string;
 export type VisibleNavigationEntry = { separator: true; name: string } | VisibleNavigationRoute
 export type VisibleNavigationModule = Omit<(typeof navigation)[number], 'routes'> & { routes: VisibleNavigationEntry[] }
 
-export function visibleNavigation(allows: (permission: string) => boolean): VisibleNavigationModule[] {
+export function visibleNavigation(allows: (permission: string) => boolean, audience: NavigationAudience = 'staff'): VisibleNavigationModule[] {
   return navigation.flatMap((module) => {
     const routes: VisibleNavigationEntry[] = []
     for (const entry of module.routes) {
@@ -38,6 +38,7 @@ export function visibleNavigation(allows: (permission: string) => boolean): Visi
         continue
       }
       if (!('to' in entry)) continue
+      if (!audienceAllows(entry, audience)) continue
       const permission: string | null = entry.permission
       if (permission !== null && !allows(permission)) continue
       const to = entry.to as { name: string }
@@ -50,13 +51,20 @@ export function visibleNavigation(allows: (permission: string) => boolean): Visi
   })
 }
 
+/** An entry without an audience belongs to every signed-in account. */
+function audienceAllows(entry: NavigationEntry, audience: NavigationAudience): boolean {
+  const required = 'audience' in entry ? (entry.audience as NavigationAudience | 'all' | undefined) : undefined
+  if (required === undefined || required === 'all') return true
+  return required === audience
+}
+
 export function matchesNavigationPath(path: string, entryPath: string) {
   return path === entryPath || path.startsWith(`${entryPath}/`)
 }
 
 /** Finds entrypoint module owning path, by segment boundary then longest match. */
-export function activeNavigationModule(path: string, resolve: (to: unknown) => { path: string }, allows: (permission: string) => boolean): string | undefined {
-  const candidates = visibleNavigation(allows).flatMap((module, index) =>
+export function activeNavigationModule(path: string, resolve: (to: unknown) => { path: string }, allows: (permission: string) => boolean, audience: NavigationAudience = 'staff'): string | undefined {
+  const candidates = visibleNavigation(allows, audience).flatMap((module, index) =>
     module.routes.flatMap((route) => {
       if ('separator' in route) return []
       const entryPath = resolve(route.to).path

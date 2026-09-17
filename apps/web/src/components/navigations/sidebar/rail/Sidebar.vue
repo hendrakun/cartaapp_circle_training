@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { activeNavigationModule, matchesNavigationPath, visibleNavigation, type VisibleNavigationModule, type VisibleNavigationRoute } from '@/manifest'
 import { allowsPermission } from '@/framework/adapters/bundle'
+import { navigationAudience } from '@/framework/audience'
 import Icon from '@southneuhof/loom/components/base/Icon.vue'
 import ProfileSegment from '../../layouts/ProfileSegment.vue'
 
@@ -15,8 +16,8 @@ function getDirectRoute(module: VisibleNavigationModule) {
   return module.routes.length === 1 && entry && !('separator' in entry) ? entry : undefined
 }
 
-const navigation = computed<SidebarNavigationModule[]>(() => visibleNavigation(allowsPermission).map((module) => ({ ...module, directRoute: getDirectRoute(module) })))
-const activeModule = computed(() => activeNavigationModule(route.path, (to) => router.resolve(to as never), allowsPermission))
+const navigation = computed<SidebarNavigationModule[]>(() => visibleNavigation(allowsPermission, navigationAudience()).map((module) => ({ ...module, directRoute: getDirectRoute(module) })))
+const activeModule = computed(() => activeNavigationModule(route.path, (to) => router.resolve(to as never), allowsPermission, navigationAudience()))
 const openGroups = ref(new Set<string>())
 const navigationElement = ref<HTMLElement>()
 const showTopFade = ref(false)

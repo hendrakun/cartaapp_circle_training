@@ -404,6 +404,27 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    'src/routes/(authenticated)/vendors/mine/vendor.layout.vue': {
+      routes:
+        | 'vendors'
+        | 'vendors-detail'
+        | 'vendors-detail-bim'
+        | 'vendors-detail-contacts'
+        | 'vendors-detail-documents'
+        | 'vendors-detail-reviews'
+        | 'vendors-mine'
+        | 'vendors-mine-bidang-usaha'
+        | 'vendors-mine-contact-person'
+        | 'vendors-mine-data-pendukung-keuangan'
+        | 'vendors-mine-data-pendukung-legal'
+        | 'vendors-mine-data-pendukung-teknis'
+        | 'vendors-mine-input-bim'
+        | 'vendors-mine-konfirmasi-selesai'
+      views:
+        | 'default'
+      pathParamNames:
+        | never
+    }
     'src/routes/(authenticated)/vendors/index.route.vue': {
       routes:
         | 'vendors'
@@ -453,21 +474,6 @@ declare module 'vue-router/auto-routes' {
         | 'vendors-detail-reviews'
       views:
         | never
-      pathParamNames:
-        | never
-    }
-    'src/routes/(authenticated)/vendors/mine/vendor.layout.vue': {
-      routes:
-        | 'vendors-mine'
-        | 'vendors-mine-bidang-usaha'
-        | 'vendors-mine-contact-person'
-        | 'vendors-mine-data-pendukung-keuangan'
-        | 'vendors-mine-data-pendukung-legal'
-        | 'vendors-mine-data-pendukung-teknis'
-        | 'vendors-mine-input-bim'
-        | 'vendors-mine-konfirmasi-selesai'
-      views:
-        | 'default'
       pathParamNames:
         | never
     }

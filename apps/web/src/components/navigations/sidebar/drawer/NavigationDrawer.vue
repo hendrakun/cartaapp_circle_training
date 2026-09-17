@@ -4,11 +4,12 @@ import { useRoute } from 'vue-router'
 import { onClickOutside } from '@vueuse/core'
 import { visibleNavigation } from '@/manifest'
 import { allowsPermission } from '@/framework/adapters/bundle'
+import { navigationAudience } from '@/framework/audience'
 import Icon from '@southneuhof/loom/components/base/Icon.vue'
 import ProfileSegment from '../../layouts/ProfileSegment.vue'
 
 const route = useRoute()
-const navigation = computed(() => visibleNavigation(allowsPermission))
+const navigation = computed(() => visibleNavigation(allowsPermission, navigationAudience()))
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ close: [] }>()
 const drawer = ref<HTMLElement>()

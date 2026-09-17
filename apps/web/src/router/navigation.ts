@@ -1,9 +1,10 @@
 import type { RouteLocationRaw, Router } from 'vue-router'
 import { visibleNavigation } from '@/manifest'
 import { allowsPermission } from '@/framework/adapters/bundle'
+import { navigationAudience } from '@/framework/audience'
 
 export function getFirstAccessibleRouteName(): string | null {
-  for (const module of visibleNavigation(allowsPermission)) {
+  for (const module of visibleNavigation(allowsPermission, navigationAudience())) {
     const route = module.routes.find((entry) => !('separator' in entry))
     if (route && !('separator' in route)) return route.name
   }

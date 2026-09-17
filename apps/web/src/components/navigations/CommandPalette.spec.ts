@@ -83,10 +83,13 @@ describe('CommandPalette', () => {
     const view = mountPalette()
 
     await view.get('[data-command-palette-trigger]').trigger('click')
+    // Filter first: the full entry list depends on the navigation manifest, so
+    // the keyboard check must not depend on module order.
+    await view.get('[data-command-palette-input]').setValue('Settings')
     await view.get('[data-command-palette-input]').trigger('keydown', { key: 'ArrowDown' })
     await view.get('[data-command-palette-input]').trigger('keydown', { key: 'Enter' })
 
-    expect(mocks.push).toHaveBeenCalledExactlyOnceWith({ name: 'settings-users' })
+    expect(mocks.push).toHaveBeenCalledExactlyOnceWith({ name: 'settings-roles' })
     expect(view.find('[data-command-palette-input]').exists()).toBe(false)
   })
 

@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { visibleNavigation, type NavigationIcon } from '@/manifest'
 import { allowsPermission } from '@/framework/adapters/bundle'
+import { navigationAudience } from '@/framework/audience'
 import Icon from '@southneuhof/loom/components/base/Icon.vue'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@southneuhof/loom/components/base/Dialog'
 
@@ -34,7 +35,7 @@ function routeCode(to: unknown, fallback: string) {
 
 const routes = computed<PaletteRoute[]>(() => {
   const entries: PaletteRoute[] = []
-  for (const module of visibleNavigation(allowsPermission)) {
+  for (const module of visibleNavigation(allowsPermission, navigationAudience())) {
     for (const entry of module.routes) {
       if ('separator' in entry) continue
       entries.push({ ...entry, aliases: [routeCode(entry.to, entry.name), ...(entry.aliases ?? [])], moduleTitle: module.title })
