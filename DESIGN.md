@@ -64,6 +64,11 @@ form, and `Form` inside an existing surface. Group fields by task and put
 prerequisite fields before dependent fields. Use the smallest filter width that
 fits the control; use a full row only when needed.
 
+A contextual dialog form opens from its own action and owns its normal open and
+close interaction. In repeated content, use one dialog form for each record
+action. Let the page control visibility only when another page control must
+coordinate the same dialog.
+
 ## Controls and values
 
 Use shared buttons, chips, forms, file inputs, and feedback components for

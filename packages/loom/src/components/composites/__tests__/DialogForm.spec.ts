@@ -51,6 +51,7 @@ function mountDialogForm(options: MountOptions = {}) {
   const errors: unknown[] = []
   const resets: unknown[] = []
   const openUpdates: boolean[] = []
+  const submittedOpenStates: boolean[] = []
   const draftUpdates: Record<string, unknown>[] = []
 
   const Host = defineComponent({
@@ -83,7 +84,10 @@ function mountDialogForm(options: MountOptions = {}) {
                   },
                 }
               : {}),
-            onSubmitted: (result: unknown) => submitted.push(result),
+            onSubmitted: (result: unknown) => {
+              submittedOpenStates.push(open.value)
+              submitted.push(result)
+            },
             onError: (error: unknown) => errors.push(error),
             onReset: () => resets.push(true),
           },
@@ -93,7 +97,7 @@ function mountDialogForm(options: MountOptions = {}) {
   })
 
   const view = mountCore(Host, {})
-  return { view, submitted, errors, resets, openUpdates, draftUpdates }
+  return { view, submitted, submittedOpenStates, errors, resets, openUpdates, draftUpdates }
 }
 
 function button(view: ReturnType<typeof mountCore>, label: string) {
@@ -181,6 +185,7 @@ describe('DialogForm', () => {
 
     expect(submit).toHaveBeenCalledWith({ name: 'Ada' })
     expect(view.submitted).toEqual([{ id: 'one', name: 'Ada' }])
+    expect(view.submittedOpenStates).toEqual([false])
     expect(view.openUpdates).toEqual([false])
     expect(view.view.exposed().open).toBe(false)
     view.view.unmount()
@@ -235,6 +240,7 @@ describe('DialogForm', () => {
     await flush()
 
     expect(view.submitted).toEqual(['saved'])
+    expect(view.submittedOpenStates).toEqual([true])
     expect(view.openUpdates).toEqual([])
     expect(view.view.exposed().open).toBe(true)
     view.view.unmount()

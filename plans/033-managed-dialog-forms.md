@@ -8,7 +8,21 @@
 - Category: migration
 - Depends on: None
 - Planned at: `5cafda4`, 2026-09-17
-- Status: TODO
+- Status: DONE — implemented and independently reviewed on 2026-09-17
+
+## Implementation evidence
+
+- The completion-order regression failed before the fix: the submitted
+  listener received open state `[true]` instead of `[false]`; the other 24
+  focused tests passed.
+- Focused DialogForm and TableInput tests: 30 passed.
+- Loom type check: passed.
+- Loom suite: 454 passed.
+- Web consumer type check: passed; route generation produced no diff.
+- Web consumer suite: 229 passed.
+- Both changed skill folders passed `quick_validate.py`.
+- `git diff --check`: passed.
+- The named forward-test stash and database were not used.
 
 Execute this plan only when implementation is requested. Read it in full first.
 Update the row in `plans/README.md` after implementation and review.

@@ -180,8 +180,9 @@ export interface DialogFormCloseContext {
 /**
  * Core Form props plus dialog lifecycle and presentation policy.
  *
- * The default `v-model` remains Form draft data. Dialog visibility uses the
- * separate named `v-model:open` declared by DialogForm.
+ * DialogForm owns visibility by default. Callers can use the separate named
+ * `v-model:open` for coordinated visibility. The default `v-model` remains
+ * Form draft data.
  */
 export type DialogFormProps<
   TInput extends object = Record<string, unknown>,

@@ -218,6 +218,18 @@ its actions slot, FormView, and DialogForm, and never queues a partial submit.
 Cancellation still closes DialogForm. The executable boundary example is
 `apps/web/src/framework/adapters/assets.form.spec.ts`.
 
+## Dialog forms
+
+`DialogForm` owns visibility when the caller supplies no `open` binding. Put the
+control that opens it in the `trigger` slot. Repeated record actions can each
+render their own keyed `DialogForm`; they need no shared selected-record state.
+
+Validation and rejected writes keep the dialog and its draft available. After a
+successful write, `closeOnSubmitted` closes the dialog before the `submitted`
+event. Set `closeOnSubmitted` to `false` only when success must keep the same form
+open. The named `v-model:open` remains available for callers that must coordinate
+visibility with another control.
+
 ## Application boundary
 
 Loom does not own application transport.

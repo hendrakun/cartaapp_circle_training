@@ -9,6 +9,59 @@ Select the form surface and action placement from
 [DESIGN.md](../../DESIGN.md#actions-and-forms). The View supplies its navigation
 header. Framework forms use the app dictionary for default action text.
 
+## Dialog forms
+
+Let `DialogForm` own its visibility for an ordinary contextual form. Supply the
+action, title, and trigger. For a row action, render one keyed dialog for each
+record:
+
+```vue
+<DialogForm :key="record.id" v-bind="items.update({ id: record.id })" title="Edit item">
+  <template #trigger>
+    <Button>Edit</Button>
+  </template>
+</DialogForm>
+```
+
+One dialog per record is the normal path. It keeps record identity and draft
+state local to that action. A shared selected-record ref is not necessary.
+
+Keep a custom submit target limited to the write. Start later cache invalidation
+and refetch from the `submitted` event. Report its failure as stale data. Do not
+rerun the write:
+
+```vue
+<DialogForm
+  :fields="fields"
+  :schema="schema"
+  :submit="saveEvaluation"
+  title="Add evaluation"
+  @submitted="invalidateAfterSave"
+>
+  <template #trigger>
+    <Button>Add evaluation</Button>
+  </template>
+</DialogForm>
+```
+
+```ts
+const staleDataError = ref<string>()
+
+async function invalidateAfterSave() {
+  try {
+    await evaluations.invalidate()
+  } catch (error) {
+    staleDataError.value = errorMessage(error, 'Saved, but current data could not be refreshed.')
+  }
+}
+```
+
+A failed validation or write keeps the dialog and its draft available. A
+successful write closes the dialog before `submitted` listeners run. Use the
+named `v-model:open` only when another page control must coordinate visibility.
+This controlled form is the advanced option; it keeps the same validation and
+completion behavior.
+
 ## Field defaults
 
 Select each schema field needed by the action. When a selected field has no

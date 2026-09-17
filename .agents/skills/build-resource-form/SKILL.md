@@ -73,12 +73,17 @@ that its configuration keys are used.
 Apply the [framework-first composition rule](../web-ui-surfaces/SKILL.md#framework-first-composition)
 once per form pattern. Select the form surface from
 [DESIGN.md](../../../DESIGN.md#actions-and-forms).
-Pass the standard action bag directly. Let the form own draft, validation, pending state, and ordinary close
-behavior instead of adding parallel state in the route.
+Pass the standard action bag directly. Use a `DialogForm` trigger slot without
+`v-model:open` for ordinary contextual forms, and render one keyed form per
+record action. Let the form own draft, validation, pending state, visibility,
+and completion. Use controlled visibility only when another page control must
+coordinate it. Read [the dialog form contract](../../../docs/ui/forms.md#dialog-forms)
+for that advanced path.
 
 For a custom submit, trace write success, form completion and data refresh in
-order. Keep the form mounted through completion; background refresh must not
-remove its state owner. Use the supported loading and invalidation path from
+order. Start later refresh work from `submitted`; keep it separate from the
+write so refresh rejection reports stale data and does not retry the write.
+Use the supported loading and invalidation path from
 the [query-cache contract](../carta-module-development/references/web-query-cache.md).
 Report a failed write separately from a failed refresh after a successful write.
 

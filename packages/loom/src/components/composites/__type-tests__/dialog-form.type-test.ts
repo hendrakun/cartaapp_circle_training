@@ -21,17 +21,20 @@ const bag = { run: async (_draft: Row) => ({ id: '1' }) }
 const submitBag: DialogFormProps<Row> = { fields, submit: bag }
 void submitBag
 
-const submitBound = {
-  fields,
-  submit: async (draft: Row) => ({ id: draft.id }),
-  beforeClose: async (context: DialogFormCloseContext) => !context.dirty,
-} satisfies DialogFormProps<Row, { id: string }>
-
-type ComponentProps = DialogFormProps & {
+type ComponentProps<TInput extends object = Record<string, unknown>, TResult = unknown> = DialogFormProps<TInput, TResult> & {
   open?: boolean
   'onUpdate:open'?: (open: boolean) => void
   'onUpdate:modelValue'?: (draft: Record<string, unknown>) => void
 }
+
+// Managed visibility needs no open prop or listener.
+const managed = {
+  fields,
+  submit: async (draft: Row) => ({ id: draft.id }),
+  beforeClose: async (context: DialogFormCloseContext) => !context.dirty,
+} satisfies ComponentProps<Row, { id: string }>
+
+// Coordinated visibility keeps the existing named model shape.
 const openAndDraftBound: ComponentProps = {
   fields,
   open: true,
@@ -40,7 +43,7 @@ const openAndDraftBound: ComponentProps = {
   'onUpdate:modelValue': (_draft: Record<string, unknown>) => undefined,
 }
 
-void submitBound
+void managed
 void openAndDraftBound
 
 // @ts-expect-error DialogForm requires canonical Form fields.

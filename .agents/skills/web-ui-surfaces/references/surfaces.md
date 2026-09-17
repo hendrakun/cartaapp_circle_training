@@ -63,12 +63,18 @@ Pass standard actions directly:
 <ListView v-bind="items.list()" />
 <DetailView v-bind="items.detail({ id })" />
 <FormView v-bind="items.create()" />
-<DialogForm v-bind="items.update({ id })" v-model:open="open" />
+<DialogForm :key="record.id" v-bind="items.update({ id: record.id })" title="Edit item">
+  <template #trigger>
+    <Button>Edit</Button>
+  </template>
+</DialogForm>
 ```
 
 `Form` and `DialogForm` accept a structural `{ run }` action bag. Do not add a
 wrapper such as `dialogFormOf`, and do not compose raw `Dialog` + `Form` when
-`DialogForm` fits.
+`DialogForm` fits. Render one keyed `DialogForm` per record action. Let it own
+ordinary visibility and completion. Read [the forms guide](../../../../docs/ui/forms.md#dialog-forms)
+before an advanced caller controls visibility with `v-model:open`.
 
 ## Collection variants and action overrides
 

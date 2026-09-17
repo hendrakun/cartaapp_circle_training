@@ -116,8 +116,8 @@ function handleDialogModel(value: boolean) {
 }
 
 function handleSubmitted(result: unknown) {
-  emit('submitted', result)
   if (props.closeOnSubmitted) open.value = false
+  emit('submitted', result)
 }
 
 function submit() {

@@ -8,11 +8,13 @@ as the advanced option. Existing framework migration plans use this directory.
 
 | Plan | Result | Priority | Effort | Risk | Depends on | Status |
 |---|---|---|---|---|---|---|
-| [033](033-managed-dialog-forms.md) | Managed triggers, safe completion order, independent row dialogs and updated guidance | P1 | M | MED | None | TODO |
+| [033](033-managed-dialog-forms.md) | Managed triggers, safe completion order, independent row dialogs and updated guidance | P1 | M | MED | None | DONE — reviewed 2026-09-17; 30 focused, 454 Loom, and 229 web tests pass |
 
-Execute the steps in 033 in order. Source and runtime tests were inspected;
-implementation checks have not run. Only plan files changed during planning.
-The forward test stays stashed. No database or package publishing work is included.
+Implementation followed the steps in 033. The completion-order regression was
+red before the one-line framework fix. Loom and web type checks pass; route
+generation produced no diff. Both changed skills validate. The forward test
+stays stashed. No database or package publishing work is included. Reviewer
+verdict: APPROVE.
 
 Considered and rejected: public sessions; shared action-owned visibility (action
 objects are cached); closing on submit start or unmount; a new controlled-dialog
